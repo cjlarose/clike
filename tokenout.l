@@ -9,6 +9,7 @@ ID     [a-zA-Z_][a-zA-Z0-9_]*
 OPS    "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|" 
 ASSGOPS ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
 COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
+INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
      
 %%
 "auto"          { printf("kw:%s ", yytext); }
@@ -49,12 +50,9 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 "volatile"          { printf("kw:%s ", yytext); }
 "while"         { printf("kw:%s ", yytext); }
 
-0[0-7]*[uU]?("l"|"L"|"ll"|"LL")? { printf("oint:%s ", yytext); } // integer constants
-0[0-7]*("l"|"L"|"ll"|"LL")[uU] { printf("oint:%s ", yytext); } 
-0[Xx][a-fA-F0-9]+[uU]?("l"|"L"|"ll"|"LL")? { printf("hint:%s ", yytext); }
-0[Xx][a-fA-F0-9]+("l"|"L"|"ll"|"LL")[uU] { printf("hint:%s ", yytext); }
-[1-9][0-9]*[uU]?("l"|"L"|"ll"|"LL")? { printf("decint:%s ", yytext); }
-[1-9][0-9]*("l"|"L"|"ll"|"LL")[uU] { printf("decint:%s ", yytext); }
+0[0-7]*{INTSUF}? { printf("oint:%s ", yytext); } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUF}? { printf("hint:%s ", yytext); }
+[1-9][0-9]*{INTSUF}? { printf("decint:%s ", yytext); }
 
 "/*"         BEGIN(comment); // traditional C comments
 <comment>[^*\n]*
