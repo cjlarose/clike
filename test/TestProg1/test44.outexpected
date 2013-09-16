@@ -1,0 +1,1 @@
+# id:include str:"stdio.h" kw:int id:main ( ) { id:printf ( str:"hello there!\n" ) ; id:exit ( int:1 ) ; } 

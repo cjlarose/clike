@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-Wall
 EXECUTABLE=tokenout
 
-.PHONY: clean
+.PHONY: clean test
 
 $(EXECUTABLE): tokenout.l
 	flex $<
@@ -10,3 +10,6 @@ $(EXECUTABLE): tokenout.l
 
 clean:
 	rm -f lex.yy.c $(EXECUTABLE)
+
+test:
+	python test/testharness.py $(EXECUTABLE) test/TestProg1
