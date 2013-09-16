@@ -1,5 +1,5 @@
 %option main
-%s integer
+%x integer
 %x comment
 
 %{
@@ -56,16 +56,17 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 {ASSGOPS}        { printf("%s ", yytext); }
 {COMPOPS}        { printf("%s ", yytext); }
 
-0[0-7]* BEGIN(integer); // integer constants
-0[Xx][a-fA-F0-9]+ BEGIN(integer);
-[1-9][0-9]* BEGIN(integer);
-<integer>[uU] { printf("uint:%s ", yytext); }
-<integer>("l"|"L"|"ll"|"LL") { printf("lint:%s ", yytext); }
-<integer>. { printf("int:%s ", yytext); }
+0[0-7]* { printf("oint:%s", yytext); BEGIN(integer); } // integer constants
+0[Xx][a-fA-F0-9]+ { printf("hint:%s", yytext); BEGIN(integer); }
+[1-9][0-9]* { printf("decint:%s", yytext); BEGIN(integer); }
 
-"/*"         BEGIN(comment);
-<comment>[^*\n]*        /* eat anything that's not a '*' */
-<comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
+<integer>[uU] { printf("%s", yytext); BEGIN(INITIAL); } // integer suffixes
+<integer>("l"|"L"|"ll"|"LL") { printf("%s", yytext); BEGIN(INITIAL); }
+<integer>.|\n { printf(" ", yytext); BEGIN(INITIAL); }
+
+"/*"         BEGIN(comment); // traditional C comments
+<comment>[^*\n]*
+<comment>"*"+[^*/\n]*
 <comment>\n             ++line_num;
 <comment>"*"+"/"        BEGIN(INITIAL);
 <comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
