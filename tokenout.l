@@ -1,7 +1,9 @@
 %option main
 %s integer
+%x comment
 
 %{
+int line_num = 1;
 %}
 
 ID     [a-zA-Z_][a-zA-Z0-9_]*
@@ -61,6 +63,14 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 <integer>("l"|"L"|"ll"|"LL") { printf("lint:%s ", yytext); }
 <integer>. { printf("int:%s ", yytext); }
 
-[ \n\t\r\f\v]+  // Ignore whitespace
+"/*"         BEGIN(comment);
+<comment>[^*\n]*        /* eat anything that's not a '*' */
+<comment>"*"+[^*/\n]*   /* eat up '*'s not followed by '/'s */
+<comment>\n             ++line_num;
+<comment>"*"+"/"        BEGIN(INITIAL);
+<comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
+
+\n { ++line_num; }
+[ \t\r\f\v]+  // Ignore whitespace
 .           { printf("%s ", yytext); }
 %%
