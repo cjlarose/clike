@@ -1,15 +1,17 @@
 %option noyywrap
 %{
-int num_lines = 0, num_chars = 0;
 %}
+
+DIGIT  [0-9]
+ID      [a-z][a-zA-Z0-9]*
      
 %%
-\n      ++num_lines; ++num_chars;
-.       ++num_chars;
-     
+{DIGIT}+    { printf("int:%s ", yytext); }
+{ID}        { printf("id:%s ", yytext); }
+[ \n\t\r\f\v]+  // Ignore whitespace
+.           { printf("%s ", yytext); }
 %%
+
 int main() {
     yylex();
-    printf("# of lines = %d, # of chars = %d\n",
-         num_lines, num_chars );
 }
