@@ -1,4 +1,6 @@
 %option noyywrap
+%s integer
+
 %{
 %}
 
@@ -52,10 +54,12 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 {ASSGOPS}        { printf("%s ", yytext); }
 {COMPOPS}        { printf("%s ", yytext); }
 
-[1-9][0-9]*("l"|"L"|"ll"|"LL")?[uU]?    { printf("int:%s ", yytext); }  // decimal
-[1-9][0-9]*[uU]("l"|"L"|"ll"|"LL")      { printf("int:%s ", yytext); }
-0[0-7]*    { printf("int:%s ", yytext); }       // octal
-0[xX][0-9A-Fa-f]*    { printf("int:%s ", yytext); } // hex
+0[0-7]* BEGIN(integer); // integer constants
+0[Xx][a-fA-F0-9]+ BEGIN(integer);
+[1-9][0-9]* BEGIN(integer);
+<integer>[uU] { printf("uint:%s ", yytext); }
+<integer>("l"|"L"|"ll"|"LL") { printf("lint:%s ", yytext); }
+<integer>. { printf("int:%s ", yytext); }
 
 [ \n\t\r\f\v]+  // Ignore whitespace
 .           { printf("%s ", yytext); }
