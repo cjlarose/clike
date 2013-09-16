@@ -5,11 +5,14 @@
 int line_num = 1;
 %}
 
-ID     [a-zA-Z_][a-zA-Z0-9_]*
-OPS    "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|" 
-ASSGOPS ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
-COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
-INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)?
+ID         [a-zA-Z_][a-zA-Z0-9_]*
+OPS        "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|" 
+ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
+COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
+INTSUFF    ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
+EXPONENT   ([Ee][+-]?[0-9]+)
+FLOATSUFF  [FfLl]
+DOTDIGITS  [0-9]*"."[0-9]*
      
 %%
 "auto"          { printf("kw:%s ", yytext); }
@@ -50,9 +53,12 @@ INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)?
 "volatile"          { printf("kw:%s ", yytext); }
 "while"         { printf("kw:%s ", yytext); }
 
-0[0-7]*{INTSUF}           { printf("octint:%s ", yytext); } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUF} { printf("hexint:%s ", yytext); }
-[1-9][0-9]*{INTSUF}       { printf("int:%s ", yytext); }
+0[0-7]*{INTSUFF}?           { printf("octint:%s ", yytext); } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUFF}? { printf("hexint:%s ", yytext); }
+[1-9][0-9]*{INTSUFF}?       { printf("int:%s ", yytext); }
+
+[0-9]+{EXPONENT}{FLOATSUFF}?       { printf("float:%s ", yytext); } // floating-point constants
+{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { printf("float:%s ", yytext); }
 
 "/*"         BEGIN(comment); // traditional C comments
 <comment>[^*\n]*
