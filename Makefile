@@ -12,4 +12,4 @@ clean:
 	rm -f lex.yy.c $(EXECUTABLE)
 
 test:
-	python test/testharness.py $(EXECUTABLE) test/TestProg1
+	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/TestProg1
