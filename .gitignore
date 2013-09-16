@@ -2,3 +2,4 @@
 *.o
 tokenout
 lex.yy.c
+tokenout.tar.gz
