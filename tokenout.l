@@ -2,7 +2,6 @@
 %{
 %}
 
-DIGIT  [0-9]
 ID     [a-zA-Z_][a-zA-Z0-9_]*
 OPS    "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|" 
 ASSGOPS ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
@@ -47,12 +46,16 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 "volatile"          { printf("kw:%s ", yytext); }
 "while"         { printf("kw:%s ", yytext); }
 
-{DIGIT}+    { printf("int:%s ", yytext); }
 {ID}        { printf("id:%s ", yytext); }
 
 {OPS}        { printf("%s ", yytext); }
 {ASSGOPS}        { printf("%s ", yytext); }
 {COMPOPS}        { printf("%s ", yytext); }
+
+[1-9][0-9]*("l"|"L"|"ll"|"LL")?[uU]?    { printf("int:%s ", yytext); }  // decimal
+[1-9][0-9]*[uU]("l"|"L"|"ll"|"LL")      { printf("int:%s ", yytext); }
+0[0-7]*    { printf("int:%s ", yytext); }       // octal
+0[xX][0-9A-Fa-f]*    { printf("int:%s ", yytext); } // hex
 
 [ \n\t\r\f\v]+  // Ignore whitespace
 .           { printf("%s ", yytext); }
