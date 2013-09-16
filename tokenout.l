@@ -9,7 +9,7 @@ ID     [a-zA-Z_][a-zA-Z0-9_]*
 OPS    "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|" 
 ASSGOPS ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
 COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
-INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
+INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)?
      
 %%
 "auto"          { printf("kw:%s ", yytext); }
@@ -50,9 +50,9 @@ INTSUF ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
 "volatile"          { printf("kw:%s ", yytext); }
 "while"         { printf("kw:%s ", yytext); }
 
-0[0-7]*{INTSUF}? { printf("oint:%s ", yytext); } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUF}? { printf("hint:%s ", yytext); }
-[1-9][0-9]*{INTSUF}? { printf("decint:%s ", yytext); }
+0[0-7]*{INTSUF}           { printf("octint:%s ", yytext); } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUF} { printf("hexint:%s ", yytext); }
+[1-9][0-9]*{INTSUF}       { printf("int:%s ", yytext); }
 
 "/*"         BEGIN(comment); // traditional C comments
 <comment>[^*\n]*
