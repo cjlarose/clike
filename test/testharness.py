@@ -66,7 +66,7 @@ of files in it (expected inputs and outputs)
     # change to test dir and run
     for filename in filenames :
 
-        if not(filename.endswith(".input") and filename.startswith("test")) :
+        if not filename.endswith(".input"):
             # print '... ignoring ', filename
             continue
         # Filename found
