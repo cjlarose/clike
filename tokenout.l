@@ -1,4 +1,4 @@
-%option noyywrap
+%option main
 %s integer
 
 %{
@@ -64,7 +64,3 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 [ \n\t\r\f\v]+  // Ignore whitespace
 .           { printf("%s ", yytext); }
 %%
-
-int main() {
-    yylex();
-}
