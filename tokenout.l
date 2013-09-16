@@ -1,5 +1,4 @@
 %option main
-%x integer
 %x comment
 
 %{
@@ -50,19 +49,12 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 "volatile"          { printf("kw:%s ", yytext); }
 "while"         { printf("kw:%s ", yytext); }
 
-{ID}        { printf("id:%s ", yytext); }
-
-{OPS}        { printf("%s ", yytext); }
-{ASSGOPS}        { printf("%s ", yytext); }
-{COMPOPS}        { printf("%s ", yytext); }
-
-0[0-7]* { printf("oint:%s", yytext); BEGIN(integer); } // integer constants
-0[Xx][a-fA-F0-9]+ { printf("hint:%s", yytext); BEGIN(integer); }
-[1-9][0-9]* { printf("decint:%s", yytext); BEGIN(integer); }
-
-<integer>[uU] { printf("%s", yytext); BEGIN(INITIAL); } // integer suffixes
-<integer>("l"|"L"|"ll"|"LL") { printf("%s", yytext); BEGIN(INITIAL); }
-<integer>.|\n { printf(" ", yytext); BEGIN(INITIAL); }
+0[0-7]*[uU]?("l"|"L"|"ll"|"LL")? { printf("oint:%s ", yytext); } // integer constants
+0[0-7]*("l"|"L"|"ll"|"LL")[uU] { printf("oint:%s ", yytext); } 
+0[Xx][a-fA-F0-9]+[uU]?("l"|"L"|"ll"|"LL")? { printf("hint:%s ", yytext); }
+0[Xx][a-fA-F0-9]+("l"|"L"|"ll"|"LL")[uU] { printf("hint:%s ", yytext); }
+[1-9][0-9]*[uU]?("l"|"L"|"ll"|"LL")? { printf("decint:%s ", yytext); }
+[1-9][0-9]*("l"|"L"|"ll"|"LL")[uU] { printf("decint:%s ", yytext); }
 
 "/*"         BEGIN(comment); // traditional C comments
 <comment>[^*\n]*
@@ -70,6 +62,12 @@ COMPOPS "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 <comment>\n             ++line_num;
 <comment>"*"+"/"        BEGIN(INITIAL);
 <comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
+
+{ID}        { printf("id:%s ", yytext); }
+
+{OPS}        { printf("%s ", yytext); }
+{ASSGOPS}        { printf("%s ", yytext); }
+{COMPOPS}        { printf("%s ", yytext); }
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
