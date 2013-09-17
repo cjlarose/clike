@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-O2
 EXECUTABLE=tokenout
 ARCHIVE=tokenout.tar.gz
-TMPARCHIVE=tokenout
+TMPARCHIVE=tmp/tokenout
 
 .PHONY: clean test test2
 
@@ -12,10 +12,10 @@ $(EXECUTABLE): tokenout.l
 
 
 $(ARCHIVE): tokenout.l Makefile
-	mkdir $(TMPARCHIVE)
+	mkdir -p $(TMPARCHIVE)
 	cp tokenout.l Makefile $(TMPARCHIVE)
 	tar zcvf $(ARCHIVE) $(TMPARCHIVE)
-	rm -rf $(TMPARCHIVE)
+	rm -rf tmp
 
 clean:
 	rm -f lex.yy.c $(EXECUTABLE) $(ARCHIVE)
