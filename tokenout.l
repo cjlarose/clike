@@ -68,6 +68,8 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 <comment>"*"+"/"        BEGIN(INITIAL);
 <comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
 
+"//".*  // c++ style comments
+
 "\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); } // string constants
 
 {ID}        { printf("id:%s ", yytext); } // identifiers
