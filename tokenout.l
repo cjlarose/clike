@@ -82,6 +82,8 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 {COMPOPS}    { printf("%s ", yytext); }
 {SEPCHARS}   { printf("%s ", yytext); }
 
+"#" { printf("%s ", yytext); } // not actually a token, but reference implementation accepts it.
+
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
 .           { fprintf(stderr, "Unknown token:%s\n", yytext); }
