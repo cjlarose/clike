@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall
+CFLAGS=-O2
 EXECUTABLE=tokenout
 ARCHIVE=tokenout.tar.gz
 TMPARCHIVE=tokenout
