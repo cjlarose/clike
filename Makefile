@@ -20,8 +20,8 @@ $(ARCHIVE): tokenout.l Makefile
 clean:
 	rm -f lex.yy.c $(EXECUTABLE) $(ARCHIVE)
 
-test:
+test: $(EXECUTABLE)
 	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/tokens
 
-test2:
+test2: $(EXECUTABLE)
 	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/TestProg1
