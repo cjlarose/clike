@@ -1,1 +1,1 @@
-str:'a' str:'b' str:'c' str:'\n' str:'\t' str:'hello' 
+char:'a' char:'b' char:'c' char:'\n' char:'\t' char:'hello' 

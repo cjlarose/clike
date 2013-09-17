@@ -73,7 +73,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 "\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); } // string constants
 
-"'"(\\.|[^'])*"'" { printf("str:%s ", yytext); } // char constants
+"'"(\\.|[^'])*"'" { printf("char:%s ", yytext); } // char constants
 
 {ID}        { printf("id:%s ", yytext); } // identifiers
 
