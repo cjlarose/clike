@@ -84,5 +84,5 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
-.           { fprintf(stderr, "Unknown token:%s ", yytext); }
+.           { fprintf(stderr, "Unknown token:%s\n", yytext); }
 %%
