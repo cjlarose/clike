@@ -1,5 +1,6 @@
 %option main
 %x comment
+%x str
 
 %{
 int line_num = 1;
@@ -60,12 +61,14 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 [0-9]+{EXPONENT}{FLOATSUFF}?       { printf("float:%s ", yytext); } // floating-point constants
 {DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { printf("float:%s ", yytext); }
 
-"/*"         BEGIN(comment); // traditional C comments
+"/*"         BEGIN(comment); // traditional comments
 <comment>[^*\n]*
 <comment>"*"+[^*/\n]*
 <comment>\n             ++line_num;
 <comment>"*"+"/"        BEGIN(INITIAL);
 <comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
+
+"\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); } // string constants
 
 {ID}        { printf("id:%s ", yytext); } // identifiers
 
