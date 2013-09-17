@@ -7,9 +7,10 @@ int line_num = 1;
 %}
 
 ID         [a-zA-Z_][a-zA-Z0-9_]*
-OPS        "!"|"%"|"^"|"&"|"*"|"-"|"+"|"="|"~"|"|"|"."|"<"|">"|"/"|"?"
+OPS        [!%^&*\-+=~\|\.<>/?]
 ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
 COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
+SEPCHARS   ([\(\)\[\]{},;:]|"...")
 INTSUFF    ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
 EXPONENT   ([Ee][+-]?[0-9]+)
 FLOATSUFF  [FfLl]
@@ -77,10 +78,11 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 {ID}        { printf("id:%s ", yytext); } // identifiers
 
 {OPS}        { printf("%s ", yytext); } // operators
-{ASSGOPS}        { printf("%s ", yytext); }
-{COMPOPS}        { printf("%s ", yytext); }
+{ASSGOPS}    { printf("%s ", yytext); }
+{COMPOPS}    { printf("%s ", yytext); }
+{SEPCHARS}   { printf("%s ", yytext); }
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
-.           { printf("%s ", yytext); }
+.           { fprintf(stderr, "Unknown token:%s ", yytext); }
 %%
