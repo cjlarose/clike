@@ -1,9 +1,10 @@
-%option main
+%option noyywrap
 %x comment
 %x str
 
 %{
 int line_num = 1;
+int status = 0;
 %}
 
 ID         [a-zA-Z_][a-zA-Z0-9_]*
@@ -67,7 +68,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 <comment>"*"+[^*/\n]*
 <comment>\n             ++line_num;
 <comment>"*"+"/"        BEGIN(INITIAL);
-<comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); BEGIN(INITIAL); }
+<comment><<EOF>>        { fprintf(stderr, "%d, Unterminated Comment\n", line_num); status = 1; BEGIN(INITIAL); }
 
 "//".*  // c++ style comments
 
@@ -86,5 +87,11 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
-.           { fprintf(stderr, "Unknown token:%s\n", yytext); }
+.           { fprintf(stderr, "Unknown token:%s\n", yytext); status=1; }
 %%
+
+int main(int argc, char **argv) {
+    yylex();
+    yylex_destroy();
+    return status;
+}
