@@ -19,7 +19,7 @@
 %token RETURN
 
 %%
-term: INT_CON 
+type: CHAR | INT | FLOAT
 %%
 
 int hello() {return 0;}
