@@ -13,7 +13,7 @@ $(LEXER_EXEC): tokenout.l
 
 $(PARSER_EXEC): tokenout.l clike.y
 	flex tokenout.l # makes lex.yy.c
-	bison -d clike.y # makes clike.tab.h and lex.yy.c
+	bison -d clike.y # makes clike.tab.h and clike.tab.c
 	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c
 
 $(ARCHIVE): tokenout.l Makefile
