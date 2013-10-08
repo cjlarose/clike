@@ -3,6 +3,7 @@
 %x str
 
 %{
+# include "clike.tab.h"
 int line_num = 1;
 int status = 0;
 %}
