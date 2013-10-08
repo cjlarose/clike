@@ -18,6 +18,9 @@
 %token FOR
 %token RETURN
 
+%token UN_OP
+%token BIN_OP
+
 %%
 dcl: type dclr_list 
   | VOID f_prot_list
@@ -36,6 +39,8 @@ type_list: type | type_list ',' type
 
 type: CHAR | INT | FLOAT
 
+un_op: UN_OP
+bin_op: BIN_OP
 %%
 
 void yyerror (char *s, ... ) {
