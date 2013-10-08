@@ -39,13 +39,31 @@ type_list: type | type_list ',' type
 
 type: CHAR | INT | FLOAT
 
+stmt: IF '(' expr ')' stmt
+  | IF '(' expr ')' stmt ELSE stmt
+  | WHILE '(' expr ')' opt_stmt
+  | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt
+  | RETURN opt_expr
+  | assg
+  | invocation
+  | '{' opt_stmt_list '}'
+ 
+opt_assg: | assg
+opt_expr: | expr
+opt_stmt: | stmt
+
+opt_stmt_list: | stmt_list
+stmt_list: stmt ';' | stmt_list stmt ';'
+
 assg: ID
   | ID '[' expr ']' '=' expr
+
+invocation: ID '(' opt_expr_list ')' 
 
 expr: un_op expr
   | expr bin_op expr
   | ID
-  | ID '(' opt_expr_list ')' 
+  | invocation
   | ID '[' expr ']'
   | '(' expr ')'
   | INT_CON
