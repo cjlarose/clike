@@ -18,6 +18,13 @@
 %token FOR
 %token RETURN
 
+%left "||"
+%left "&&"
+%nonassoc "<" "<=" ">" ">=" "==" "!="
+%left '+' '-'
+%left '/' '*'
+%right '!'
+
 %%
 dcl: type dclr_list 
   | VOID f_prot_list
@@ -58,8 +65,14 @@ stmt_list: stmt ';' | stmt_list stmt ';'
 
 assg: id_with_optional_index '=' expr
 
-expr: un_op expr
-  | expr bin_op expr
+expr: un_op expr %prec '-'
+  | expr '/' expr
+  | expr '*' expr
+  | expr '+' expr
+  | expr '-' expr
+  | expr comp_op expr %prec "=="
+  | expr "&&" expr
+  | expr "||" expr
   | invocation
   | id_with_optional_index
   | '(' expr ')'
@@ -73,9 +86,10 @@ invocation: ID '(' opt_expr_list ')'
 id_with_optional_index: ID
   | ID '[' expr ']'
 
+comp_op: "==" | "!=" | "<=" | "<" | ">=" | ">"
+
 un_op: '-' | '!'
-bin_op: '&&' | '||' | '==' | '!=' | '+' | '-' | '*' | '/' 
-    | '<=' | '<' | '>=' | '>'
+
 %%
 
 void yyerror (char *s, ... ) {
