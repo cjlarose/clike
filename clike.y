@@ -25,31 +25,40 @@
 %left '/' '*'
 %right '!'
 
+%expect 1 /* That damn dangling else */
+
 %%
+prog: | prog dcl_or_func
+dcl_or_func: dcl ';' | func
+
 dcl: type dclr_list 
   | VOID f_prot_list
 
-dclr_list: dclr 
-  | ',' dclr_list
+dclr_list: dclr_list ',' dclr |
+  | dclr
 
-f_prot_list: f_prot 
-  | ',' f_prot_list
+f_prot_list: f_prot_list ',' f_prot |
+  | f_prot
 
 dclr: f_prot | ID | ID '[' INT_CON ']'
 
-f_prot: ID '(' opt_type_list ')'
-opt_type_list: | type_list
+f_prot: ID '(' type_list ')'
+  | ID '(' ')'
 type_list: type | type_list ',' type
 
-func: opt_type_or_void ID '(' opt_id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | VOID ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | type ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | VOID ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+
 
 type: CHAR | INT | FLOAT
-opt_type_or_void: | type | VOID
 
 loc_dcl_list: | loc_dcl loc_dcl_list
 loc_dcl: type id_list ';'
 
-opt_id_list: | id_list
 id_list: ID | id_list ',' ID
 
 stmt: IF '(' expr ')' stmt
