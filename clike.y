@@ -18,9 +18,6 @@
 %token FOR
 %token RETURN
 
-%token UN_OP
-%token BIN_OP
-
 %%
 dcl: type dclr_list 
   | VOID f_prot_list
@@ -76,8 +73,9 @@ invocation: ID '(' opt_expr_list ')'
 id_with_optional_index: ID
   | ID '[' expr ']'
 
-un_op: UN_OP
-bin_op: BIN_OP
+un_op: '-' | '!'
+bin_op: '&&' | '||' | '==' | '!=' | '+' | '-' | '*' | '/' 
+    | '<=' | '<' | '>=' | '>'
 %%
 
 void yyerror (char *s, ... ) {

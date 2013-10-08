@@ -9,8 +9,7 @@ int status = 0;
 %}
 
 ID         [a-zA-Z_][a-zA-Z0-9_]*
-UNOPS      [!~]
-BINOPS     [%^&*\-+\|.<>/?]
+OPS        [!%^&*\-+=~\|\.<>/?]
 ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
 COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
 SEPCHARS   ([\(\)\[\]{},;:]|"...")
@@ -81,10 +80,9 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 {ID}        { printf("id:%s ", yytext); return ID; } // identifiers
 
 "=" { printf("%s ", yytext); }
-{UNOPS}      { printf("%s ", yytext); return UN_OP; } // operators
-{BINOPS}     { printf("%s ", yytext); return BIN_OP; }
-{ASSGOPS}    { printf("%s ", yytext); return BIN_OP; }
-{COMPOPS}    { printf("%s ", yytext); return BIN_OP; }
+{OPS}      { printf("%s ", yytext); } // operators
+{ASSGOPS}    { printf("%s ", yytext); }
+{COMPOPS}    { printf("%s ", yytext); }
 {SEPCHARS}   { printf("%s ", yytext); }
 
 "#" { printf("%s ", yytext); } // not actually a token, but reference implementation accepts it.
