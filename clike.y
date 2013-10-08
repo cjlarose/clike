@@ -39,6 +39,9 @@ type_list: type | type_list ',' type
 
 type: CHAR | INT | FLOAT
 
+assg: ID
+  | ID '[' expr ']' '=' expr
+
 expr: un_op expr
   | expr bin_op expr
   | ID
