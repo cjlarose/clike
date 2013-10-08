@@ -39,6 +39,17 @@ type_list: type | type_list ',' type
 
 type: CHAR | INT | FLOAT
 
+expr: un_op expr
+  | expr bin_op expr
+  | ID
+  | ID '(' opt_expr_list ')' 
+  | ID '[' expr ']'
+  | '(' expr ')'
+  | INT_CON
+  | FLOAT_CON
+opt_expr_list: | expr_list
+expr_list: expr | expr_list ',' expr
+
 un_op: UN_OP
 bin_op: BIN_OP
 %%
