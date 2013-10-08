@@ -1,0 +1,4 @@
+
+int g(), c[10], h(int, double);
+int g(a,b) int a,b; int c,d; { }
+

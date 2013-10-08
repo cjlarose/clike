@@ -1,0 +1,4 @@
+
+/* many thing separated by , */
+void one(), two(double);
+

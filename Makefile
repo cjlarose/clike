@@ -5,7 +5,7 @@ PARSER_EXEC=parse
 ARCHIVE=tokenout.tar.gz
 TMPARCHIVE=tmp/tokenout
 
-.PHONY: clean test test2
+.PHONY: clean lex_test lex_test2
 
 $(LEXER_EXEC): tokenout.l
 	flex $<
@@ -25,8 +25,8 @@ $(ARCHIVE): tokenout.l Makefile
 clean:
 	rm -f lex.yy.c $(LEXER_EXEC) $(ARCHIVE) clike.tab.c clike.tab.h $(PARSER_EXEC)
 
-test: $(LEXER_EXEC)
+lex_test: $(LEXER_EXEC)
 	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/tokens
 
-test2: $(LEXER_EXEC)
+lex_test2: $(LEXER_EXEC)
 	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/TestProg1

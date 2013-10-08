@@ -1,0 +1,16 @@
+
+
+
+
+int f(a)
+ int a;
+{
+   int l;
+   double d;
+
+   for (l=1; 1==1 ;l=5) {
+      while (1) ;  
+   }; 
+
+}
+

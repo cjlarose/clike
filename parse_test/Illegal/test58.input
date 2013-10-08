@@ -1,0 +1,25 @@
+
+
+
+int f(ai, bb)
+ int a; double ff; 
+{
+   int l;
+   double d,f,f,f;
+
+   f(a*b+1 - 6);
+   g(1<2);
+   a = -1 + 17 * 100.1 / 12 - 18;
+   b = (1+2)* 3 - 4;
+
+   if (a==17) {
+      printf(a,f);
+   } else {
+      l = (a<= 17) || (b<18) && (dd>19) || (e>= 18) ; 
+      l = 1;
+   };
+
+   if (a==17) ;
+      if (c==17) return 0;
+}
+

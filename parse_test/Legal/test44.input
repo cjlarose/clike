@@ -1,0 +1,14 @@
+
+
+
+
+int f(a)
+ int a;
+{
+   int l;
+   double d;
+
+   l = 100;
+   d = 17;
+}
+

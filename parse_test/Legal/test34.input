@@ -1,0 +1,12 @@
+
+
+
+
+
+
+int f(a)
+ int a;
+{
+   int local1;
+}
+

@@ -1,0 +1,15 @@
+
+
+
+
+int f(a)
+ int a;
+{
+   int l;
+   double d;
+
+   for (; "haa" ;) {
+   };
+
+}
+

@@ -1,0 +1,10 @@
+
+
+int f(a)
+ int a;
+{
+  if (a==17) return 0
+  else 
+
+}
+

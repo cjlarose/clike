@@ -1,0 +1,14 @@
+
+
+
+
+int f(ai, bb)
+ int a; double ff; 
+{
+
+   if (a==17)
+      if (c==17) return 0
+      else return 1;
+   else return 2;
+}
+

@@ -1,0 +1,8 @@
+
+
+int f(a)
+ int a;
+{
+   int local1 local2;
+}
+
