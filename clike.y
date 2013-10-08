@@ -20,9 +20,13 @@
 
 %%
 type: CHAR | INT | FLOAT
+
+f_prot: ID '(' opt_type_list ')'
+opt_type_list: | type_list
+type_list: type | type_list ',' type
+
 %%
 
-int hello() {return 0;}
 void yyerror (char *s, ... ) {
     //fprintf(stderr, "%d: error: ", yylineno);
     return;
