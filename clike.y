@@ -61,11 +61,6 @@ stmt_list: stmt ';' | stmt_list stmt ';'
 
 assg: id_with_optional_index '=' expr
 
-id_with_optional_index: ID
-  | ID '[' expr ']'
-
-invocation: ID '(' opt_expr_list ')' 
-
 expr: un_op expr
   | expr bin_op expr
   | invocation
@@ -75,6 +70,11 @@ expr: un_op expr
   | FLOAT_CON
 opt_expr_list: | expr_list
 expr_list: expr | expr_list ',' expr
+
+invocation: ID '(' opt_expr_list ')' 
+
+id_with_optional_index: ID
+  | ID '[' expr ']'
 
 un_op: UN_OP
 bin_op: BIN_OP
