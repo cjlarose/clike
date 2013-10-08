@@ -26,7 +26,7 @@ clean:
 	rm -f lex.yy.c $(LEXER_EXEC) $(ARCHIVE) clike.tab.c clike.tab.h $(PARSER_EXEC)
 
 test: $(LEXER_EXEC)
-	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/tokens
+	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/tokens
 
 test2: $(LEXER_EXEC)
-	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/TestProg1
+	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/TestProg1
