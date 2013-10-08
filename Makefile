@@ -23,7 +23,7 @@ $(ARCHIVE): tokenout.l Makefile
 	rm -rf tmp
 
 clean:
-	rm -f lex.yy.c $(LEXER_EXEC) $(ARCHIVE) 
+	rm -f lex.yy.c $(LEXER_EXEC) $(ARCHIVE) clike.tab.c clike.tab.h $(PARSER_EXEC)
 
 test: $(LEXER_EXEC)
 	python test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" test/tokens
