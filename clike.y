@@ -19,6 +19,17 @@
 %token RETURN
 
 %%
+dcl: type dclr_list 
+  | VOID f_prot_list
+
+dclr_list: dclr 
+  | ',' dclr_list
+
+f_prot_list: f_prot 
+  | ',' f_prot_list
+
+dclr: f_prot | ID | ID '[' INT_CON ']'
+
 f_prot: ID '(' opt_type_list ')'
 opt_type_list: | type_list
 type_list: type | type_list ',' type
