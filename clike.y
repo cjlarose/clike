@@ -19,11 +19,11 @@
 %token RETURN
 
 %%
-type: CHAR | INT | FLOAT
-
 f_prot: ID '(' opt_type_list ')'
 opt_type_list: | type_list
 type_list: type | type_list ',' type
+
+type: CHAR | INT | FLOAT
 
 %%
 
