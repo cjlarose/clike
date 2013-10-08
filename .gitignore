@@ -4,3 +4,6 @@ tokenout
 lex.yy.c
 tokenout.tar.gz
 reference
+clike.tab.h
+clike.tab.c
+parse
