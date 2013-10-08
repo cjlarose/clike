@@ -2,8 +2,8 @@
 # include <stdio.h>
 %}
 
-%token INTCON /* constants */
-%token FLOATCON
+%token INT_CON /* constants */
+%token FLOAT_CON
 
 %token CHAR /* types */
 %token INT
@@ -19,7 +19,7 @@
 %token RETURN
 
 %%
-term: INTCON 
+term: INT_CON 
 %%
 
 int hello() {return 0;}
