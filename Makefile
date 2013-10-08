@@ -11,10 +11,10 @@ $(LEXER_EXEC): tokenout.l
 	flex $<
 	$(CC) $(CFLAGS) -o $@ lex.yy.c
 
-$(PARSER_EXEC): tokenout.l clike.y
+$(PARSER_EXEC): tokenout.l clike.y clike_fn.h clike_fn.c
 	bison -d clike.y # makes clike.tab.h and clike.tab.c
 	flex tokenout.l # makes lex.yy.c
-	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c
+	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c clike_fn.c
 
 $(ARCHIVE): tokenout.l Makefile
 	mkdir -p $(TMPARCHIVE)

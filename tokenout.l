@@ -4,6 +4,7 @@
 
 %{
 # include "clike.tab.h"
+# include "clike_fn.h"
 int line_num = 1;
 int status = 0;
 %}

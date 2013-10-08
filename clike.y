@@ -1,5 +1,5 @@
 %{
-# include <stdio.h>
+# include "clike_fn.h"
 %}
 
 %token INT_CON /* constants */
@@ -105,8 +105,3 @@ comp_op: "==" | "!=" | "<=" | "<" | ">=" | ">"
 un_op: '-' | '!'
 
 %%
-
-void yyerror (char *s, ... ) {
-    //fprintf(stderr, "%d: error: ", yylineno);
-    return;
-}
