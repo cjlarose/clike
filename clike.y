@@ -39,6 +39,10 @@ type_list: type | type_list ',' type
 
 type: CHAR | INT | FLOAT
 
+loc_dcl: type id_list
+
+id_list: ID | id_list ',' ID
+
 stmt: IF '(' expr ')' stmt
   | IF '(' expr ')' stmt ELSE stmt
   | WHILE '(' expr ')' opt_stmt
