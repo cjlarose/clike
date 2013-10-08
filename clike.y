@@ -41,10 +41,15 @@ f_prot: ID '(' opt_type_list ')'
 opt_type_list: | type_list
 type_list: type | type_list ',' type
 
+func: opt_type_or_void ID '(' opt_id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+
 type: CHAR | INT | FLOAT
+opt_type_or_void: | type | VOID
 
-loc_dcl: type id_list
+loc_dcl_list: | loc_dcl loc_dcl_list
+loc_dcl: type id_list ';'
 
+opt_id_list: | id_list
 id_list: ID | id_list ',' ID
 
 stmt: IF '(' expr ')' stmt
