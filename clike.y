@@ -18,6 +18,8 @@
 %token FOR
 %token RETURN
 
+%token COMP_OP
+
 %left "||"
 %left "&&"
 %nonassoc "<" "<=" ">" ">=" "==" "!="
@@ -105,3 +107,10 @@ comp_op: "==" | "!=" | "<=" | "<" | ">=" | ">"
 un_op: '-' | '!'
 
 %%
+
+int main(int argc, char **argv) {
+# ifdef YDEBUG
+    yydebug = 1;
+# endif
+    return yyparse();
+}

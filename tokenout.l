@@ -80,11 +80,11 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 {ID}        { printf("id:%s ", yytext); return ID; } // identifiers
 
-"=" { printf("%s ", yytext); }
-{OPS}      { printf("%s ", yytext); } // operators
+"=" { printf("%s ", yytext); return *yytext; }
+{OPS}      { printf("%s ", yytext); return *yytext; } // operators
 {ASSGOPS}    { printf("%s ", yytext); }
-{COMPOPS}    { printf("%s ", yytext); }
-{SEPCHARS}   { printf("%s ", yytext); }
+{COMPOPS}    { printf("%s ", yytext); return COMP_OP; }
+{SEPCHARS}   { printf("%s ", yytext); return *yytext; }
 
 "#" { printf("%s ", yytext); } // not actually a token, but reference implementation accepts it.
 
@@ -93,8 +93,10 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 .           { fprintf(stderr, "Unknown token:%s\n", yytext); status=1; }
 %%
 
+/*
 int main(int argc, char **argv) {
     yylex();
     yylex_destroy();
     return status;
 }
+*/

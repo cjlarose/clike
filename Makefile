@@ -14,7 +14,12 @@ $(LEXER_EXEC): tokenout.l
 $(PARSER_EXEC): tokenout.l clike.y clike_fn.h clike_fn.c
 	bison -d clike.y # makes clike.tab.h and clike.tab.c
 	flex tokenout.l # makes lex.yy.c
-	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c clike_fn.c
+	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
+
+debug: tokenout.l clike.y clike_fn.h clike_fn.c
+	bison -d -t -v clike.y # makes clike.tab.h and clike.tab.c
+	flex tokenout.l # makes lex.yy.c
+	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
 
 $(ARCHIVE): tokenout.l Makefile
 	mkdir -p $(TMPARCHIVE)
@@ -30,3 +35,6 @@ lex_test: $(LEXER_EXEC)
 
 lex_test2: $(LEXER_EXEC)
 	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/TestProg1
+
+parse_test: $(PARSER_EXEC)
+	python parse_test/parse_test.py parse parse_test
