@@ -12,7 +12,7 @@ int status = 0;
 ID         [a-zA-Z_][a-zA-Z0-9_]*
 OPS        [!%^&*\-+=~\|\./?]
 ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
-COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"
+COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"|">"|"<"
 SEPCHARS   ([\(\)\[\]{},;:]|"...")
 INTSUFF    ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
 EXPONENT   ([Ee][+-]?[0-9]+)
@@ -83,12 +83,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "=" { printf("%s ", yytext); return *yytext; }
 {OPS}      { printf("%s ", yytext); return *yytext; } // operators
 {ASSGOPS}    { printf("%s ", yytext); }
-"=="    { printf("%s ", yytext); return EQ_OP; }
-"!="    { printf("%s ", yytext); return NEQ_OP; }
-">"    { printf("%s ", yytext); return GT_OP; }
-">="    { printf("%s ", yytext); return GTE_OP; }
-"<"    { printf("%s ", yytext); return LT_OP; }
-"<="    { printf("%s ", yytext); return LTE_OP; }
+{COMPOPS}    { printf("%s ", yytext); return COMP_OP; }
 {SEPCHARS}   { printf("%s ", yytext); return *yytext; }
 
 "#" { printf("%s ", yytext); } // not actually a token, but reference implementation accepts it.
