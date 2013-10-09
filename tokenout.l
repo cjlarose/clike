@@ -21,50 +21,50 @@ FLOATSUFF  [FfLl]
 DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
      
 %%
-"auto"          { printf("kw:%s ", yytext); } // keywords
-"_Bool"         { printf("kw:%s ", yytext); }
-"break"         { printf("kw:%s ", yytext); }
-"case"          { printf("kw:%s ", yytext); }
-"char"          { printf("kw:%s ", yytext); return CHAR; }
-"_Complex"      { printf("kw:%s ", yytext); }
-"const"         { printf("kw:%s ", yytext); }
-"continue"      { printf("kw:%s ", yytext); }
-"default"       { printf("kw:%s ", yytext); }
-"restrict"      { printf("kw:%s ", yytext); }
-"do"            { printf("kw:%s ", yytext); }
-"double"        { printf("kw:%s ", yytext); return FLOAT; }
-"else"          { printf("kw:%s ", yytext); return ELSE; }
-"enum"          { printf("kw:%s ", yytext); }
-"extern"        { printf("kw:%s ", yytext); }
-"float"         { printf("kw:%s ", yytext); return FLOAT; }
-"for"           { printf("kw:%s ", yytext); return FOR;}
-"goto"          { printf("kw:%s ", yytext); return GOTO; }
-"if"            { printf("kw:%s ", yytext); return IF; }
-"_Imaginary"    { printf("kw:%s ", yytext); }
-"inline"        { printf("kw:%s ", yytext); }
-"int"           { printf("kw:%s ", yytext); return INT; }
-"long"          { printf("kw:%s ", yytext); }
-"register"      { printf("kw:%s ", yytext); }
-"return"        { printf("kw:%s ", yytext); return RETURN; }
-"short"         { printf("kw:%s ", yytext); }
-"signed"        { printf("kw:%s ", yytext); }
-"sizeof"        { printf("kw:%s ", yytext); }
-"static"        { printf("kw:%s ", yytext); }
-"struct"        { printf("kw:%s ", yytext); }
-"switch"        { printf("kw:%s ", yytext); }
-"typedef"       { printf("kw:%s ", yytext); }
-"union"         { printf("kw:%s ", yytext); }
-"unsigned"      { printf("kw:%s ", yytext); }
-"void"          { printf("kw:%s ", yytext); return VOID; }
-"volatile"      { printf("kw:%s ", yytext); }
-"while"         { printf("kw:%s ", yytext); return WHILE; }
+"auto"           // keywords
+"_Bool"         
+"break"         
+"case"          
+"char"          {  return CHAR; }
+"_Complex"      
+"const"         
+"continue"      
+"default"       
+"restrict"      
+"do"            
+"double"        {  return FLOAT; }
+"else"          {  return ELSE; }
+"enum"          
+"extern"        
+"float"         {  return FLOAT; }
+"for"           {  return FOR;}
+"goto"          {  return GOTO; }
+"if"            {  return IF; }
+"_Imaginary"    
+"inline"        
+"int"           {  return INT; }
+"long"          
+"register"      
+"return"        {  return RETURN; }
+"short"         
+"signed"        
+"sizeof"        
+"static"        
+"struct"        
+"switch"        
+"typedef"       
+"union"         
+"unsigned"      
+"void"          {  return VOID; }
+"volatile"      
+"while"         {  return WHILE; }
 
-0[0-7]*{INTSUFF}?           { printf("octint:%s ", yytext); return INT_CON; } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUFF}? { printf("hexint:%s ", yytext); return INT_CON; }
-[1-9][0-9]*{INTSUFF}?       { printf("int:%s ", yytext); return INT_CON; }
+0[0-7]*{INTSUFF}?           {  return INT_CON; } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUFF}? {  return INT_CON; }
+[1-9][0-9]*{INTSUFF}?       {  return INT_CON; }
 
-[0-9]+{EXPONENT}{FLOATSUFF}?       { printf("float:%s ", yytext); return FLOAT_CON; } // floating-point constants
-{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { printf("float:%s ", yytext); return FLOAT_CON; }
+[0-9]+{EXPONENT}{FLOATSUFF}?       {  return FLOAT_CON; } // floating-point constants
+{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? {  return FLOAT_CON; }
 
 "/*"         BEGIN(comment); // traditional comments
 <comment>[^*\n]*
@@ -75,22 +75,22 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 "//".*  // c++ style comments
 
-"\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); return STRING_LITERAL; } // string constants
+"\""(\\.|[^"])*"\"" {  return STRING_LITERAL; } // string constants
 
-"'"(\\.|[^'])*"'" { printf("char:%s ", yytext); return CHAR_LITERAL; } // char constants
+"'"(\\.|[^'])*"'" {  return CHAR_LITERAL; } // char constants
 
-{ID}        { printf("id:%s ", yytext); return ID; } // identifiers
+{ID}        {  return ID; } // identifiers
 
-"=" { printf("%s ", yytext); return *yytext; }
-{OPS}      { printf("%s ", yytext); return *yytext; } // operators
-{ASSGOPS}    { printf("%s ", yytext); }
-"||"     { printf("%s ", yytext); return LOGICAL_OR; } // operators
-"&&"     { printf("%s ", yytext); return LOGICAL_AND; } // operators
-{BINOPS}    { printf("%s ", yytext); return BIN_OP; }
-{COMPOPS}    { printf("%s ", yytext); return COMP_OP; }
-{SEPCHARS}   { printf("%s ", yytext); return *yytext; }
+"=" {  return *yytext; }
+{OPS}      {  return *yytext; } // operators
+{ASSGOPS}    
+"||"     {  return LOGICAL_OR; } // operators
+"&&"     {  return LOGICAL_AND; } // operators
+{BINOPS}    {  return BIN_OP; }
+{COMPOPS}    {  return COMP_OP; }
+{SEPCHARS}   {  return *yytext; }
 
-"#" { printf("%s ", yytext); } // not actually a token, but reference implementation accepts it.
+"#" 
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace

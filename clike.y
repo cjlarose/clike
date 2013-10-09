@@ -117,5 +117,8 @@ int main(int argc, char **argv) {
 # ifdef DEBUG
     yydebug = 1;
 # endif
-    return yyparse();
+    int status;
+    status = yyparse();
+    yylex_destroy();
+    return status;
 }
