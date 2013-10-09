@@ -2,8 +2,10 @@ CC=gcc
 CFLAGS=-O2
 LEXER_EXEC=tokenout
 PARSER_EXEC=parse
-ARCHIVE=tokenout.tar.gz
-TMPARCHIVE=tmp/tokenout
+TOKENOUT_ARCHIVE=tokenout.tar.gz
+TMP_TOKENOUT_ARCHIVE=tmp/tokenout
+PARSER_ARCHIVE=parser.tar.gz
+TMP_PARSER_ARCHIVE=tmp/parser
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 
@@ -21,10 +23,16 @@ debug: tokenout.l clike.y clike_fn.h clike_fn.c
 	flex tokenout.l # makes lex.yy.c
 	$(CC) $(CFLAGS) -DDEBUG=1 -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
 
-$(ARCHIVE): tokenout.l Makefile
-	mkdir -p $(TMPARCHIVE)
-	cp tokenout.l Makefile $(TMPARCHIVE)
-	tar zcvf $(ARCHIVE) $(TMPARCHIVE)
+$(TOKENOUT_ARCHIVE): tokenout.l Makefile
+	mkdir -p $(TMP_TOKENOUT_ARCHIVE)
+	cp tokenout.l Makefile $(TMP_TOKENOUT_ARCHIVE)
+	tar zcvf $(TOKENOUT_ARCHIVE) $(TMP_TOKENOUT_ARCHIVE)
+	rm -rf tmp
+
+$(PARSER_ARCHIVE): tokenout.l clike.y clike_fn.h clike_fn.c
+	mkdir -p $(TMP_PARSER_ARCHIVE)
+	cp tokenout.l clike.y clike_fn.h clike_fn.c Makefile $(TMP_PARSER_ARCHIVE)
+	tar zcvf $(PARSER_ARCHIVE) $(TMP_PARSER_ARCHIVE)
 	rm -rf tmp
 
 clean:
