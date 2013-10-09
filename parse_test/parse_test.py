@@ -48,11 +48,11 @@ of files in it (expected inputs and outputs)
                 print "debug < %s" % os.path.join(legal_dir, filename)
             print ""
 
-    print "=" * 80
-    print ""
-    print "Passed %d / %d " % (num_passed, num_passed+num_failed) + "test cases"
-    print ""
-    print "=" * 80
+        print "=" * 80
+        print ""
+        print "Passed %d / %d " % (num_passed, num_passed+num_failed) + "test cases"
+        print ""
+        print "=" * 80
 
     if show_illegal:
         # illegal test cases
@@ -62,4 +62,5 @@ of files in it (expected inputs and outputs)
             cmd = "%s < %s" % (executable, os.path.join(illegal_dir, filename))
             print "  " + cmd
             os.system(cmd)
-            print ""
+            print " "
+            print " "

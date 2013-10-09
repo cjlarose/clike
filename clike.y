@@ -4,6 +4,8 @@
 
 %token INT_CON /* constants */
 %token FLOAT_CON
+%token CHAR_LITERAL
+%token STRING_LITERAL
 
 %token CHAR /* types */
 %token INT
@@ -17,8 +19,10 @@
 %token WHILE
 %token FOR
 %token RETURN
+%token GOTO
 
 %token COMP_OP
+%token BIN_OP
 %token LOGICAL_OR
 %token LOGICAL_AND
 
@@ -60,7 +64,7 @@ func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
 
 type: CHAR | INT | FLOAT
 
-loc_dcl_list: | loc_dcl loc_dcl_list
+loc_dcl_list: | loc_dcl_list loc_dcl
 loc_dcl: type id_list ';'
 
 id_list: ID | id_list ',' ID

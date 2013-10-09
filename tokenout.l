@@ -12,7 +12,8 @@ int status = 0;
 ID         [a-zA-Z_][a-zA-Z0-9_]*
 OPS        [!%^&*\-+=~\|\./?]
 ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
-COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|">"|"<"
+BINOPS     "->"|"++"|"--"|"<<"|">>"
+COMPOPS    "<="|">="|"=="|"!="|">"|"<"
 SEPCHARS   ([\(\)\[\]{},;:]|"...")
 INTSUFF    ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
 EXPONENT   ([Ee][+-]?[0-9]+)
@@ -37,7 +38,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "extern"        { printf("kw:%s ", yytext); }
 "float"         { printf("kw:%s ", yytext); return FLOAT; }
 "for"           { printf("kw:%s ", yytext); return FOR;}
-"goto"          { printf("kw:%s ", yytext); }
+"goto"          { printf("kw:%s ", yytext); return GOTO; }
 "if"            { printf("kw:%s ", yytext); return IF; }
 "_Imaginary"    { printf("kw:%s ", yytext); }
 "inline"        { printf("kw:%s ", yytext); }
@@ -74,9 +75,9 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 "//".*  // c++ style comments
 
-"\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); } // string constants
+"\""(\\.|[^"])*"\"" { printf("str:%s ", yytext); return STRING_LITERAL; } // string constants
 
-"'"(\\.|[^'])*"'" { printf("char:%s ", yytext); } // char constants
+"'"(\\.|[^'])*"'" { printf("char:%s ", yytext); return CHAR_LITERAL; } // char constants
 
 {ID}        { printf("id:%s ", yytext); return ID; } // identifiers
 
@@ -85,6 +86,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 {ASSGOPS}    { printf("%s ", yytext); }
 "||"     { printf("%s ", yytext); return LOGICAL_OR; } // operators
 "&&"     { printf("%s ", yytext); return LOGICAL_AND; } // operators
+{BINOPS}    { printf("%s ", yytext); return BIN_OP; }
 {COMPOPS}    { printf("%s ", yytext); return COMP_OP; }
 {SEPCHARS}   { printf("%s ", yytext); return *yytext; }
 
