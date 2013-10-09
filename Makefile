@@ -5,7 +5,7 @@ PARSER_EXEC=parse
 ARCHIVE=tokenout.tar.gz
 TMPARCHIVE=tmp/tokenout
 
-.PHONY: clean lex_test lex_test2
+.PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 
 $(LEXER_EXEC): tokenout.l
 	flex $<
@@ -19,7 +19,7 @@ $(PARSER_EXEC): tokenout.l clike.y clike_fn.h clike_fn.c
 debug: tokenout.l clike.y clike_fn.h clike_fn.c
 	bison -d -t -v clike.y # makes clike.tab.h and clike.tab.c
 	flex tokenout.l # makes lex.yy.c
-	$(CC) $(CFLAGS) -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
+	$(CC) $(CFLAGS) -DDEBUG=1 -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
 
 $(ARCHIVE): tokenout.l Makefile
 	mkdir -p $(TMPARCHIVE)
@@ -38,3 +38,9 @@ lex_test2: $(LEXER_EXEC)
 
 parse_test: $(PARSER_EXEC)
 	python parse_test/parse_test.py parse parse_test
+
+parse_test_legal: $(PARSER_EXEC)
+	python parse_test/parse_test.py parse parse_test legal
+
+parse_test_illegal: $(PARSER_EXEC)
+	python parse_test/parse_test.py parse parse_test illegal

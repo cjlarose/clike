@@ -31,7 +31,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "default"       { printf("kw:%s ", yytext); }
 "restrict"      { printf("kw:%s ", yytext); }
 "do"            { printf("kw:%s ", yytext); }
-"double"        { printf("kw:%s ", yytext); }
+"double"        { printf("kw:%s ", yytext); return FLOAT; }
 "else"          { printf("kw:%s ", yytext); return ELSE; }
 "enum"          { printf("kw:%s ", yytext); }
 "extern"        { printf("kw:%s ", yytext); }

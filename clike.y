@@ -109,7 +109,7 @@ un_op: '-' | '!'
 %%
 
 int main(int argc, char **argv) {
-# ifdef YDEBUG
+# ifdef DEBUG
     yydebug = 1;
 # endif
     return yyparse();
