@@ -19,9 +19,11 @@
 %token RETURN
 
 %token COMP_OP
+%token LOGICAL_OR
+%token LOGICAL_AND
 
-%left "||"
-%left "&&"
+%left LOGICAL_OR
+%left LOGICAL_AND
 %nonassoc COMP_OP
 %left '+' '-'
 %left '/' '*'
@@ -87,8 +89,8 @@ expr: un_op expr %prec '-'
   | expr '+' expr
   | expr '-' expr
   | expr COMP_OP expr
-  | expr "&&" expr
-  | expr "||" expr
+  | expr LOGICAL_AND expr
+  | expr LOGICAL_OR expr
   | invocation
   | id_with_optional_index
   | '(' expr ')'

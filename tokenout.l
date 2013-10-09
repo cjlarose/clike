@@ -12,7 +12,7 @@ int status = 0;
 ID         [a-zA-Z_][a-zA-Z0-9_]*
 OPS        [!%^&*\-+=~\|\./?]
 ASSGOPS    ("+"|"-"|"*"|"/"|"%"|"<<"|">>"|"&"|"^"|"|")"="
-COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|"&&"|"||"|">"|"<"
+COMPOPS    "->"|"++"|"--"|"<<"|">>"|"<="|">="|"=="|"!="|">"|"<"
 SEPCHARS   ([\(\)\[\]{},;:]|"...")
 INTSUFF    ([uU]("l"|"L"|"ll"|"LL")?|("l"|"L"|"ll"|"LL")[uU]?)
 EXPONENT   ([Ee][+-]?[0-9]+)
@@ -36,7 +36,7 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "enum"          { printf("kw:%s ", yytext); }
 "extern"        { printf("kw:%s ", yytext); }
 "float"         { printf("kw:%s ", yytext); return FLOAT; }
-"for"           { printf("kw:%s ", yytext); }
+"for"           { printf("kw:%s ", yytext); return FOR;}
 "goto"          { printf("kw:%s ", yytext); }
 "if"            { printf("kw:%s ", yytext); return IF; }
 "_Imaginary"    { printf("kw:%s ", yytext); }
@@ -83,6 +83,8 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "=" { printf("%s ", yytext); return *yytext; }
 {OPS}      { printf("%s ", yytext); return *yytext; } // operators
 {ASSGOPS}    { printf("%s ", yytext); }
+"||"     { printf("%s ", yytext); return LOGICAL_OR; } // operators
+"&&"     { printf("%s ", yytext); return LOGICAL_AND; } // operators
 {COMPOPS}    { printf("%s ", yytext); return COMP_OP; }
 {SEPCHARS}   { printf("%s ", yytext); return *yytext; }
 
