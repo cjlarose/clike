@@ -5,7 +5,7 @@ PARSER_EXEC=parse
 TOKENOUT_ARCHIVE=tokenout.tar.gz
 TMP_TOKENOUT_ARCHIVE=tmp/tokenout
 PARSER_ARCHIVE=parser.tar.gz
-TMP_PARSER_ARCHIVE=tmp/parser
+TMP_PARSER_ARCHIVE=parser
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 
@@ -33,7 +33,7 @@ $(PARSER_ARCHIVE): tokenout.l clike.y clike_fn.h clike_fn.c
 	mkdir -p $(TMP_PARSER_ARCHIVE)
 	cp tokenout.l clike.y clike_fn.h clike_fn.c Makefile $(TMP_PARSER_ARCHIVE)
 	tar zcvf $(PARSER_ARCHIVE) $(TMP_PARSER_ARCHIVE)
-	rm -rf tmp
+	rm -rf $(TMP_PARSER_ARCHIVE)
 
 clean:
 	rm -f lex.yy.c $(LEXER_EXEC) $(ARCHIVE) clike.tab.c clike.tab.h $(PARSER_EXEC)
