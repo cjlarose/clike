@@ -14,6 +14,25 @@ void yyerror(char *s, ...) {
     va_start(ap, s);
 
     fprintf(stderr, "%d: error: ", line_num);
-    vfprintf(stderr, s, ap);
+
+    //fprintf(stderr, "%c", yychar);
+
+    switch(yychar) {
+        case ')':
+            fprintf(stderr, "%s", "Unpected ')'");
+            break;
+        case ']':
+            fprintf(stderr, "%s", "Unexpected ']'");
+            break;
+        case '}':
+            fprintf(stderr, "%s", "Unexpected '}'");
+            break;
+        case ';':
+            fprintf(stderr, "%s", "Premature ';'");
+            break;
+        default: 
+            vfprintf(stderr, s, ap);
+    }
+
     fprintf(stderr, "\n");
 }
