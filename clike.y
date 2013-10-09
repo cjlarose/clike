@@ -18,11 +18,16 @@
 %token FOR
 %token RETURN
 
-%token COMP_OP
+%token EQ_OP 
+%token NEQ_OP 
+%token GT_OP 
+%token GTE_OP 
+%token LT_OP 
+%token LTE_OP 
 
 %left "||"
 %left "&&"
-%nonassoc "<" "<=" ">" ">=" "==" "!="
+%nonassoc LT_OP LTE_OP GT_OP GTE_OP EQ_OP NEQ_OP
 %left '+' '-'
 %left '/' '*'
 %right '!'
@@ -86,7 +91,7 @@ expr: un_op expr %prec '-'
   | expr '*' expr
   | expr '+' expr
   | expr '-' expr
-  | expr comp_op expr %prec "=="
+  | comparison_expr
   | expr "&&" expr
   | expr "||" expr
   | invocation
@@ -97,12 +102,17 @@ expr: un_op expr %prec '-'
 opt_expr_list: | expr_list
 expr_list: expr | expr_list ',' expr
 
+comparison_expr: expr EQ_OP expr
+  | expr NEQ_OP expr
+  | expr GT_OP expr
+  | expr GTE_OP expr
+  | expr LT_OP expr
+  | expr LTE_OP expr
+
 invocation: ID '(' opt_expr_list ')' 
 
 id_with_optional_index: ID
   | ID '[' expr ']'
-
-comp_op: "==" | "!=" | "<=" | "<" | ">=" | ">"
 
 un_op: '-' | '!'
 
