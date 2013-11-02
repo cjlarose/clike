@@ -1,0 +1,3 @@
+[submodule "nitty_gritty"]
+	path = nitty_gritty
+	url = ssh://lemon/~/repos/csc453/nitty_gritty.git
