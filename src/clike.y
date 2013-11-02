@@ -36,6 +36,8 @@
 %token LOGICAL_OR
 %token LOGICAL_AND
 
+%token ASSIGNMENT_OP /* ignored compound assignment operators */
+
 %left LOGICAL_OR
 %left LOGICAL_AND
 %nonassoc COMP_OP

@@ -58,7 +58,7 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 
 "=" {  return *yytext; }
 {OPS}      {  return *yytext; } // operators
-{ASSGOPS}    
+{ASSGOPS}    {return ASSIGNMENT_OP; }
 "||"     {  return LOGICAL_OR; } // operators
 "&&"     {  return LOGICAL_AND; } // operators
 {BINOPS}    {  return BIN_OP; }
@@ -137,6 +137,9 @@ int main(int argc, char **argv) {
                 break;
             case CHAR_LITERAL:
                 printf("char:%s ", yytext);
+                break;
+            case ASSIGNMENT_OP:
+                printf("%s ", yytext);
                 break;
             default:
                 printf("%s ", yytext);
