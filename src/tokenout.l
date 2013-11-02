@@ -65,7 +65,7 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 {COMPOPS}    {  return COMP_OP; }
 {SEPCHARS}   {  return *yytext; }
 
-"#" 
+"#" { return *yytext; }
 
 \n { ++line_num; }
 [ \t\r\f\v]+  // Ignore whitespace
