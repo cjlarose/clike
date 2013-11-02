@@ -106,8 +106,59 @@ int main(int argc, char **argv) {
     */
     int tok;
 
-    while ((tok=yylex()) > 0)
-        printf("tok=%d  yytext=%s\n", tok, yyget_text());
+    while ((tok=yylex()) > 0) {
+        //printf("tok=%d  yytext=%s\n", tok, yyget_text());
+        switch (tok) {
+            case CHAR:
+                printf("kw:char ");
+                break;
+            case FLOAT:
+                printf("kw:float ");
+                break;
+            case ELSE:
+                printf("kw:else ");
+                break;
+            case FOR:
+                printf("kw:for ");
+                break;
+            case GOTO:
+                printf("kw:goto ");
+                break;
+            case IF:
+                printf("kw:if ");
+                break;
+            case INT:
+                printf("kw:int ");
+                break;
+            case RETURN:
+                printf("kw:return ");
+                break;
+            case VOID:
+                printf("kw:void ");
+                break;
+            case WHILE:
+                printf("kw:while ");
+                break;
+            case ID:
+                printf("id:%s ", yytext);
+                break;
+            case STRING_LITERAL:
+                printf("str:%s ", yytext);
+                break;
+            case INT_CON:
+                printf("int:%s ", yytext);
+                break;
+            case FLOAT_CON:
+                printf("int:%s ", yytext);
+                break;
+            case CHAR_LITERAL:
+                printf("char:%s ", yytext);
+                break;
+            default:
+                printf("%s ", yytext);
+                break;
+        }
+    }
 
     yylex_destroy();
     return status;
