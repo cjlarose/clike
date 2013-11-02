@@ -2,17 +2,23 @@
 # include "clike_fn.h"
 %}
 
-%token INT_CON /* constants */
-%token FLOAT_CON
-%token CHAR_LITERAL
-%token STRING_LITERAL
+%union {
+    int ival;
+    float fval;
+    char *sval;
+}
+
+%token <ival> INT_CON /* constants */
+%token <fval> FLOAT_CON
+%token <sval> CHAR_LITERAL
+%token <sval> STRING_LITERAL
 
 %token CHAR /* types */
 %token INT
 %token FLOAT
 %token VOID
 
-%token ID
+%token <sval> ID
 
 %token IF /* control flow */
 %token ELSE
@@ -113,6 +119,7 @@ un_op: '-' | '!'
 
 %%
 
+#ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
 # ifdef DEBUG
     yydebug = 1;
@@ -122,3 +129,4 @@ int main(int argc, char **argv) {
     yylex_destroy();
     return status;
 }
+#endif

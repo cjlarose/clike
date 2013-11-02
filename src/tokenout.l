@@ -59,12 +59,12 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 "volatile"      
 "while"         {  return WHILE; }
 
-0[0-7]*{INTSUFF}?           {  return INT_CON; } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUFF}? {  return INT_CON; }
-[1-9][0-9]*{INTSUFF}?       {  return INT_CON; }
+0[0-7]*{INTSUFF}?           { yylval.ival = atoi(yytext); return INT_CON; } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUFF}? { yylval.ival = atoi(yytext); return INT_CON; }
+[1-9][0-9]*{INTSUFF}?       { yylval.ival = atoi(yytext); return INT_CON; }
 
-[0-9]+{EXPONENT}{FLOATSUFF}?       {  return FLOAT_CON; } // floating-point constants
-{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? {  return FLOAT_CON; }
+[0-9]+{EXPONENT}{FLOATSUFF}?       { yylval.fval = atof(yytext); return FLOAT_CON; } // floating-point constants
+{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { yylval.fval = atof(yytext); return FLOAT_CON; }
 
 "/*"         BEGIN(comment); // traditional comments
 <comment>[^*\n]*
@@ -75,11 +75,11 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 "//".*  // c++ style comments
 
-"\""(\\.|[^"])*"\"" {  return STRING_LITERAL; } // string constants
+"\""(\\.|[^"])*"\"" {  yylval.sval = strdup(yytext); return STRING_LITERAL; } // string constants
 
-"'"(\\.|[^'])*"'" {  return CHAR_LITERAL; } // char constants
+"'"(\\.|[^'])*"'" { yylval.sval = strdup(yytext); return CHAR_LITERAL; } // char constants
 
-{ID}        {  return ID; } // identifiers
+{ID}        { yylval.sval = strdup(yytext); return ID; } // identifiers
 
 "=" {  return *yytext; }
 {OPS}      {  return *yytext; } // operators
@@ -99,7 +99,16 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 
 #if TOKENOUT_MAIN
 int main(int argc, char **argv) {
+    /*
     yylex();
+    yylex_destroy();
+    return status;
+    */
+    int tok;
+
+    while ((tok=yylex()) > 0)
+        printf("tok=%d  yytext=%s\n", tok, yyget_text());
+
     yylex_destroy();
     return status;
 }

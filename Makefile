@@ -21,14 +21,17 @@ PARSER_ARCHIVE=parser.tar.gz
 $(SRC_DIR)/lex.yy.c: $(SRC_DIR)/tokenout.l
 	flex -o $(SRC_DIR)/lex.yy.c $(SRC_DIR)/tokenout.l # makes lex.yy.c
 
-$(LEXER_EXEC): $(SRC_DIR)/lex.yy.c
-	$(CC) -D TOKENOUT_MAIN -I $(INC_DIR) -o $@ $(SRC_DIR)/lex.yy.c
+#$(LEXER_EXEC): $(SRC_DIR)/lex.yy.c
+#	$(CC) -D TOKENOUT_MAIN -I $(INC_DIR) -o $@ $(SRC_DIR)/lex.yy.c
+
+$(LEXER_EXEC): $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike_fn.c
+	$(CC) -D TOKENOUT_MAIN -I $(INC_DIR) -o $@ $^
 
 $(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
 	bison --defines=$(INC_DIR)/clike.tab.h -o $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike.y # makes clike.tab.h and clike.tab.c
 
 $(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
-	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike_fn.c -ly -lfl
+	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $^ -ly -lfl
 
 ################################################################################
 ## Debugging                                                                  ##
