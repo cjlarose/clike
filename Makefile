@@ -14,23 +14,35 @@ PARSER_ARCHIVE=parser.tar.gz
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 
-#$(LEXER_EXEC): tokenout.l
-#	flex $<
-#	$(CC) $(CFLAGS) -o $@ lex.yy.c
-
-$(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
-	bison --defines=$(INC_DIR)/clike.tab.h -o $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike.y # makes clike.tab.h and clike.tab.c
+################################################################################
+## Executables                                                                ##
+################################################################################
 
 $(SRC_DIR)/lex.yy.c: $(SRC_DIR)/tokenout.l
 	flex -o $(SRC_DIR)/lex.yy.c $(SRC_DIR)/tokenout.l # makes lex.yy.c
 
+$(LEXER_EXEC): $(SRC_DIR)/lex.yy.c
+	$(CC) -D TOKENOUT_MAIN -I $(INC_DIR) -o $@ $(SRC_DIR)/lex.yy.c
+
+$(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
+	bison --defines=$(INC_DIR)/clike.tab.h -o $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike.y # makes clike.tab.h and clike.tab.c
+
 $(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
 	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike_fn.c -ly -lfl
+
+################################################################################
+## Debugging                                                                  ##
+################################################################################
 
 #debug: tokenout.l clike.y clike_fn.h clike_fn.c
 #	bison -d -t -v clike.y # makes clike.tab.h and clike.tab.c
 #	flex tokenout.l # makes lex.yy.c
 #	$(CC) $(CFLAGS) -DDEBUG=1 -o $@ lex.yy.c clike.tab.c clike_fn.c -ly -lfl
+
+
+################################################################################
+## Archiving                                                                  ##
+################################################################################
 
 $(TOKENOUT_ARCHIVE): tokenout.l Makefile
 	mkdir -p $(TMP_TOKENOUT_ARCHIVE)
@@ -44,8 +56,9 @@ $(PARSER_ARCHIVE): tokenout.l clike.y clike_fn.h clike_fn.c
 	tar zcvf $(PARSER_ARCHIVE) $(TMP_PARSER_ARCHIVE)
 	rm -rf $(TMP_PARSER_ARCHIVE)
 
-clean:
-	rm -f $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC)
+################################################################################
+## Testing                                                                    ##
+################################################################################
 
 lex_test: $(LEXER_EXEC)
 	python lex_test/testharness.py "/home/cjlarose/csc453/lexer/tokenout" lex_test/tokens
@@ -61,3 +74,10 @@ parse_test_legal: $(PARSER_EXEC)
 
 parse_test_illegal: $(PARSER_EXEC)
 	python parse_test/parse_test.py parse parse_test illegal
+
+################################################################################
+## Cleaning                                                                   ##
+################################################################################
+
+clean:
+	rm -f $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC)

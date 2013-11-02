@@ -97,10 +97,10 @@ DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
 .           { fprintf(stderr, "Unknown token:%s\n", yytext); status=1; }
 %%
 
-/*
+#if TOKENOUT_MAIN
 int main(int argc, char **argv) {
     yylex();
     yylex_destroy();
     return status;
 }
-*/
+#endif
