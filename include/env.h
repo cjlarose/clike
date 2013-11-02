@@ -12,3 +12,4 @@ void Env_init(Env * env, Env * prev);
 Env * Env_new(Env * prev);
 void Env_put(Env * env, char * id, Symbol * sym);
 Symbol * Env_get(Env * env, char * id);
+void Env_free(Env * env);

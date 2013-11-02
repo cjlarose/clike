@@ -35,3 +35,8 @@ Symbol * Env_get(Env * env, char * id) {
             return found;
     return NULL;
 }
+
+void Env_free(Env * env) {
+    map_free(&(env->table), NULL);
+    free(env);
+}
