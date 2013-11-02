@@ -1,11 +1,11 @@
 *.swp
 *.o
 tokenout
-lex.yy.c
 tokenout.tar.gz
 reference
-clike.tab.h
-clike.tab.c
+src/lex.yy.c
+src/clike.tab.c
+include/clike.tab.h
 parse
 debug
 clike.output
