@@ -8,7 +8,9 @@
     char *sval;
 }
 
-%token <ival> INT_CON /* constants */
+%token <ival> DEC_INT_CON /* constants */
+%token <ival> OCT_INT_CON 
+%token <ival> HEX_INT_CON 
 %token <fval> FLOAT_CON
 %token <sval> CHAR_LITERAL
 %token <sval> STRING_LITERAL
@@ -17,6 +19,8 @@
 %token INT
 %token FLOAT
 %token VOID
+
+%token KEYWORD /* Ignored keywords */
 
 %token <sval> ID
 
@@ -54,7 +58,7 @@ dclr_list: dclr_list ',' dclr |
 f_prot_list: f_prot_list ',' f_prot |
   | f_prot
 
-dclr: f_prot | ID | ID '[' INT_CON ']'
+dclr: f_prot | ID | ID '[' int_con ']'
 
 f_prot: ID '(' type_list ')'
   | ID '(' ')'
@@ -104,7 +108,7 @@ expr: un_op expr %prec '-'
   | invocation
   | id_with_optional_index
   | '(' expr ')'
-  | INT_CON
+  | int_con
   | FLOAT_CON
 opt_expr_list: | expr_list
 expr_list: expr | expr_list ',' expr
@@ -116,6 +120,8 @@ id_with_optional_index: ID
   | ID '[' expr ']'
 
 un_op: '-' | '!'
+
+int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 
 %%
 

@@ -21,47 +21,22 @@ FLOATSUFF  [FfLl]
 DOTDIGITS  (([0-9]+"."[0-9]*)|("."[0-9]+))
      
 %%
-"auto"           // keywords
-"_Bool"         
-"break"         
-"case"          
+auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_Imaginary|inline|long|register|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|volatile {return KEYWORD; }
 "char"          {  return CHAR; }
-"_Complex"      
-"const"         
-"continue"      
-"default"       
-"restrict"      
-"do"            
 "double"        {  return FLOAT; }
 "else"          {  return ELSE; }
-"enum"          
-"extern"        
 "float"         {  return FLOAT; }
 "for"           {  return FOR;}
 "goto"          {  return GOTO; }
 "if"            {  return IF; }
-"_Imaginary"    
-"inline"        
 "int"           {  return INT; }
-"long"          
-"register"      
 "return"        {  return RETURN; }
-"short"         
-"signed"        
-"sizeof"        
-"static"        
-"struct"        
-"switch"        
-"typedef"       
-"union"         
-"unsigned"      
 "void"          {  return VOID; }
-"volatile"      
 "while"         {  return WHILE; }
 
-0[0-7]*{INTSUFF}?           { yylval.ival = atoi(yytext); return INT_CON; } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUFF}? { yylval.ival = atoi(yytext); return INT_CON; }
-[1-9][0-9]*{INTSUFF}?       { yylval.ival = atoi(yytext); return INT_CON; }
+0[0-7]*{INTSUFF}?           { yylval.ival = atoi(yytext); return OCT_INT_CON; } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUFF}? { yylval.ival = atoi(yytext); return HEX_INT_CON; }
+[1-9][0-9]*{INTSUFF}?       { yylval.ival = atoi(yytext); return DEC_INT_CON; }
 
 [0-9]+{EXPONENT}{FLOATSUFF}?       { yylval.fval = atof(yytext); return FLOAT_CON; } // floating-point constants
 {DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { yylval.fval = atof(yytext); return FLOAT_CON; }
@@ -109,11 +84,14 @@ int main(int argc, char **argv) {
     while ((tok=yylex()) > 0) {
         //printf("tok=%d  yytext=%s\n", tok, yyget_text());
         switch (tok) {
+            case KEYWORD:
+                printf("kw:%s ", yytext);
+                break;
             case CHAR:
                 printf("kw:char ");
                 break;
             case FLOAT:
-                printf("kw:float ");
+                printf("kw:%s ", yytext); /* might be double or float */
                 break;
             case ELSE:
                 printf("kw:else ");
@@ -145,11 +123,17 @@ int main(int argc, char **argv) {
             case STRING_LITERAL:
                 printf("str:%s ", yytext);
                 break;
-            case INT_CON:
+            case OCT_INT_CON:
+                printf("octint:%s ", yytext);
+                break;
+            case HEX_INT_CON:
+                printf("hexint:%s ", yytext);
+                break;
+            case DEC_INT_CON:
                 printf("int:%s ", yytext);
                 break;
             case FLOAT_CON:
-                printf("int:%s ", yytext);
+                printf("float:%s ", yytext);
                 break;
             case CHAR_LITERAL:
                 printf("char:%s ", yytext);
