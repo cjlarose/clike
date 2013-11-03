@@ -23,8 +23,11 @@ Env * Env_new(Env * prev) {
     Env_init(env, prev);
 }
 
-void Env_put(Env * env, char * id, Symbol * sym) {
+int Env_put(Env * env, char * id, Symbol * sym) {
+    if (map_find(&(env->table), id) != NULL)
+        return 0;
     map_insert(&(env->table), id, sym);
+    return 1;
 }
 
 Symbol * Env_get(Env * env, char * id) {

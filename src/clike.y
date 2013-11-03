@@ -1,7 +1,13 @@
 %{
-# include <stdlib.h>
-# include "clike_fn.h"
-# include "env.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "clike_fn.h"
+#include "semantics.h"
+#include "env.h"
+
+Env *current_scope;
+int current_type; 
+
 %}
 
 %union {
@@ -47,14 +53,16 @@
 %left '/' '*'
 %right '!'
 
+%type <ival> type
+
 %expect 1 /* That damn dangling else */
 
 %%
-prog: | prog dcl_or_func { Env *global = Env_new(NULL); }
+prog: | prog dcl_or_func
 dcl_or_func: dcl ';' | func
 
-dcl: type dclr_list 
-  | VOID f_prot_list
+dcl: type dclr_list  { current_type = $1; }
+  | VOID f_prot_list { current_type = 0; }
 
 dclr_list: dclr_list ',' dclr |
   | dclr
@@ -62,7 +70,9 @@ dclr_list: dclr_list ',' dclr |
 f_prot_list: f_prot_list ',' f_prot |
   | f_prot
 
-dclr: f_prot | ID | ID '[' int_con ']'
+dclr: f_prot 
+  | ID { insert_symbol($1); } 
+  | ID { verify_array($1); } '[' int_con ']'
 
 f_prot: ID '(' type_list ')'
   | ID '(' ')'
@@ -76,7 +86,7 @@ func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
 
 
-type: CHAR | INT | FLOAT
+type: CHAR {$$ = 1; } | INT {$$ = 2;} | FLOAT {$$ = 3;}
 
 loc_dcl_list: | loc_dcl_list loc_dcl
 loc_dcl: type id_list ';'
@@ -131,6 +141,9 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
+
+    current_scope = Env_new(NULL);
+
 # ifdef DEBUG
     yydebug = 1;
 # endif

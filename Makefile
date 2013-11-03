@@ -21,9 +21,13 @@ NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_grit
 ## Components                                                                 ##
 ################################################################################
 
-$(BUILD_DIR)/env.o:
-	mkdir $(BUILD_DIR)
+$(BUILD_DIR)/env.o: $(SRC_DIR)/env.c
+	mkdir -p $(BUILD_DIR)
 	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/env.c -o $@ # makes env.o
+
+$(BUILD_DIR)/semantics.o: $(SRC_DIR)/semantics.c
+	mkdir -p $(BUILD_DIR)
+	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/semantics.c -o $@ # makes semantics.o
 
 .PHONY: nitty_gritty
 nitty_gritty:
@@ -48,8 +52,8 @@ $(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
 #$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
 #	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $^ -ly -lfl
 
-$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c nitty_gritty $(BUILD_DIR)/env.o
-	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) -I nitty_gritty/include $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(BUILD_DIR)/env.o $(NITTY_GRITTY_OBJS) $(SRC_DIR)/clike_fn.c
+$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c nitty_gritty $(BUILD_DIR)/env.o $(BUILD_DIR)/semantics.o
+	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) -I nitty_gritty/include $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(BUILD_DIR)/semantics.o $(BUILD_DIR)/env.o $(NITTY_GRITTY_OBJS) $(SRC_DIR)/clike_fn.c
 
 ################################################################################
 ## Debugging                                                                  ##
@@ -104,4 +108,4 @@ env_test: $(TEST_DIR)/test_env.c $(BUILD_DIR)/env.o nitty_gritty
 ################################################################################
 
 clean:
-	rm -f $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC)
+	rm -rf $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC) $(BUILD_DIR)
