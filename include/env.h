@@ -1,14 +1,36 @@
 #ifndef _ENV_H_
 #define _ENV_H_
 #include "map.h"
+#include "array.h"
 typedef struct Env {
     struct map table;
     struct Env * prev;
 } Env;
 
+enum SymType {
+    TYPE_VOID,
+    TYPE_CHAR,
+    TYPE_INT,
+    TYPE_FLOAT,
+    TYPE_FN,
+    TYPE_FN_PROT
+};
+
 typedef struct Symbol {
-    int type;
+    enum SymType type;
+    int is_array; // 1 if true
+    int return_type;
+    Array type_list;
 } Symbol;
+
+/*
+ * for a function, 
+ *   store list of types (to verify invocation)
+ *   store return type
+ * for a prototype,
+ *   store return type
+ *   store type list
+ */
 
 void Env_init(Env * env, Env * prev);
 Env * Env_new(Env * prev);

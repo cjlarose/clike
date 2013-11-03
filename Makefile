@@ -13,7 +13,7 @@ TOKENOUT_ARCHIVE=tokenout.tar.gz
 PARSER_EXEC=parse
 TMP_PARSER_ARCHIVE=parser
 PARSER_ARCHIVE=parser.tar.gz
-NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o
+NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o nitty_gritty/build/array.o
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 

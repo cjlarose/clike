@@ -23,6 +23,10 @@ Env * Env_new(Env * prev) {
     Env_init(env, prev);
 }
 
+/* 
+ * Insert symbol into environment. If the symbol is already in the environment,
+ * return 0. Otherwise, insert it and return 1
+ */
 int Env_put(Env * env, char * id, Symbol * sym) {
     if (map_find(&(env->table), id) != NULL)
         return 0;

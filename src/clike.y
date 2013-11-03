@@ -6,7 +6,7 @@
 #include "env.h"
 
 Env *current_scope;
-int current_type; 
+enum SymType current_type; 
 
 %}
 
@@ -14,6 +14,7 @@ int current_type;
     int ival;
     float fval;
     char *sval;
+    void *ptrval;
 }
 
 %token <ival> DEC_INT_CON /* constants */
@@ -54,6 +55,7 @@ int current_type;
 %right '!'
 
 %type <ival> int_con
+%type <ptrval> type_list
 
 %expect 1 /* That damn dangling else */
 
@@ -61,7 +63,7 @@ int current_type;
 prog: | prog dcl_or_func
 dcl_or_func: dcl ';' | func
 
-void: VOID {current_type = 0; }
+void: VOID {current_type = TYPE_VOID; }
 
 dcl: type dclr_list  
   | void f_prot_list 
@@ -78,7 +80,8 @@ dclr: f_prot
 
 f_prot: ID '(' type_list ')'
   | ID '(' ')'
-type_list: type | type_list ',' type
+type_list: type { $$ = new_type_list(); } 
+  | type_list ',' type {type_list_insert($1); $$ = $1; }
 
 func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | void ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
@@ -88,7 +91,7 @@ func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
 
 
-type: CHAR {current_type = 1; } | INT {current_type = 2;} | FLOAT {current_type = 3;}
+type: CHAR {current_type = TYPE_CHAR; } | INT {current_type = TYPE_INT;} | FLOAT {current_type = TYPE_FLOAT;}
 
 loc_dcl_list: | loc_dcl_list loc_dcl
 loc_dcl: type id_list ';'
