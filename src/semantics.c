@@ -28,17 +28,6 @@ void insert_array_symbol(char *id, int size) {
     _add_to_scope(id, sym);
 }
 
-void type_list_insert(Array *tx) {
-    printf("Inserting type %d into type list\n", current_type);
-    Array_append(tx, &current_type);
-}
-
-Array *new_type_list() {
-    Array *tx = Array_init(4, sizeof(enum SymType));
-    type_list_insert(tx);
-    return tx;
-}
-
 void insert_fn_prot(char *id, Array *tx) {
     Symbol * sym = malloc(sizeof(Symbol));
     sym->type = TYPE_FN_PROT;
@@ -46,4 +35,26 @@ void insert_fn_prot(char *id, Array *tx) {
     sym->return_type = current_type;
     sym->type_list = tx;
     _add_to_scope(id, sym);
+}
+
+void type_list_insert(Array *tx) {
+    printf("Inserting type %d into type list\n", current_type);
+    Array_append(tx, &current_type);
+}
+
+Array *type_list_new() {
+    Array *tx = Array_init(4, sizeof(enum SymType));
+    type_list_insert(tx);
+    return tx;
+}
+
+void id_list_insert(Array *idx, char *id) {
+    printf("Inserting id %s into id list\n", id);
+    Array_append(idx, &id);
+}
+
+Array *id_list_new(char *id) {
+    Array *idx = Array_init(4, sizeof(char *));
+    id_list_insert(idx, id);
+    return idx;
 }
