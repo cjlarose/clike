@@ -5,4 +5,5 @@ void insert_symbol(char *id);
 void insert_array_symbol(char *id, int size);
 Array *new_type_list();
 void type_list_insert(Array *tx);
+void insert_fn_prot(char *id, Array *tx);
 #endif

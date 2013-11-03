@@ -20,7 +20,7 @@ typedef struct Symbol {
     enum SymType type;
     int is_array; // 1 if true
     int return_type;
-    Array type_list;
+    Array *type_list;
 } Symbol;
 
 /*
