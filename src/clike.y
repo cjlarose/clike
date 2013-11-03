@@ -53,7 +53,7 @@ int current_type;
 %left '/' '*'
 %right '!'
 
-%type <ival> type
+%type <ival> int_con
 
 %expect 1 /* That damn dangling else */
 
@@ -61,8 +61,10 @@ int current_type;
 prog: | prog dcl_or_func
 dcl_or_func: dcl ';' | func
 
-dcl: type dclr_list  { current_type = $1; }
-  | VOID f_prot_list { current_type = 0; }
+void: VOID {current_type = 0; }
+
+dcl: type dclr_list  
+  | void f_prot_list 
 
 dclr_list: dclr_list ',' dclr |
   | dclr
@@ -72,21 +74,21 @@ f_prot_list: f_prot_list ',' f_prot |
 
 dclr: f_prot 
   | ID { insert_symbol($1); } 
-  | ID { verify_array($1); } '[' int_con ']'
+  | ID '[' int_con ']' { insert_array_symbol($1, $3); }
 
 f_prot: ID '(' type_list ')'
   | ID '(' ')'
 type_list: type | type_list ',' type
 
 func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | VOID ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | type ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | VOID ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
   | ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
 
 
-type: CHAR {$$ = 1; } | INT {$$ = 2;} | FLOAT {$$ = 3;}
+type: CHAR {current_type = 1; } | INT {current_type = 2;} | FLOAT {current_type = 3;}
 
 loc_dcl_list: | loc_dcl_list loc_dcl
 loc_dcl: type id_list ';'
@@ -135,7 +137,7 @@ id_with_optional_index: ID
 
 un_op: '-' | '!'
 
-int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
+int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON 
 
 %%
 
