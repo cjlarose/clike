@@ -4,6 +4,7 @@ CFLAGS=-O2
 SRC_DIR = src
 INC_DIR = include
 TEST_DIR = test
+BUILD_DIR = build
 
 LEXER_EXEC=tokenout
 TMP_TOKENOUT_ARCHIVE=tmp/tokenout
@@ -12,8 +13,21 @@ TOKENOUT_ARCHIVE=tokenout.tar.gz
 PARSER_EXEC=parse
 TMP_PARSER_ARCHIVE=parser
 PARSER_ARCHIVE=parser.tar.gz
+NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
+
+################################################################################
+## Components                                                                 ##
+################################################################################
+
+$(BUILD_DIR)/env.o:
+	mkdir $(BUILD_DIR)
+	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/env.c -o $@ # makes env.o
+
+.PHONY: nitty_gritty
+nitty_gritty:
+	cd nitty_gritty && make all
 
 ################################################################################
 ## Executables                                                                ##
@@ -31,8 +45,11 @@ $(LEXER_EXEC): $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike_fn.c
 $(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
 	bison --defines=$(INC_DIR)/clike.tab.h -o $(SRC_DIR)/clike.tab.c $(SRC_DIR)/clike.y # makes clike.tab.h and clike.tab.c
 
-$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
-	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $^ -ly -lfl
+#$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
+#	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $^ -ly -lfl
+
+$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c nitty_gritty $(BUILD_DIR)/env.o
+	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) -I nitty_gritty/include $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(BUILD_DIR)/env.o $(NITTY_GRITTY_OBJS) $(SRC_DIR)/clike_fn.c
 
 ################################################################################
 ## Debugging                                                                  ##
@@ -79,10 +96,8 @@ parse_test_legal: $(PARSER_EXEC)
 parse_test_illegal: $(PARSER_EXEC)
 	python parse_test/parse_test.py parse parse_test illegal
 
-env_test: $(TEST_DIR)/test_env.c
-	gcc -g -I include -I nitty_gritty/include -c $(SRC_DIR)/env.c # makes env.o
-	cd nitty_gritty && make all
-	gcc -g -I include -I $(TEST_DIR)/include -I nitty_gritty/include env.o nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o $(TEST_DIR)/test_env.c
+env_test: $(TEST_DIR)/test_env.c $(BUILD_DIR)/env.o nitty_gritty
+	gcc -g -I include -I $(TEST_DIR)/include -I nitty_gritty/include $(BUILD_DIR)/env.o $(NITTY_GRITTY_OBJS) $(TEST_DIR)/test_env.c
 
 ################################################################################
 ## Cleaning                                                                   ##

@@ -1,5 +1,7 @@
 %{
+# include <stdlib.h>
 # include "clike_fn.h"
+# include "env.h"
 %}
 
 %union {
@@ -48,7 +50,7 @@
 %expect 1 /* That damn dangling else */
 
 %%
-prog: | prog dcl_or_func
+prog: | prog dcl_or_func { Env *global = Env_new(NULL); }
 dcl_or_func: dcl ';' | func
 
 dcl: type dclr_list 
