@@ -3,8 +3,6 @@
 
 Env *global = NULL;
 
-unsigned long long int hash1 = 0;
-
 char * test_init() {
     global = Env_new(NULL);
     return NULL;
@@ -25,28 +23,29 @@ char * test_global() {
     mu_assert(Env_get(global, "foo")->type == 1, "Wrong type");
     mu_assert(Env_get(global, "bar")->type == 2, "Wrong type");
 
-
-    hash1 = fnv1_hash("bar");
     return NULL;
 }
 
 
 char * test_local() {
     Env * local_scope = Env_new(global);
-    Symbol local_sym1, local_sym2;
-    local_sym1.type = 3;
-    local_sym2.type = 4;
+    Symbol * local_sym1, * local_sym2;
+    local_sym1 = (Symbol *) malloc(sizeof(Symbol));
+    local_sym2 = (Symbol *) malloc(sizeof(Symbol));
+    local_sym1->type = 3;
+    local_sym2->type = 4;
 
-    Env_put(local_scope, strdup("baz"), &local_sym1); // new id name
-    Env_put(local_scope, strdup("foo"), &local_sym2); // already in global
+    Env_put(local_scope, strdup("baz"), local_sym1); // new id name
+    Env_put(local_scope, strdup("foo"), local_sym2); // already in global
 
     mu_assert(Env_get(local_scope, "baz")->type == 3, "Wrong type");
     mu_assert(Env_get(local_scope, "foo")->type == 4, "Wrong type");
     
-    mu_assert(hash1 == fnv1_hash("bar"), "WTF");
     // test inheritance
     mu_assert(Env_get(local_scope, "bar") != NULL, "Cannot find global symbol");
-    //mu_assert(Env_get(local_scope, "bar")->type == 2, "Wrong type");
+    mu_assert(Env_get(local_scope, "bar")->type == 2, "Wrong type");
+
+    Env_free(local_scope);
     return NULL;
 }
 
