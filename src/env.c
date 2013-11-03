@@ -28,15 +28,14 @@ void Env_put(Env * env, char * id, Symbol * sym) {
 }
 
 Symbol * Env_get(Env * env, char * id) {
-    Env * e;
-    Symbol * found;
-    for (e = env; e != NULL; e = e->prev) 
-        if (( found = *((Symbol **) map_find(&(env->table), id)) ) != NULL)
-            return found;
+    void * found;
+    for (; env != NULL; env = env->prev) 
+        if (( found = map_find(&(env->table), id) ) != NULL)
+            return *((Symbol **) found);
     return NULL;
 }
 
 void Env_free(Env * env) {
     map_free(&(env->table), NULL);
-    free(env);
+    //free(env);
 }

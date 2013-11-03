@@ -3,6 +3,7 @@ CFLAGS=-O2
 
 SRC_DIR = src
 INC_DIR = include
+TEST_DIR = test
 
 LEXER_EXEC=tokenout
 TMP_TOKENOUT_ARCHIVE=tmp/tokenout
@@ -77,6 +78,11 @@ parse_test_legal: $(PARSER_EXEC)
 
 parse_test_illegal: $(PARSER_EXEC)
 	python parse_test/parse_test.py parse parse_test illegal
+
+env_test: $(TEST_DIR)/test_env.c
+	gcc -g -I include -I nitty_gritty/include -c $(SRC_DIR)/env.c # makes env.o
+	cd nitty_gritty && make all
+	gcc -g -I include -I $(TEST_DIR)/include -I nitty_gritty/include env.o nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o $(TEST_DIR)/test_env.c
 
 ################################################################################
 ## Cleaning                                                                   ##
