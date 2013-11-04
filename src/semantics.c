@@ -43,7 +43,7 @@ void type_list_insert(Array *tx) {
 }
 
 Array *type_list_new() {
-    Array *tx = Array_init(4, sizeof(enum SymType));
+    Array *tx = Array_init(0, sizeof(enum SymType));
     type_list_insert(tx);
     return tx;
 }
@@ -69,6 +69,7 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         //printf("idx[%d] = %p\n", i, Array_get(idx, i));
         Symbol *sym = malloc(sizeof(Symbol));
         sym->type = current_type;
+        sym->is_array = 0; // our grammar actually doesn't arrays in loc_dcl_lists
         printf("Inserting symbol %s of type %d into dcl_map %p\n", id, sym->type, dcl_map);
         if (!Env_put(dcl_map, id, sym))
             fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier %s.\n", line_num, id);
@@ -94,6 +95,7 @@ Env *dcl_map_new() {
  */
 void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
+    // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
@@ -107,12 +109,30 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     }
     map_apply(&dclx->table, check_id_list);
 
+    // if there's a prototype, make sure the id list matches
+    Symbol *prot = Env_get(current_scope, fn_id);
+    if (prot) {
+        assert(prot->type == TYPE_FN_PROT);
+        if (prot->type_list->length != idx->length) {
+            fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
+            prot = NULL;
+        }
+    }
+
+    // verify every id in id list is in decl list
+    //   every such id matches its type in the prototype
     int i;
     for (i = 0; i < idx->length; i++) {
         char *id = *((char **) Array_get(idx, i));
         Symbol *sym = Env_get(dclx, id);
-        if (sym == NULL)
+        if (!sym) {
             fprintf(stderr, "Line %d: Variable %s found in parameter list of function %s, but not found in %s's declaration. Assuming %s's type is int.\n", line_num, id, fn_id, fn_id, id);
-        else {}
+            sym = malloc(sizeof(Symbol));
+            sym->type = TYPE_INT;
+            sym->is_array = false;
+            Env_put(dclx, id, sym);
+        } else if(prot) {
+            // matches type?
+        }
     }
 }
