@@ -4,6 +4,7 @@
 #include "array.h"
 typedef struct Env {
     struct map table;
+    struct map prot_table;
     struct Env * prev;
 } Env;
 
@@ -34,7 +35,10 @@ typedef struct Symbol {
 
 void Env_init(Env * env, Env * prev);
 Env * Env_new(Env * prev);
+
 int Env_put(Env * env, char * id, Symbol * sym);
 Symbol * Env_get(Env * env, char * id);
+Symbol * Env_get_prot(Env * env, char * id);
+
 void Env_free(Env * env);
 #endif

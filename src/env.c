@@ -15,12 +15,14 @@ unsigned long long int fnv1_hash (void *ptr) {
 
 void Env_init(Env * env, Env * prev) {
     env->prev = prev; 
-    map_init(&(env->table), &fnv1_hash, &key_eq, 4);
+    map_init(&env->table, &fnv1_hash, &key_eq, 4);
+    map_init(&env->prot_table, &fnv1_hash, &key_eq, 4);
 }
 
 Env * Env_new(Env * prev) {
     Env * env = malloc(sizeof(Env));
     Env_init(env, prev);
+    return env;
 }
 
 /* 
@@ -28,16 +30,32 @@ Env * Env_new(Env * prev) {
  * return 0. Otherwise, insert it and return 1
  */
 int Env_put(Env * env, char * id, Symbol * sym) {
-    if (map_find(&(env->table), id) != NULL)
+    if (map_find(&env->table, id) != NULL)
         return 0;
-    map_insert(&(env->table), id, sym);
+
+    if (sym->type != TYPE_FN)
+        if (map_find(&env->prot_table, id) != NULL)
+            return 0;
+
+    if (sym->type == TYPE_FN_PROT)
+        map_insert(&env->prot_table, id, sym);
+    else
+        map_insert(&env->table, id, sym);
     return 1;
 }
 
 Symbol * Env_get(Env * env, char * id) {
     void * found;
     for (; env != NULL; env = env->prev) 
-        if (( found = map_find(&(env->table), id) ) != NULL)
+        if (( found = map_find(&env->table, id) ) != NULL)
+            return *((Symbol **) found);
+    return NULL;
+}
+
+Symbol * Env_get_prot(Env * env, char * id) {
+    void * found;
+    for (; env != NULL; env = env->prev) 
+        if (( found = map_find(&env->prot_table, id) ) != NULL)
             return *((Symbol **) found);
     return NULL;
 }
@@ -48,6 +66,7 @@ void Entry_free(void * id, void * sym) {
 }
 
 void Env_free(Env * env) {
-    map_free(&(env->table), Entry_free);
+    map_free(&env->table, Entry_free);
+    map_free(&env->prot_table, Entry_free);
     //free(env);
 }

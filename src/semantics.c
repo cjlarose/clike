@@ -180,7 +180,7 @@ void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     validate_dcl_list(fn_id, idx, dclx);
 
     // if there's a prototype, make sure the id list matches in length
-    Symbol *prot = Env_get(current_scope, fn_id);
+    Symbol *prot = Env_get_prot(current_scope, fn_id);
     if (prot)
         validate_fn_against_prot(fn_id, idx, prot);
 
