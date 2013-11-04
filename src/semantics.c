@@ -80,6 +80,25 @@ Env *dcl_map_new() {
     return Env_new(NULL);
 }
 
+
+/* Don't rely on this. Only used for printing errors. */
+char *_type_str(enum SymType type) {
+    switch(type) {
+        case TYPE_VOID:
+            return "void";
+        case TYPE_CHAR:
+            return "char";
+        case TYPE_INT:
+            return "int";
+        case TYPE_FLOAT:
+            return "float";
+        case TYPE_FN:
+            return "function";
+        case TYPE_FN_PROT:
+            return "function prototype";
+    }
+}
+
 /* 
  * Given a function idenifier, id_list, and declaration list:
  *   verify every id in declaration list is in the id_list
@@ -109,7 +128,7 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     }
     map_apply(&dclx->table, check_id_list);
 
-    // if there's a prototype, make sure the id list matches
+    // if there's a prototype, make sure the id list matches in length
     Symbol *prot = Env_get(current_scope, fn_id);
     if (prot) {
         assert(prot->type == TYPE_FN_PROT);
@@ -132,7 +151,11 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
             sym->is_array = false;
             Env_put(dclx, id, sym);
         } else if(prot) {
-            // matches type?
+            // matches prototype type?
+            int prot_type = *((int *) Array_get(prot->type_list, i));
+            if (sym->type != prot_type) {
+                fprintf(stderr, "Line: %d: Variable %s declared as %s in %s's declaration, but %s's prototype specifies that %s's type should be %s. Assuming %s's type is %s.\n", line_num, id, _type_str(sym->type), fn_id, fn_id, id, _type_str(prot_type), id, _type_str(sym->type));
+            }
         }
     }
 }
