@@ -138,6 +138,9 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         }
     }
 
+    // new type list
+    Array *tx = Array_init(idx->length, sizeof(enum SymType));
+
     // verify every id in id list is in decl list
     //   every such id matches its type in the prototype
     int i;
@@ -157,5 +160,16 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
                 fprintf(stderr, "Line: %d: Variable %s declared as %s in %s's declaration, but %s's prototype specifies that %s's type should be %s. Assuming %s's type is %s.\n", line_num, id, _type_str(sym->type), fn_id, fn_id, id, _type_str(prot_type), id, _type_str(sym->type));
             }
         }
+
+        // insert into type list
+        Array_set(tx, i, &sym->type);
     }
+
+    /*
+    for (i = 0; i < tx->length; i++) {
+        int type = *((int *) Array_get(tx, i));
+        printf("tx[%d] = %s\n", i, _type_str(type));
+    }
+    */
+
 }
