@@ -86,12 +86,12 @@ f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); }
 type_list: type { $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
 
-func: type ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($2, $4, $6); } '{' loc_dcl_list opt_stmt_list '}'
-  | void ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($2, $4, $6); } '{' loc_dcl_list opt_stmt_list '}'
-  | ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($1, $3, $5); } '{' loc_dcl_list opt_stmt_list '}'
-  | type ID '(' ')' loc_dcl_list { verify_fn_dcl($2, NULL, $5); } '{' loc_dcl_list opt_stmt_list '}'
-  | void ID '(' ')' loc_dcl_list { verify_fn_dcl($2, NULL, $5); } '{' loc_dcl_list opt_stmt_list '}'
-  | ID '(' ')' loc_dcl_list { verify_fn_dcl($1, NULL, $4); } '{' loc_dcl_list opt_stmt_list '}'
+func: type ID '(' id_list ')' loc_dcl_list { validate_fn_dcl($2, $4, $6); } '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' id_list ')' loc_dcl_list { validate_fn_dcl($2, $4, $6); } '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' id_list ')' loc_dcl_list { validate_fn_dcl($1, $3, $5); } '{' loc_dcl_list opt_stmt_list '}'
+  | type ID '(' ')' loc_dcl_list { validate_fn_dcl($2, NULL, $5); } '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' ')' loc_dcl_list { validate_fn_dcl($2, NULL, $5); } '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' ')' loc_dcl_list { validate_fn_dcl($1, NULL, $4); } '{' loc_dcl_list opt_stmt_list '}'
 
 
 type: CHAR {current_type = TYPE_CHAR; } | INT {current_type = TYPE_INT;} | FLOAT {current_type = TYPE_FLOAT;}

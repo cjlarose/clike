@@ -167,7 +167,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
  *   add all (valid) symbols in declaration list to local symbol table
  *   
  */
-void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
+void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     validate_dcl_list(fn_id, idx, dclx);
 
