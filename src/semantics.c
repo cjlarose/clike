@@ -49,9 +49,10 @@ Array *type_list_new() {
 }
 
 void id_list_insert(Array *idx, char *id) {
-    // stored a stack variable in array
+    // stored a stack variable in array?
+    //char ** ptr = malloc(sizeof(char **));
+    //*ptr = id;
     Array_append(idx, &id);
-    printf("idx[%d] = %p\n", idx->length - 1, Array_get(idx, idx->length -1));
     assert(*((char **) Array_get(idx, idx->length - 1)) == id);
 }
 
@@ -91,31 +92,17 @@ Env *dcl_map_new() {
  *   
  */
 void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
-    printf("Verifying\n");
-    printf("|idx| = %d\n", idx->length);
 
-    int i;
-    for (i = 0; i < idx->length - 1; i++) {
-        char *id = *((char **) Array_get(idx, i));
-        printf("idx[%d] = %p\n", i, Array_get(idx, i));
-        printf("idx[%d] = %s\n", i, id);
-    }
-
-    /*
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
         for (i = 0; i < idx->length - 1; i++) {
             char *id = *((char **) Array_get(idx, i));
-            printf("idx[%d] =  %s\n", i, id);
-            if (strcmp(id, (char *) k) == 0) {
-                printf("Found id %s\n", id);
+            if (strcmp(id, (char *) k) == 0)
                 return;
-            }
         }
-        fprintf(stderr, "Line %d: variable %s found in declaration of function %s, but not found in identifier list\n", line_num, (char *) k, fn_id);
+        fprintf(stderr, "Line %d: Variable %s found in declaration of function %s, but not found in identifier list. Continuing without declaration of %s.\n", line_num, (char *) k, fn_id, (char *) k);
+        // TODO: actually remove k from table
     }
-    printf("Actually about to verify\n");
     map_apply(&dclx->table, check_id_list);
-    */
 }
