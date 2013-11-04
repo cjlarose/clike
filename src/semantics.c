@@ -49,12 +49,47 @@ Array *type_list_new() {
 }
 
 void id_list_insert(Array *idx, char *id) {
-    printf("Inserting id %s into id list\n", id);
     Array_append(idx, &id);
+    assert(*((char **) Array_get(idx, idx->length - 1)) == id);
 }
 
 Array *id_list_new(char *id) {
-    Array *idx = Array_init(4, sizeof(char *));
+    Array *idx = Array_init(0, sizeof(char *));
     id_list_insert(idx, id);
     return idx;
+}
+
+void dcl_map_insert(Env *dcl_map, Array *idx) {
+    int i;
+    for (i = 0; i < idx->length; i++) {
+        char *id = *((char **) Array_get(idx, i));
+        Symbol *sym = malloc(sizeof(Symbol));
+        sym->type = current_type;
+        printf("Inserting symbol %s of type %d into dcl_map\n", id, sym->type);
+        if (!Env_put(current_scope, id, sym))
+            fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier %s.\n", line_num, id);
+    }
+}
+
+Env *dcl_map_new() {
+    return Env_new(NULL);
+}
+
+/* 
+ * Given a function idenifier, id_list, and declaration list:
+ *   if a prototype exists
+ *     see that the id list matches the prototype size
+ *     create (id => sym map) m1
+ *     verify that the m1 == declaration list
+ *   else
+ *     verify every id in declaration list is in the id_list
+ *     verify every id in id_list is in declaration list
+ *     construct type list
+ * 
+ *   create symbol entry for fn
+ *   add fn to global symbol table
+ *   add all symbols in declaration list to local symbol table
+ *   
+ */
+void verify_fn_dcl(char *fn_id, Array *idx, Array *dclx) {
 }

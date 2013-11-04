@@ -57,6 +57,8 @@ enum SymType current_type;
 %type <ival> int_con
 %type <ptrval> type_list
 %type <ptrval> id_list
+%type <ptrval> loc_dcl_list
+%type <ptrval> loc_dcl
 
 %expect 1 /* That damn dangling else */
 
@@ -84,18 +86,19 @@ f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); }
 type_list: type { $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
 
-func: type ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | void ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | ID '(' id_list ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | type ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | void ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
-  | ID '(' ')' loc_dcl_list '{' loc_dcl_list opt_stmt_list '}'
+func: type ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($2, $4, NULL); } '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($2, $4, NULL); } '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' id_list ')' loc_dcl_list { verify_fn_dcl($1, $3, NULL); } '{' loc_dcl_list opt_stmt_list '}'
+  | type ID '(' ')' loc_dcl_list { verify_fn_dcl($2, NULL, NULL); } '{' loc_dcl_list opt_stmt_list '}'
+  | void ID '(' ')' loc_dcl_list { verify_fn_dcl($2, NULL, NULL); } '{' loc_dcl_list opt_stmt_list '}'
+  | ID '(' ')' loc_dcl_list { verify_fn_dcl($1, NULL, NULL); } '{' loc_dcl_list opt_stmt_list '}'
 
 
 type: CHAR {current_type = TYPE_CHAR; } | INT {current_type = TYPE_INT;} | FLOAT {current_type = TYPE_FLOAT;}
 
-loc_dcl_list: | loc_dcl_list loc_dcl
-loc_dcl: type id_list ';'
+loc_dcl_list: { $$ = dcl_map_new(); } 
+  | loc_dcl_list loc_dcl { dcl_map_insert($1, $2); $$ = $1; }
+loc_dcl: type id_list ';' { $$ = $2; }
 
 id_list: ID { $$ = id_list_new($1); }
   | id_list ',' ID { id_list_insert($1, $3); }
