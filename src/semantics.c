@@ -176,7 +176,7 @@ void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
  *   add all (valid) symbols in declaration list to local symbol table
  *   
  */
-void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
+Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     // hack
     if (!idx)
@@ -192,6 +192,8 @@ void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     Array *tx = validate_id_list(fn_id, idx, dclx, prot);
 
     insert_fn_into_global_symtable(fn_id, tx);
+
+    return dclx;
 
     /*
     int i;
