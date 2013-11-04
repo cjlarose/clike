@@ -125,7 +125,6 @@ Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
     if (prot->type_list->length != idx->length) {
         fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
         prot = NULL;
-        // TODO: remove prototype
     }
     return prot;
 }
@@ -191,8 +190,10 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     // if there's a prototype, make sure the id list matches in length
     Symbol *prot = Env_get_prot(current_scope, fn_id);
-    if (prot)
-        prot = validate_fn_against_prot(fn_id, idx, prot);
+    if (prot) {
+        if ((prot = validate_fn_against_prot(fn_id, idx, prot)) == NULL)
+            Env_remove_prot(current_scope, fn_id);
+    }
 
     Array *tx = validate_id_list(fn_id, idx, dclx, prot);
 

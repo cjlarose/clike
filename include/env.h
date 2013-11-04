@@ -40,5 +40,8 @@ int Env_put(Env * env, char * id, Symbol * sym);
 Symbol * Env_get(Env * env, char * id);
 Symbol * Env_get_prot(Env * env, char * id);
 
+int Env_remove(Env *env, char *id);
+int Env_remove_prot(Env *env, char *id);
+
 void Env_free(Env * env);
 #endif

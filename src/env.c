@@ -69,6 +69,10 @@ int Env_remove(Env * env, char * id) {
     return map_delete(&env->table, id, &Entry_free);
 }
 
+int Env_remove_prot(Env * env, char * id) {
+    return map_delete(&env->prot_table, id, &Entry_free);
+}
+
 void Env_free(Env * env) {
     map_free(&env->table, Entry_free);
     map_free(&env->prot_table, Entry_free);
