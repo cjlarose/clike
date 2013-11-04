@@ -33,7 +33,7 @@ void insert_fn_prot(char *id, Array *tx) {
     sym->type = TYPE_FN_PROT;
     sym->is_array = 0;
     sym->return_type = current_type;
-    sym->type_list = tx;
+    sym->type_list = tx ? tx : Array_init(0, sizeof(enum SymType)); // hack
     _add_to_scope(id, sym);
 }
 
@@ -116,12 +116,13 @@ void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
     map_apply(&dclx->table, check_id_list);
 }
 
-void validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
+Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
     assert(prot->type == TYPE_FN_PROT);
     if (prot->type_list->length != idx->length) {
         fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
         prot = NULL;
     }
+    return prot;
 }
 
 Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
@@ -177,12 +178,16 @@ void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
  */
 void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
+    // hack
+    if (!idx)
+        idx = Array_init(0, sizeof(char *));
+
     validate_dcl_list(fn_id, idx, dclx);
 
     // if there's a prototype, make sure the id list matches in length
     Symbol *prot = Env_get_prot(current_scope, fn_id);
     if (prot)
-        validate_fn_against_prot(fn_id, idx, prot);
+        prot = validate_fn_against_prot(fn_id, idx, prot);
 
     Array *tx = validate_id_list(fn_id, idx, dclx, prot);
 
