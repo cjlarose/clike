@@ -100,20 +100,24 @@ char *_type_str(enum SymType type) {
 }
 
 
-void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
+Env *validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
+    Env *new_dclx = Env_new(NULL); // hack
     // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
         for (i = 0; i < idx->length; i++) {
             char *id = *((char **) Array_get(idx, i));
-            if (strcmp(id, (char *) k) == 0)
+            if (strcmp(id, (char *) k) == 0) {
+                Env_put(new_dclx, id, *((Symbol **) v));
                 return;
+            }
         }
         fprintf(stderr, "Line %d: Variable %s found in declaration of function %s, but not found in identifier list. Continuing without declaration of %s.\n", line_num, (char *) k, fn_id, (char *) k);
-        // TODO: actually remove k from table
     }
     map_apply(&dclx->table, check_id_list);
+
+    return new_dclx;
 }
 
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
@@ -182,7 +186,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     if (!idx)
         idx = Array_init(0, sizeof(char *));
 
-    validate_dcl_list(fn_id, idx, dclx);
+    dclx = validate_dcl_list(fn_id, idx, dclx);
 
     // if there's a prototype, make sure the id list matches in length
     Symbol *prot = Env_get_prot(current_scope, fn_id);
@@ -193,6 +197,15 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     insert_fn_into_global_symtable(fn_id, tx);
 
+    /*
+    printf("DCLX\n");
+    void print_map(void *k, void **v) {
+        Symbol *sym = *((Symbol **) v);
+        printf("%s => %s\n", (char*) k, _type_str(sym->type));
+    }
+    map_apply(&dclx->table, &print_map);
+    */
+
     return dclx;
 
     /*
@@ -202,5 +215,6 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         printf("tx[%d] = %s\n", i, _type_str(type));
     }
     */
+
 
 }
