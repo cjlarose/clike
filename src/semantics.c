@@ -101,7 +101,7 @@ char *_type_str(enum SymType type) {
 
 
 Env *validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
-    Env *new_dclx = Env_new(NULL); // hack
+    Env *new_dclx = Env_new(current_scope); // hack
     // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
@@ -177,7 +177,7 @@ void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
  *   construct type list
  * 
  *   create symbol table entry for fn
- *   add all (valid) symbols in declaration list to local symbol table
+ *   //add all (valid) symbols in declaration list to local symbol table
  *   
  */
 Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {

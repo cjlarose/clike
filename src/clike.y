@@ -94,7 +94,7 @@ func_begin: type ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, 
   | void ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $5); }
   | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
 
-func: func_begin '{' loc_dcl_list opt_stmt_list '}'
+func: func_begin { current_scope = $1; } '{' loc_dcl_list opt_stmt_list '}'{ current_scope = current_scope->prev; }
 
 type: CHAR {current_type = TYPE_CHAR; } | INT {current_type = TYPE_INT;} | FLOAT {current_type = TYPE_FLOAT;}
 
