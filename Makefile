@@ -109,3 +109,4 @@ env_test: $(TEST_DIR)/test_env.c $(BUILD_DIR)/env.o nitty_gritty
 
 clean:
 	rm -rf $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC) $(BUILD_DIR)
+	cd nitty_gritty && make clean
