@@ -82,13 +82,14 @@ Env *dcl_map_new() {
 /* 
  * Given a function idenifier, id_list, and declaration list:
  *   verify every id in declaration list is in the id_list
+ *     reject invalid declarations
  *   verify every id in id_list is in declaration list
  *     verify that it is of the correct type according to prototype (if exists)
  *   construct type list
  * 
  *   create symbol entry for fn
  *   add fn to global symbol table
- *   add all symbols in declaration list to local symbol table
+ *   add all (valid) symbols in declaration list to local symbol table
  *   
  */
 void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
@@ -96,7 +97,7 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
-        for (i = 0; i < idx->length - 1; i++) {
+        for (i = 0; i < idx->length; i++) {
             char *id = *((char **) Array_get(idx, i));
             if (strcmp(id, (char *) k) == 0)
                 return;
@@ -105,4 +106,13 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         // TODO: actually remove k from table
     }
     map_apply(&dclx->table, check_id_list);
+
+    int i;
+    for (i = 0; i < idx->length; i++) {
+        char *id = *((char **) Array_get(idx, i));
+        Symbol *sym = Env_get(dclx, id);
+        if (sym == NULL)
+            fprintf(stderr, "Line %d: Variable %s found in parameter list of function %s, but not found in %s's declaration. Assuming %s's type is int.\n", line_num, id, fn_id, fn_id, id);
+        else {}
+    }
 }
