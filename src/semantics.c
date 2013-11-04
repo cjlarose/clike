@@ -99,21 +99,8 @@ char *_type_str(enum SymType type) {
     }
 }
 
-/* 
- * Given a function idenifier, id_list, and declaration list:
- *   verify every id in declaration list is in the id_list
- *     reject invalid declarations
- *   verify every id in id_list is in declaration list
- *     verify that it is of the correct type according to prototype (if exists)
- *   construct type list
- * 
- *   create symbol entry for fn
- *   add fn to global symbol table
- *   add all (valid) symbols in declaration list to local symbol table
- *   
- */
-void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
+void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
     // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
@@ -127,17 +114,17 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         // TODO: actually remove k from table
     }
     map_apply(&dclx->table, check_id_list);
+}
 
-    // if there's a prototype, make sure the id list matches in length
-    Symbol *prot = Env_get(current_scope, fn_id);
-    if (prot) {
-        assert(prot->type == TYPE_FN_PROT);
-        if (prot->type_list->length != idx->length) {
-            fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
-            prot = NULL;
-        }
+void validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
+    assert(prot->type == TYPE_FN_PROT);
+    if (prot->type_list->length != idx->length) {
+        fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
+        prot = NULL;
     }
+}
 
+Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
     // new type list
     Array *tx = Array_init(idx->length, sizeof(enum SymType));
 
@@ -164,8 +151,35 @@ void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         // insert into type list
         Array_set(tx, i, &sym->type);
     }
+    return tx;
+}
+
+/* 
+ * Given a function idenifier, id_list, and declaration list:
+ *   verify every id in declaration list is in the id_list
+ *     reject invalid declarations
+ *   verify every id in id_list is in declaration list
+ *     verify that it is of the correct type according to prototype (if exists)
+ *   construct type list
+ * 
+ *   create symbol entry for fn
+ *   add fn to global symbol table
+ *   add all (valid) symbols in declaration list to local symbol table
+ *   
+ */
+void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
+
+    validate_dcl_list(fn_id, idx, dclx);
+
+    // if there's a prototype, make sure the id list matches in length
+    Symbol *prot = Env_get(current_scope, fn_id);
+    if (prot)
+        validate_fn_against_prot(fn_id, idx, prot);
+
+    Array *tx = validate_id_list(fn_id, idx, dclx, prot);
 
     /*
+    int i;
     for (i = 0; i < tx->length; i++) {
         int type = *((int *) Array_get(tx, i));
         printf("tx[%d] = %s\n", i, _type_str(type));
