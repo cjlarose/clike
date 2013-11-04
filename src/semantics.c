@@ -99,25 +99,25 @@ char *_type_str(enum SymType type) {
     }
 }
 
-
-Env *validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
-    Env *new_dclx = Env_new(current_scope); // hack
+void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
+    Array *to_remove = Array_init(0, sizeof(char **));
     // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
         for (i = 0; i < idx->length; i++) {
             char *id = *((char **) Array_get(idx, i));
-            if (strcmp(id, (char *) k) == 0) {
-                Env_put(new_dclx, id, *((Symbol **) v));
+            if (strcmp(id, (char *) k) == 0)
                 return;
-            }
         }
         fprintf(stderr, "Line %d: Variable %s found in declaration of function %s, but not found in identifier list. Continuing without declaration of %s.\n", line_num, (char *) k, fn_id, (char *) k);
+        Array_append(to_remove, &k);
     }
-    map_apply(&dclx->table, check_id_list);
+    map_apply(&dclx->table, &check_id_list);
 
-    return new_dclx;
+    int i;
+    for (i = 0; i < to_remove->length; i++)
+        Env_remove(dclx, *((char **) Array_get(to_remove, i)));
 }
 
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
@@ -125,6 +125,7 @@ Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
     if (prot->type_list->length != idx->length) {
         fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
         prot = NULL;
+        // TODO: remove prototype
     }
     return prot;
 }
@@ -186,7 +187,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     if (!idx)
         idx = Array_init(0, sizeof(char *));
 
-    dclx = validate_dcl_list(fn_id, idx, dclx);
+    validate_dcl_list(fn_id, idx, dclx);
 
     // if there's a prototype, make sure the id list matches in length
     Symbol *prot = Env_get_prot(current_scope, fn_id);
@@ -205,6 +206,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     }
     map_apply(&dclx->table, &print_map);
     */
+    dclx->prev = current_scope;
 
     return dclx;
 

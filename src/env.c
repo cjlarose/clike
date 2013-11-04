@@ -65,6 +65,10 @@ void Entry_free(void * id, void * sym) {
     free(sym);
 }
 
+int Env_remove(Env * env, char * id) {
+    return map_delete(&env->table, id, &Entry_free);
+}
+
 void Env_free(Env * env) {
     map_free(&env->table, Entry_free);
     map_free(&env->prot_table, Entry_free);
