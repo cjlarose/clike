@@ -154,6 +154,15 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
     return tx;
 }
 
+void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
+    Symbol * sym = malloc(sizeof(Symbol));
+    sym->type = TYPE_FN;
+    sym->is_array = 0;
+    sym->return_type = current_type;
+    sym->type_list = tx;
+    _add_to_scope(fn_id, sym);
+}
+
 /* 
  * Given a function idenifier, id_list, and declaration list:
  *   verify every id in declaration list is in the id_list
@@ -162,8 +171,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
  *     verify that it is of the correct type according to prototype (if exists)
  *   construct type list
  * 
- *   create symbol entry for fn
- *   add fn to global symbol table
+ *   create symbol table entry for fn
  *   add all (valid) symbols in declaration list to local symbol table
  *   
  */
@@ -177,6 +185,8 @@ void validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
         validate_fn_against_prot(fn_id, idx, prot);
 
     Array *tx = validate_id_list(fn_id, idx, dclx, prot);
+
+    insert_fn_into_global_symtable(fn_id, tx);
 
     /*
     int i;
