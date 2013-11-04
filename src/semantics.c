@@ -49,7 +49,9 @@ Array *type_list_new() {
 }
 
 void id_list_insert(Array *idx, char *id) {
+    // stored a stack variable in array
     Array_append(idx, &id);
+    printf("idx[%d] = %p\n", idx->length - 1, Array_get(idx, idx->length -1));
     assert(*((char **) Array_get(idx, idx->length - 1)) == id);
 }
 
@@ -63,10 +65,11 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
     int i;
     for (i = 0; i < idx->length; i++) {
         char *id = *((char **) Array_get(idx, i));
+        //printf("idx[%d] = %p\n", i, Array_get(idx, i));
         Symbol *sym = malloc(sizeof(Symbol));
         sym->type = current_type;
-        printf("Inserting symbol %s of type %d into dcl_map\n", id, sym->type);
-        if (!Env_put(current_scope, id, sym))
+        printf("Inserting symbol %s of type %d into dcl_map %p\n", id, sym->type, dcl_map);
+        if (!Env_put(dcl_map, id, sym))
             fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier %s.\n", line_num, id);
     }
 }
@@ -77,19 +80,42 @@ Env *dcl_map_new() {
 
 /* 
  * Given a function idenifier, id_list, and declaration list:
- *   if a prototype exists
- *     see that the id list matches the prototype size
- *     create (id => sym map) m1
- *     verify that the m1 == declaration list
- *   else
- *     verify every id in declaration list is in the id_list
- *     verify every id in id_list is in declaration list
- *     construct type list
+ *   verify every id in declaration list is in the id_list
+ *   verify every id in id_list is in declaration list
+ *     verify that it is of the correct type according to prototype (if exists)
+ *   construct type list
  * 
  *   create symbol entry for fn
  *   add fn to global symbol table
  *   add all symbols in declaration list to local symbol table
  *   
  */
-void verify_fn_dcl(char *fn_id, Array *idx, Array *dclx) {
+void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
+    printf("Verifying\n");
+    printf("|idx| = %d\n", idx->length);
+
+    int i;
+    for (i = 0; i < idx->length - 1; i++) {
+        char *id = *((char **) Array_get(idx, i));
+        printf("idx[%d] = %p\n", i, Array_get(idx, i));
+        printf("idx[%d] = %s\n", i, id);
+    }
+
+    /*
+    void check_id_list(void *k, void **v) {
+        // ugly linear search
+        int i;
+        for (i = 0; i < idx->length - 1; i++) {
+            char *id = *((char **) Array_get(idx, i));
+            printf("idx[%d] =  %s\n", i, id);
+            if (strcmp(id, (char *) k) == 0) {
+                printf("Found id %s\n", id);
+                return;
+            }
+        }
+        fprintf(stderr, "Line %d: variable %s found in declaration of function %s, but not found in identifier list\n", line_num, (char *) k, fn_id);
+    }
+    printf("Actually about to verify\n");
+    map_apply(&dclx->table, check_id_list);
+    */
 }

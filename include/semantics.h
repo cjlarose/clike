@@ -15,6 +15,6 @@ Array *id_list_new(char *id);
 void  dcl_map_insert(Env *dcl_map, Array *idx);
 Env *dcl_map_new();
 
-void verify_fn_dcl(char *fn_id, Array *idx, Array *dclx);
+void verify_fn_dcl(char *fn_id, Array *idx, Env *dclx);
 
 #endif
