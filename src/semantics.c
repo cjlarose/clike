@@ -102,17 +102,3 @@ char *_type_str(enum SymType type) {
             return "function prototype";
     }
 }
-
-/*****************************************************************************
- * Type Checking                                                             *
- *****************************************************************************/
-
-int compatible_types(enum SymType t1, enum SymType t2) {
-    if (t1 == t2)
-        return true;
-    if (t1 == TYPE_INT && t2 == TYPE_CHAR)
-        return true;
-    if (t1 == TYPE_INT && t2 == TYPE_CHAR)
-        return true;
-    return false;
-}
