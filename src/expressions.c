@@ -51,6 +51,16 @@ ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     return _new_expnode(TYPE_BOOL, op, lhs, rhs);
 }
 
+ExpNode *new_comparison_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
+    if (resolve_types(lhs->return_type, rhs->return_type) == -1) {
+        fprintf(stderr, "Line %d: Left- and right-hand sides of comparison "
+        "expression %s (%s and %s, respecively) are not type-compatible.\n",
+        line_num, op, _type_str(lhs->return_type), 
+        _type_str(rhs->return_type));
+    }
+    return _new_expnode(TYPE_BOOL, op, lhs, rhs);
+}
+
 ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     enum SymType type;
     if (rhs == NULL)
@@ -61,7 +71,7 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
             fprintf(stderr, "Line %d: Left- and right-hand sides of arithmetic "
             "expression %s (%s and %s, respecively) are not type-compatible. "
             "Proceeding with the assumption that the result of the expression "
-            "is %s.", line_num, op, _type_str(lhs->return_type), 
+            "is %s.\n", line_num, op, _type_str(lhs->return_type), 
             _type_str(rhs->return_type), _type_str(lhs->return_type));
             type = lhs->return_type;
         }
@@ -117,7 +127,7 @@ ExpNode *new_id_expnode(char *id, int has_index) {
          line_num, id, id);
     else if (sym->type != TYPE_CHAR && sym->type != TYPE_INT && sym->type != TYPE_FLOAT)
         fprintf(stderr, "Line: %d: Variable %s is of a type than cannot be used"
-        " as part of an expression", line_num, id);
+        " as part of an expression.\n", line_num, id);
     else {
         if (has_index && sym->is_array == 0)
             fprintf(stderr, "Line: %d: Index used with variable %s, but %s is "
