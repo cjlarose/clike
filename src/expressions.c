@@ -72,7 +72,9 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
 int _verify_types(char *fn_id, Array *tx, Array *expnx) {
     // TODO: verify expnx is non-null
     if (tx->length != expnx->length) {
-        fprintf(stderr, "Line %d: Invocation of function %s has too %s arguments.\n", line_num, fn_id, tx->length > expnx->length ? "few" : "many");
+        fprintf(stderr, "Line %d: Invocation of function %s has too %s "
+        "arguments.\n", line_num, fn_id, 
+        tx->length > expnx->length ? "few" : "many");
         return 1;
     }
 
