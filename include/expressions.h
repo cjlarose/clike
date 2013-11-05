@@ -16,6 +16,7 @@ ExpNode *new_float_expnode();
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs);
 ExpNode *new_comparison_expnode(char *op, ExpNode *lhs, ExpNode *rhs);
 ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs);
-ExpNode *new_invocation_expnode(char *fn_id, Array *expnx);
+ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void);
 ExpNode *new_id_expnode(char *id, int has_index);
+
 #endif

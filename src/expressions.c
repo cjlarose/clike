@@ -91,13 +91,11 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     return _new_expnode(type, op, lhs, rhs);
 }
 
-int _verify_types(char *fn_id, Array *tx, Array *expnx) {
-    // TODO: verify expnx is non-null
+void _verify_types(char *fn_id, Array *tx, Array *expnx) {
     if (tx->length != expnx->length) {
         fprintf(stderr, "Line %d: Invocation of function %s has too %s "
         "arguments.\n", line_num, fn_id, 
         tx->length > expnx->length ? "few" : "many");
-        return 1;
     }
 
     int i;
@@ -110,13 +108,13 @@ int _verify_types(char *fn_id, Array *tx, Array *expnx) {
             "%s is of type %s, but argument %d of function %s is of type %s. "
             "These types are incompatible.\n", line_num, i, fn_id, 
             _type_str(node->return_type), i, fn_id, _type_str(argument_type));
-            return 1;
         }
     }
-    return 1;
 }
 
-ExpNode *new_invocation_expnode(char *fn_id, Array *expnx) {
+ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
+    if (!expnx)
+        expnx = Array_init(0, sizeof(ExpNode *));
     Symbol *sym = Env_get(current_scope, fn_id);
     if (!sym)
         fprintf(stderr, "Line %d: Attempt to invoke undeclared function %s. "
@@ -126,8 +124,18 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx) {
         fprintf(stderr, "Line %d: Attempt to invoke function %s, but %s is of "
         "type %s. Proceeding with the assumption that the return type of the "
         "function is int.\n", line_num, fn_id, fn_id, _type_str(sym->type));
-    else if (_verify_types(fn_id, sym->type_list, expnx))
+    else if (sym->return_type == TYPE_VOID && !should_be_void)
+        fprintf(stderr, "Line %d: Attempt to use void function %s in "
+        "expression. Continuing with the assuption that the return type of %s "
+        "is int.", line_num, fn_id, fn_id);
+    else if (sym->return_type != TYPE_VOID && should_be_void)
+        fprintf(stderr, "Line %d: Attempt to invoke non-void function %s in "
+        "statement. Continuing with the assuption that the return type of %s "
+        "is void.", line_num, fn_id, fn_id);
+    else {
+        _verify_types(fn_id, sym->type_list, expnx);
         return _new_expnode(sym->return_type, NULL, NULL, NULL);
+    }
     return _new_expnode(TYPE_INT, NULL, NULL, NULL); // keep the party gooooin
 }
 
