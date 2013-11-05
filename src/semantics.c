@@ -103,6 +103,11 @@ char *_type_str(enum SymType type) {
     }
 }
 
+
+/*****************************************************************************
+ * Function Declaration Validation                                           *
+ *****************************************************************************/
+
 void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
     Array *to_remove = Array_init(0, sizeof(char **));
     // verify every id in decl list is in id list
@@ -244,4 +249,18 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     */
 
 
+}
+
+/*****************************************************************************
+ * Type Checking                                                             *
+ *****************************************************************************/
+
+int compatible_types(enum SymType t1, enum SymType t2) {
+    if (t1 == t2)
+        return true;
+    if (t1 == TYPE_INT && t2 == TYPE_CHAR)
+        return true;
+    if (t1 == TYPE_INT && t2 == TYPE_CHAR)
+        return true;
+    return false;
 }
