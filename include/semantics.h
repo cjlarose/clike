@@ -15,6 +15,6 @@ Array *id_list_new(char *id);
 void dcl_map_insert(Env *dcl_map, Array *idx);
 Env *dcl_map_new();
 
-Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx);
-
+void _add_to_scope(char *id, Symbol *sym);
+char *_type_str(enum SymType type);
 #endif

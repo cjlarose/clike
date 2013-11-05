@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "clike_fn.h"
 #include "semantics.h"
+#include "declarations.h"
 #include "env.h"
 
 Env *current_scope;
