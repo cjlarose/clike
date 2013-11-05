@@ -11,7 +11,8 @@ void _add_to_scope(char *id, Symbol * sym) {
     assert(current_scope);
     printf("Inserting symbol %s of type %d\n", id, sym->type);
     if (!Env_put(current_scope, id, sym))
-        fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier %s.\n", line_num, id);
+        fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier "
+        "%s.\n", line_num, id);
 }
 
 void insert_symbol(char *id) {
@@ -70,9 +71,11 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         Symbol *sym = malloc(sizeof(Symbol));
         sym->type = current_type;
         sym->is_array = 0; // our grammar actually doesn't arrays in loc_dcl_lists
-        printf("Inserting symbol %s of type %d into dcl_map %p\n", id, sym->type, dcl_map);
+        printf("Inserting symbol %s of type %d into dcl_map %p\n", id, 
+        sym->type, dcl_map);
         if (!Env_put(dcl_map, id, sym))
-            fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier %s.\n", line_num, id);
+            fprintf(stderr, "Line %d: Ignoring duplicate declaration of "
+            "identifier %s.\n", line_num, id);
     }
 }
 
@@ -110,7 +113,9 @@ void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
             if (strcmp(id, (char *) k) == 0)
                 return;
         }
-        fprintf(stderr, "Line %d: Variable %s found in declaration of function %s, but not found in identifier list. Continuing without declaration of %s.\n", line_num, (char *) k, fn_id, (char *) k);
+        fprintf(stderr, "Line %d: Variable %s found in declaration of function "
+        "%s, but not found in identifier list. Continuing without declaration "
+        "of %s.\n", line_num, (char *) k, fn_id, (char *) k);
         Array_append(to_remove, &k);
     }
     map_apply(&dclx->table, &check_id_list);
@@ -123,7 +128,10 @@ void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
     assert(prot->type == TYPE_FN_PROT);
     if (prot->type_list->length != idx->length) {
-        fprintf(stderr, "Line %d: Function %s's prototype specifies %d variables, but %s's paramater list has %d variables. Ignoring prototype of function %s entirely.\n", line_num, fn_id, prot->type_list->length, fn_id, idx->length, fn_id);
+        fprintf(stderr, "Line %d: Function %s's prototype specifies %d "
+        "variables, but %s's paramater list has %d variables. Ignoring "
+        "prototype of function %s entirely.\n", line_num, fn_id, 
+        prot->type_list->length, fn_id, idx->length, fn_id);
         prot = NULL;
     }
     return prot;
@@ -140,7 +148,9 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
         char *id = *((char **) Array_get(idx, i));
         Symbol *sym = Env_get(dclx, id);
         if (!sym) {
-            fprintf(stderr, "Line %d: Variable %s found in parameter list of function %s, but not found in %s's declaration. Assuming %s's type is int.\n", line_num, id, fn_id, fn_id, id);
+            fprintf(stderr, "Line %d: Variable %s found in parameter list of "
+            "function %s, but not found in %s's declaration. Assuming %s's "
+            "type is int.\n", line_num, id, fn_id, fn_id, id);
             sym = malloc(sizeof(Symbol));
             sym->type = TYPE_INT;
             sym->is_array = false;
@@ -149,7 +159,11 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
             // matches prototype type?
             int prot_type = *((int *) Array_get(prot->type_list, i));
             if (sym->type != prot_type) {
-                fprintf(stderr, "Line: %d: Variable %s declared as %s in %s's declaration, but %s's prototype specifies that %s's type should be %s. Assuming %s's type is %s.\n", line_num, id, _type_str(sym->type), fn_id, fn_id, id, _type_str(prot_type), id, _type_str(sym->type));
+                fprintf(stderr, "Line: %d: Variable %s declared as %s in %s's "
+                "declaration, but %s's prototype specifies that %s's type "
+                "should be %s. Assuming %s's type is %s.\n", line_num, id, 
+                _type_str(sym->type), fn_id, fn_id, id, _type_str(prot_type), 
+                id, _type_str(sym->type));
             }
         }
 
