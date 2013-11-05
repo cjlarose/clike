@@ -34,19 +34,25 @@ ExpNode *new_float_expnode() {
 }
 
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
-    char bad_side = 0;
-    if (lhs->return_type != TYPE_BOOL)
-        bad_side |= 1;
-    if (rhs->return_type != TYPE_BOOL)
-        bad_side |= 2;
-    if (bad_side != 0) {
-        if (bad_side == 3)
-            fprintf(stderr, "Line %d: Neither side of boolean expression %s is "
-            "type-compatible with bool.\n", line_num, op); 
-        else
-            fprintf(stderr, "Line %d: %s-hand side of boolean expression %s is "
-            "not type-compatible with bool.\n", line_num, 
-            bad_side == 1 ? "Left" : "Right", op); 
+    if (rhs == NULL) {
+        if (rhs->return_type != TYPE_BOOL)
+            fprintf(stderr, "Line %d: Operand of unary boolean expression %s "
+            "is not type-compatible with bool.\n", line_num, op); 
+    } else {
+        char bad_side = 0;
+        if (lhs->return_type != TYPE_BOOL)
+            bad_side |= 1;
+        if (rhs->return_type != TYPE_BOOL)
+            bad_side |= 2;
+        if (bad_side != 0) {
+            if (bad_side == 3)
+                fprintf(stderr, "Line %d: Neither side of boolean expression %s"
+                " is type-compatible with bool.\n", line_num, op); 
+            else
+                fprintf(stderr, "Line %d: %s-hand side of boolean expression %s"
+                " is not type-compatible with bool.\n", line_num, 
+                bad_side == 1 ? "Left" : "Right", op); 
+        }
     }
     return _new_expnode(TYPE_BOOL, op, lhs, rhs);
 }
@@ -65,6 +71,12 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     enum SymType type;
     if (rhs == NULL)
         type = lhs->return_type;
+        if (type != TYPE_CHAR && type != TYPE_INT && type != TYPE_FLOAT) {
+            fprintf(stderr, "Line %d: Operand of unary arithmetic expression %s"
+            " is not type-compatible with char, int, or float. Proceeding with "
+            "the assuption that it is an int.\n", line_num, op); 
+            type = TYPE_INT;
+        }
     else {
         type = resolve_types(lhs->return_type, rhs->return_type);
         if (type == -1) {
