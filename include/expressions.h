@@ -19,4 +19,6 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs);
 ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void);
 ExpNode *new_id_expnode(char *id, int has_index);
 
+Array *expr_list_new(ExpNode * node);
+Array *expr_list_insert(Array *exprx, ExpNode * node);
 #endif

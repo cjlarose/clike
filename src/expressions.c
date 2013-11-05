@@ -157,3 +157,14 @@ ExpNode *new_id_expnode(char *id, int has_index) {
     }
     return _new_expnode(TYPE_INT, NULL, NULL, NULL);
 }
+
+Array *expr_list_insert(Array *exprx, ExpNode * node) {
+    Array_append(exprx, node);
+    return exprx;
+}
+
+Array *expr_list_new(ExpNode * node) {
+    Array *exprx = Array_init(0, sizeof(ExpNode *));
+    expr_list_insert(exprx, node);
+    return exprx;
+}
