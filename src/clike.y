@@ -6,7 +6,9 @@
 #include "env.h"
 
 Env *current_scope;
+enum SymType prev_type; 
 enum SymType current_type; 
+enum SymType current_return_type;
 
 %}
 
@@ -64,10 +66,10 @@ enum SymType current_type;
 %expect 1 /* That damn dangling else */
 
 %%
-prog: | prog {current_type = TYPE_INT; } dcl_or_func
+prog: | prog {current_return_type = TYPE_INT; } dcl_or_func
 dcl_or_func: dcl ';' | func
 
-void: VOID {current_type = TYPE_VOID; }
+void: VOID {set_current_type(TYPE_VOID); }
 
 dcl: type dclr_list  
   | void f_prot_list 
@@ -84,7 +86,8 @@ dclr: f_prot
 
 f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); }
   | ID '(' ')' { insert_fn_prot($1, NULL); }
-type_list: type { $$ = type_list_new(); } 
+
+type_list: type { current_return_type = prev_type; $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
 
 func_begin: type ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, $6); } 
@@ -96,9 +99,9 @@ func_begin: type ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, 
 
 func: func_begin { current_scope = $1; } '{' loc_dcl_list opt_stmt_list '}'{ current_scope = current_scope->prev; }
 
-type: CHAR {current_type = TYPE_CHAR; } | INT {current_type = TYPE_INT;} | FLOAT {current_type = TYPE_FLOAT;}
+type: CHAR {set_current_type(TYPE_CHAR); } | INT {set_current_type(TYPE_INT);} | FLOAT {set_current_type(TYPE_FLOAT);}
 
-loc_dcl_list: { $$ = dcl_map_new(); } 
+loc_dcl_list: { current_return_type = prev_type; $$ = dcl_map_new(); } 
   | loc_dcl_list loc_dcl { dcl_map_insert($1, $2); $$ = $1; }
 loc_dcl: type id_list ';' { $$ = $2; }
 
@@ -150,6 +153,12 @@ un_op: '-' | '!'
 int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON 
 
 %%
+
+/* total hack */
+set_current_type(enum SymType t) {
+    prev_type = current_type;
+    current_type = t;
+}
 
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {

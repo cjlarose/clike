@@ -4,6 +4,7 @@
 #include "env.h"
 #include "array.h"
 extern int current_type;
+extern int current_return_type;
 extern Env *current_scope; 
 extern int line_num;
 
@@ -33,7 +34,7 @@ void insert_fn_prot(char *id, Array *tx) {
     Symbol * sym = malloc(sizeof(Symbol));
     sym->type = TYPE_FN_PROT;
     sym->is_array = 0;
-    sym->return_type = current_type;
+    sym->return_type = current_return_type;
     sym->type_list = tx ? tx : Array_init(0, sizeof(enum SymType)); // hack
     _add_to_scope(id, sym);
 }
@@ -132,7 +133,16 @@ Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
         "variables, but %s's paramater list has %d variables. Ignoring "
         "prototype of function %s entirely.\n", line_num, fn_id, 
         prot->type_list->length, fn_id, idx->length, fn_id);
-        prot = NULL;
+        return NULL;
+    }
+    printf("PROT RETURN TYPE: %s\n", _type_str(prot->return_type));
+    if (prot->return_type != current_return_type) {
+        fprintf(stderr, "Line %d: Function %s's prototype specifies return "
+        "type %s, but %s's definition specifies return type %s. Ignoring "
+        "prototype of function %s entirely.\n", line_num, fn_id, 
+        _type_str(prot->return_type), fn_id, _type_str(current_return_type), 
+        fn_id);
+        return NULL;
     }
     return prot;
 }
@@ -177,7 +187,7 @@ void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
     Symbol * sym = malloc(sizeof(Symbol));
     sym->type = TYPE_FN;
     sym->is_array = 0;
-    sym->return_type = current_type;
+    sym->return_type = current_return_type;
     sym->type_list = tx;
     _add_to_scope(fn_id, sym);
 }

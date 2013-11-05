@@ -35,6 +35,8 @@ of files in it (expected inputs and outputs)
         legal_dir = os.path.join(test_dir, 'Legal')
         for filename in sorted_files(legal_dir):
             print "Test %s" % filename
+            with open(os.path.join(legal_dir, filename)) as f:
+                print f.read()
             cmd = "%s < %s" % (executable, os.path.join(legal_dir, filename))
             #print "  " + cmd
             return_value = os.system(cmd)
