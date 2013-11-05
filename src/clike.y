@@ -97,7 +97,7 @@ func_begin: type ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, 
   | void ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $5); }
   | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
 
-func: func_begin { current_scope = $1; } '{' loc_dcl_list opt_stmt_list '}'{ current_scope = current_scope->prev; }
+func: func_begin { current_scope = $1; } '{' loc_dcl_list opt_stmt_list '}'{ /* TODO: Verify fn body contains at least one return expr if non void (store on scope?) */ current_scope = current_scope->prev; }
 
 type: CHAR {set_current_type(TYPE_CHAR); } | INT {set_current_type(TYPE_INT);} | FLOAT {set_current_type(TYPE_FLOAT);}
 
@@ -112,9 +112,9 @@ stmt: IF '(' expr ')' stmt
   | IF '(' expr ')' stmt ELSE stmt
   | WHILE '(' expr ')' opt_stmt
   | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt
-  | RETURN opt_expr
+  | RETURN opt_expr { /* TODO: opt_expr is empty <=> return type is void. Or just type check. */}
   | assg
-  | invocation
+  | invocation { /* TODO: make sure void  */ }
   | '{' opt_stmt_list '}'
  
 opt_assg: | assg
@@ -134,7 +134,7 @@ expr: un_op expr %prec '-'
   | expr COMP_OP expr
   | expr LOGICAL_AND expr
   | expr LOGICAL_OR expr
-  | invocation
+  | invocation { /* TODO: make sure not void */ }
   | id_with_optional_index
   | '(' expr ')'
   | int_con
