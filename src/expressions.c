@@ -41,8 +41,8 @@ ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
         bad_side |= 2;
     if (bad_side != 0) {
         if (bad_side == 3)
-            fprintf(stderr, "Line %d: Both sides of boolean expression %s are "
-            "not type-compatible with bool.\n", line_num, op); 
+            fprintf(stderr, "Line %d: Neither side of boolean expression %s is "
+            "type-compatible with bool.\n", line_num, op); 
         else
             fprintf(stderr, "Line %d: %s-hand side of boolean expression %s is "
             "not type-compatible with bool.\n", line_num, 
@@ -52,10 +52,21 @@ ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
 }
 
 ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
-    // if rhs is null
-    //enum SymType type = resolve_type(lhs, rhs);
-    //return _new_expnode(type, op, lhs, rhs);
-    return NULL;
+    enum SymType type;
+    if (rhs == NULL)
+        type = lhs->return_type;
+    else {
+        type = resolve_types(lhs->return_type, rhs->return_type);
+        if (type == -1) {
+            fprintf(stderr, "Line %d: Left- and right-hand sides of arithmetic "
+            "expression %s (%s and %s, respecively) are not type-compatible. "
+            "Proceeding with the assumption that the result of the expression "
+            "is %s.", line_num, op, _type_str(lhs->return_type), 
+            _type_str(rhs->return_type), _type_str(lhs->return_type));
+            type = lhs->return_type;
+        }
+    }
+    return _new_expnode(type, op, lhs, rhs);
 }
 
 ExpNode *new_invocation_expnode(char *fn_id, Array *expnx) {

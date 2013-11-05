@@ -96,9 +96,12 @@ char *_type_str(enum SymType type) {
             return "int";
         case TYPE_FLOAT:
             return "float";
+        case TYPE_BOOL:
+            return "boolean";
         case TYPE_FN:
             return "function";
         case TYPE_FN_PROT:
             return "function prototype";
     }
+    return "UNKNOWN TYPE";
 }
