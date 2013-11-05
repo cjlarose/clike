@@ -110,6 +110,20 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx) {
 }
 
 ExpNode *new_id_expnode(char *id, int has_index) {
-    // get return type
-    return NULL;
+    Symbol *sym = Env_get(current_scope, id);
+    if (!sym)
+        fprintf(stderr, "Line %d: Variable %s used before declaration. "
+        "Proceeding with the assumption that the type of %s is int.\n", 
+         line_num, id, id);
+    else if (sym->type != TYPE_CHAR && sym->type != TYPE_INT && sym->type != TYPE_FLOAT)
+        fprintf(stderr, "Line: %d: Variable %s is of a type than cannot be used"
+        " as part of an expression", line_num, id);
+    else {
+        if (has_index && sym->is_array == 0)
+            fprintf(stderr, "Line: %d: Index used with variable %s, but %s is "
+            "not a pointer. Continuing with the type of %s.\n", line_num, id, 
+            id, id);
+        return _new_expnode(sym->type, NULL, NULL, NULL);
+    }
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL);
 }
