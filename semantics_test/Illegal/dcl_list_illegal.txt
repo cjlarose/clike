@@ -1,0 +1,9 @@
+int main(a, b, c) 
+    int a, b; float c; int a; {
+    return 0;
+}
+
+int f(a, b, c) 
+    int a, b; float c; int r; {
+    return 0;
+}

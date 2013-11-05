@@ -1,0 +1,6 @@
+int f(int, char, float);
+int f(int, float, float);
+
+float f(a, b, c)
+    int a; char b; float c; {
+}

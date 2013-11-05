@@ -103,6 +103,9 @@ parse_test_illegal: $(PARSER_EXEC)
 env_test: $(TEST_DIR)/test_env.c $(BUILD_DIR)/env.o nitty_gritty
 	gcc -g -I include -I $(TEST_DIR)/include -I nitty_gritty/include $(BUILD_DIR)/env.o $(NITTY_GRITTY_OBJS) $(TEST_DIR)/test_env.c
 
+sem_test: $(PARSER_EXEC)
+	python semantics_test/parse_test.py parse semantics_test
+
 ################################################################################
 ## Cleaning                                                                   ##
 ################################################################################

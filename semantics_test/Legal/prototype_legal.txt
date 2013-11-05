@@ -1,0 +1,5 @@
+int main(int, int, int);
+
+int main(a, b, c) 
+    int a, b, c; {
+}

@@ -1,0 +1,8 @@
+int g;
+int a;
+int g;
+int main() {
+    int a; int b;
+    int b;
+    return 0;
+}
