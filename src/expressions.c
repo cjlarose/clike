@@ -69,11 +69,42 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     return _new_expnode(type, op, lhs, rhs);
 }
 
+int _verify_types(char *fn_id, Array *tx, Array *expnx) {
+    // TODO: verify expnx is non-null
+    if (tx->length != expnx->length) {
+        fprintf(stderr, "Line %d: Invocation of function %s has too %s arguments.\n", line_num, fn_id, tx->length > expnx->length ? "few" : "many");
+        return 1;
+    }
+
+    int i;
+    for (i = 0; i < tx->length; i++) {
+        enum SymType argument_type = *((enum SymType *) Array_get(tx, i));
+        ExpNode *node = Array_get(expnx, i);
+        if (resolve_types(argument_type, node->return_type) == -1) {
+            // TODO: type promotion of parameters
+            fprintf(stderr, "Line %d: Parameter %d of invocation of function "
+            "%s is of type %s, but argument %d of function %s is of type %s. "
+            "These types are incompatible.\n", line_num, i, fn_id, 
+            _type_str(node->return_type), i, fn_id, _type_str(argument_type));
+            return 1;
+        }
+    }
+    return 1;
+}
+
 ExpNode *new_invocation_expnode(char *fn_id, Array *expnx) {
-    // validate expnx
-    // get return type
-    //return _new_expnode(return_type, NULL, NULL, NULL);
-    return NULL;
+    Symbol *sym = Env_get(current_scope, fn_id);
+    if (!sym)
+        fprintf(stderr, "Line %d: Attempt to invoke undeclared function %s. "
+        "Proceeding with the assumption that the return type of the function "
+        "is int.\n", line_num, fn_id);
+    else if (sym->type != TYPE_FN)
+        fprintf(stderr, "Line %d: Attempt to invoke function %s, but %s is of "
+        "type %s. Proceeding with the assumption that the return type of the "
+        "function is int.\n", line_num, fn_id, fn_id, _type_str(sym->type));
+    else if (_verify_types(fn_id, sym->type_list, expnx))
+        return _new_expnode(sym->return_type, NULL, NULL, NULL);
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL); // keep the party gooooin
 }
 
 ExpNode *new_id_expnode(char *id, int has_index) {
