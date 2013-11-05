@@ -13,6 +13,7 @@ enum SymType {
     TYPE_CHAR,
     TYPE_INT,
     TYPE_FLOAT,
+    TYPE_BOOL,
     TYPE_FN,
     TYPE_FN_PROT
 };
