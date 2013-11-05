@@ -69,7 +69,7 @@ ExpNode *new_comparison_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
 
 ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     enum SymType type;
-    if (rhs == NULL)
+    if (rhs == NULL) {
         type = lhs->return_type;
         if (type != TYPE_CHAR && type != TYPE_INT && type != TYPE_FLOAT) {
             fprintf(stderr, "Line %d: Operand of unary arithmetic expression %s"
@@ -77,7 +77,7 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
             "the assuption that it is an int.\n", line_num, op); 
             type = TYPE_INT;
         }
-    else {
+    } else {
         type = resolve_types(lhs->return_type, rhs->return_type);
         if (type == -1) {
             fprintf(stderr, "Line %d: Left- and right-hand sides of arithmetic "
