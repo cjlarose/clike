@@ -98,8 +98,8 @@ dclr: f_prot
   | ID { insert_symbol($1); } 
   | ID '[' int_con ']' { insert_array_symbol($1, $3); }
 
-f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); }
-  | ID '(' ')' { insert_fn_prot($1, NULL); }
+f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); current_type = 0; }
+  | ID '(' ')' { current_return_type = current_type; insert_fn_prot($1, NULL); }
 
 type_list: type { current_return_type = prev_type; $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
