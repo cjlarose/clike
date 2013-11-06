@@ -26,7 +26,7 @@ void _add_to_scope(char *id, Symbol * sym) {
     printf("Inserting symbol %s of type %d\n", id, sym->type);
     if (!Env_put(current_scope, id, sym))
         print_error("Ignoring duplicate declaration of identifier "
-        "%s.\n", id);
+        "%s.", id);
 }
 
 void insert_symbol(char *id) {
@@ -89,7 +89,7 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         sym->type, dcl_map);
         if (!Env_put(dcl_map, id, sym))
             print_error("Ignoring duplicate declaration of "
-            "identifier %s.\n", id);
+            "identifier %s.", id);
     }
 }
 

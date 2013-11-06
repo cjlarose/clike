@@ -23,7 +23,7 @@ void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
         }
         print_error("Variable %s found in declaration of function "
         "%s, but not found in identifier list. Continuing without declaration "
-        "of %s.\n", (char *) k, fn_id, (char *) k);
+        "of %s.", (char *) k, fn_id, (char *) k);
         Array_append(to_remove, &k);
     }
     map_apply(&dclx->table, &check_id_list);
@@ -38,15 +38,14 @@ Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
     if (prot->type_list->length != idx->length) {
         print_error("Function %s's prototype specifies %d "
         "variables, but %s's paramater list has %d variables. Ignoring "
-        "prototype of function %s entirely.\n", fn_id, 
+        "prototype of function %s entirely.", fn_id, 
         prot->type_list->length, fn_id, idx->length, fn_id);
         return NULL;
     }
-    printf("PROT RETURN TYPE: %s\n", _type_str(prot->return_type));
     if (prot->return_type != current_return_type) {
         print_error("Function %s's prototype specifies return "
         "type %s, but %s's definition specifies return type %s. Ignoring "
-        "prototype of function %s entirely.\n", fn_id, 
+        "prototype of function %s entirely.", fn_id, 
         _type_str(prot->return_type), fn_id, _type_str(current_return_type), 
         fn_id);
         return NULL;
@@ -67,7 +66,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
         if (!sym) {
             print_error("Variable %s found in parameter list of "
             "function %s, but not found in %s's declaration. Assuming %s's "
-            "type is int.\n", id, fn_id, fn_id, id);
+            "type is int.", id, fn_id, fn_id, id);
             sym = malloc(sizeof(Symbol));
             sym->type = TYPE_INT;
             sym->is_array = false;
@@ -78,7 +77,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
             if (sym->type != prot_type) {
                 print_error("Variable %s declared as %s in %s's "
                 "declaration, but %s's prototype specifies that %s's type "
-                "should be %s. Assuming %s's type is %s.\n", id, 
+                "should be %s. Assuming %s's type is %s.", id, 
                 _type_str(sym->type), fn_id, fn_id, id, _type_str(prot_type), 
                 id, _type_str(sym->type));
             }
@@ -131,10 +130,10 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     insert_fn_into_global_symtable(fn_id, tx);
 
     /*
-    printf("DCLX\n");
+    printf("DCLX");
     void print_map(void *k, void **v) {
         Symbol *sym = *((Symbol **) v);
-        printf("%s => %s\n", (char*) k, _type_str(sym->type));
+        printf("%s => %s", (char*) k, _type_str(sym->type));
     }
     map_apply(&dclx->table, &print_map);
     */
@@ -146,7 +145,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     int i;
     for (i = 0; i < tx->length; i++) {
         int type = *((int *) Array_get(tx, i));
-        printf("tx[%d] = %s\n", i, _type_str(type));
+        printf("tx[%d] = %s", i, _type_str(type));
     }
     */
 }
