@@ -18,7 +18,7 @@ void print_error(char *message, ...) {
     vfprintf(stderr, message, ap);
     fprintf(stderr, "\n");
     va_end(ap);
-    status = 1;
+    status = 2;
 }
 
 void _add_to_scope(char *id, Symbol * sym) {

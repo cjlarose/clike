@@ -181,7 +181,9 @@ int main(int argc, char **argv) {
 # ifdef DEBUG
     yydebug = 1;
 # endif
-    status = yyparse();
+    int bison_status = yyparse();
+    if (bison_status)
+        status = bison_status;
     yylex_destroy();
     return status;
 }
