@@ -117,7 +117,7 @@ sem_test: $(PARSER_EXEC)
 sem_test2_legal: $(PARSER_EXEC)
 	python semantics_test2/parse_test.py parse semantics_test2/ legal
 
-sem_test2_llegal: $(PARSER_EXEC)
+sem_test2_illegal: $(PARSER_EXEC)
 	python semantics_test2/parse_test.py parse semantics_test2/ illegal
 
 ################################################################################
