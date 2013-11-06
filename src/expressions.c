@@ -35,7 +35,7 @@ ExpNode *new_float_expnode() {
 
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
     if (rhs == NULL) {
-        if (rhs->return_type != TYPE_BOOL)
+        if (lhs->return_type != TYPE_BOOL)
             fprintf(stderr, "Line %d: Operand of unary boolean expression %s "
             "is not type-compatible with bool.\n", line_num, op); 
     } else {
