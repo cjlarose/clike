@@ -7,6 +7,7 @@
 #include "expressions.h"
 #include "env.h"
 
+int status;
 Env *current_scope;
 enum SymType prev_type; 
 enum SymType current_type; 
@@ -180,7 +181,6 @@ int main(int argc, char **argv) {
 # ifdef DEBUG
     yydebug = 1;
 # endif
-    int status;
     status = yyparse();
     yylex_destroy();
     return status;

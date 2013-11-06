@@ -2,6 +2,7 @@
 #define _SEMANTICS_H_
 #include "array.h"
 #include "env.h"
+void print_error(char *message, ...);
 void insert_symbol(char *id);
 void insert_array_symbol(char *id, int size);
 void insert_fn_prot(char *id, Array *tx);

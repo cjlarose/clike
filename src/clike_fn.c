@@ -13,7 +13,7 @@ void yyerror(char *s, ...) {
     va_list ap;
     va_start(ap, s);
 
-    fprintf(stderr, "%d: error: ", line_num);
+    fprintf(stderr, "Line %d: Error: ", line_num);
 
     //fprintf(stderr, "%c", yychar);
 

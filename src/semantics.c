@@ -1,19 +1,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdarg.h>
+#include <string.h>
 #include "env.h"
 #include "array.h"
 extern int current_type;
 extern int current_return_type;
 extern Env *current_scope; 
 extern int line_num;
+extern int status;
+
+void print_error(char *message, ...) {
+    va_list ap;
+    va_start(ap, message);
+    fprintf(stderr, "Line %d: Warning: ", line_num);
+    fprintf(stderr, message, ap);
+    fprintf(stderr, "\n");
+    status = 1;
+}
 
 void _add_to_scope(char *id, Symbol * sym) {
     assert(current_scope);
     printf("Inserting symbol %s of type %d\n", id, sym->type);
     if (!Env_put(current_scope, id, sym))
-        fprintf(stderr, "Line %d: Ignoring duplicate declaration of identifier "
-        "%s.\n", line_num, id);
+        print_error("Ignoring duplicate declaration of identifier "
+        "%s.\n", id);
 }
 
 void insert_symbol(char *id) {
@@ -75,8 +87,8 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         printf("Inserting symbol %s of type %d into dcl_map %p\n", id, 
         sym->type, dcl_map);
         if (!Env_put(dcl_map, id, sym))
-            fprintf(stderr, "Line %d: Ignoring duplicate declaration of "
-            "identifier %s.\n", line_num, id);
+            print_error("Ignoring duplicate declaration of "
+            "identifier %s.\n", id);
     }
 }
 
@@ -85,23 +97,25 @@ Env *dcl_map_new() {
 }
 
 
+
 /* Don't rely on this. Only used for printing errors. */
+/* This eats a fuck-ton of memory.  TODO: Fix this */
 char *_type_str(enum SymType type) {
     switch(type) {
         case TYPE_VOID:
-            return "void";
+            return strdup("void");
         case TYPE_CHAR:
-            return "char";
+            return strdup("char");
         case TYPE_INT:
-            return "int";
+            return strdup("int");
         case TYPE_FLOAT:
-            return "float";
+            return strdup("float");
         case TYPE_BOOL:
-            return "boolean";
+            return strdup("boolean");
         case TYPE_FN:
-            return "function";
+            return strdup("function");
         case TYPE_FN_PROT:
-            return "function prototype";
+            return strdup("function prototype");
     }
-    return "UNKNOWN TYPE";
+    return strdup("UNKNOWN TYPE");
 }
