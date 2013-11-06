@@ -76,6 +76,7 @@ enum SymType current_return_type;
 %type <exp_node> expr
 %type <arr_val> expr_list
 %type <arr_val> opt_expr_list
+%type <exp_node> opt_expr
 
 %expect 1 /* That damn dangling else */
 
@@ -122,23 +123,23 @@ loc_dcl: type id_list ';' { $$ = $2; }
 id_list: ID { $$ = id_list_new($1); }
   | id_list ',' ID { id_list_insert($1, $3); }
 
-stmt: IF '(' expr ')' stmt
-  | IF '(' expr ')' stmt ELSE stmt
-  | WHILE '(' expr ')' opt_stmt
-  | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt
+stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); }
+  | IF '(' expr ')' stmt ELSE stmt { validate_boolean_expression($3); }
+  | WHILE '(' expr ')' opt_stmt { validate_boolean_expression($3); }
+  | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt { validate_boolean_expression($5); }
   | RETURN opt_expr { /* TODO: opt_expr is empty <=> return type is void. Or just type check. */}
   | assg
   | ID '(' opt_expr_list ')' { /* TODO: make sure void  */ }
   | '{' opt_stmt_list '}'
  
 opt_assg: | assg
-opt_expr: | expr
+opt_expr: {$$ = NULL; } | expr {$$ = $1; }
 opt_stmt: | stmt
 
 opt_stmt_list: | stmt_list
 stmt_list: stmt ';' | stmt_list stmt ';'
 
-assg: id_with_optional_index '=' expr
+assg: id_with_optional_index '=' expr {/* TODO: see to it that types match */}
 
 expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | '!' expr %prec '-' { $$ = new_boolean_expnode($1, $2, NULL); }

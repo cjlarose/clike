@@ -21,4 +21,6 @@ ExpNode *new_id_expnode(char *id, ExpNode *index);
 
 Array *expr_list_new(ExpNode * node);
 Array *expr_list_insert(Array *exprx, ExpNode * node);
+
+void validate_boolean_expression(ExpNode *node);
 #endif

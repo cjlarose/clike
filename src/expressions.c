@@ -170,3 +170,9 @@ Array *expr_list_new(ExpNode * node) {
     expr_list_insert(exprx, node);
     return exprx;
 }
+
+void validate_boolean_expression(ExpNode *node) {
+    if (node->return_type != TYPE_BOOL) 
+        print_error("Expression used as conditional does not return type "
+        "boolean.");
+}
