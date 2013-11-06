@@ -73,6 +73,14 @@ int Env_remove_prot(Env * env, char * id) {
     return map_delete(&env->prot_table, id, &Entry_free);
 }
 
+void Env_merge_into(Env * env1, Env * env2) {
+    void merge(void *k, void **v) {
+        Env_put(env1, k, *((Symbol **) v));
+    }
+    map_apply(&env2->table, merge);
+    return;
+}
+
 void Env_free(Env * env) {
     map_free(&env->table, Entry_free);
     map_free(&env->prot_table, Entry_free);
