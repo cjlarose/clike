@@ -114,6 +114,12 @@ env_test: $(TEST_DIR)/test_env.c $(BUILD_DIR)/env.o nitty_gritty
 sem_test: $(PARSER_EXEC)
 	python semantics_test/parse_test.py parse semantics_test
 
+sem_test2_legal: $(PARSER_EXEC)
+	python semantics_test2/parse_test.py parse semantics_test2/ legal
+
+sem_test2_llegal: $(PARSER_EXEC)
+	python semantics_test2/parse_test.py parse semantics_test2/ illegal
+
 ################################################################################
 ## Cleaning                                                                   ##
 ################################################################################
