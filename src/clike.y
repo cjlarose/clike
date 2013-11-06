@@ -104,18 +104,18 @@ f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); }
 type_list: type { current_return_type = prev_type; $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
 
-func_begin: type ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, $6); } 
-  | void ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($2, $4, $6); }
+func_begin: type ID '(' id_list ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); } 
+  | void ID '(' id_list ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); }
   | ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($1, $3, $5); }
-  | type ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $5); }
-  | void ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $5); }
+  | type ID '(' ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
+  | void ID '(' ')' { current_return_type = current_type; } loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
   | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
 
 func: func_begin { current_scope = $1; } '{' loc_dcl_list opt_stmt_list '}'{ /* TODO: Verify fn body contains at least one return expr if non void (store on scope?) */ current_scope = current_scope->prev; }
 
 type: CHAR {set_current_type(TYPE_CHAR); } | INT {set_current_type(TYPE_INT);} | FLOAT {set_current_type(TYPE_FLOAT);}
 
-loc_dcl_list: { current_return_type = prev_type; $$ = dcl_map_new(); } 
+loc_dcl_list: { $$ = dcl_map_new(); } 
   | loc_dcl_list loc_dcl { dcl_map_insert($1, $2); $$ = $1; }
 loc_dcl: type id_list ';' { $$ = $2; }
 
