@@ -127,11 +127,11 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
     else if (sym->return_type == TYPE_VOID && !should_be_void)
         fprintf(stderr, "Line %d: Attempt to use void function %s in "
         "expression. Continuing with the assuption that the return type of %s "
-        "is int.", line_num, fn_id, fn_id);
+        "is int.\n", line_num, fn_id, fn_id);
     else if (sym->return_type != TYPE_VOID && should_be_void)
         fprintf(stderr, "Line %d: Attempt to invoke non-void function %s in "
         "statement. Continuing with the assuption that the return type of %s "
-        "is void.", line_num, fn_id, fn_id);
+        "is void.\n", line_num, fn_id, fn_id);
     else {
         _verify_types(fn_id, sym->type_list, expnx);
         return _new_expnode(sym->return_type, NULL, NULL, NULL);
