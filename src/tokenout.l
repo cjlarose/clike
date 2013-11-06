@@ -3,8 +3,8 @@
 %x str
 
 %{
-# include "clike.tab.h"
-# include "clike_fn.h"
+#include "clike.tab.h"
+#include "clike_fn.h"
 int line_num = 1;
 int status = 0;
 %}
@@ -57,12 +57,12 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 {ID}        { yylval.sval = strdup(yytext); return ID; } // identifiers
 
 "=" {  return *yytext; }
-{OPS}      {  return *yytext; } // operators
+{OPS}      {  yylval.sval = strdup(yytext); return *yytext; } // operators
 {ASSGOPS}    {return ASSIGNMENT_OP; }
-"||"     {  return LOGICAL_OR; } // operators
-"&&"     {  return LOGICAL_AND; } // operators
+"||"     {  yylval.sval = strdup(yytext); return LOGICAL_OR; } // operators
+"&&"     {  yylval.sval = strdup(yytext); return LOGICAL_AND; } // operators
 {BINOPS}    {  return BIN_OP; }
-{COMPOPS}    {  return COMP_OP; }
+{COMPOPS}    {  yylval.sval = strdup(yytext); return COMP_OP; }
 {SEPCHARS}   {  return *yytext; }
 
 "#" { return *yytext; }

@@ -4,6 +4,7 @@
 #include "clike_fn.h"
 #include "semantics.h"
 #include "declarations.h"
+#include "expressions.h"
 #include "env.h"
 
 Env *current_scope;
@@ -17,7 +18,9 @@ enum SymType current_return_type;
     int ival;
     float fval;
     char *sval;
-    void *ptrval;
+    void *ptrval; // TODO: remove this.
+    struct ExpNode * exp_node;
+    struct Array * arr_val;
 }
 
 %token <ival> DEC_INT_CON /* constants */
@@ -43,10 +46,10 @@ enum SymType current_return_type;
 %token RETURN
 %token GOTO
 
-%token COMP_OP
+%token <sval> COMP_OP
 %token BIN_OP
-%token LOGICAL_OR
-%token LOGICAL_AND
+%token <sval> LOGICAL_OR
+%token <sval> LOGICAL_AND
 
 %token ASSIGNMENT_OP /* ignored compound assignment operators */
 
@@ -57,12 +60,21 @@ enum SymType current_return_type;
 %left '/' '*'
 %right '!'
 
+%token <sval> '!'
+%token <sval> '-'
+%token <sval> '+'
+%token <sval> '*'
+%token <sval> '/'
+
 %type <ival> int_con
 %type <ptrval> type_list
 %type <ptrval> id_list
 %type <ptrval> loc_dcl_list
 %type <ptrval> loc_dcl
 %type <ptrval> func_begin
+%type <exp_node> expr
+%type <arr_val> expr_list
+%type <arr_val> opt_expr_list
 
 %expect 1 /* That damn dangling else */
 
@@ -115,7 +127,7 @@ stmt: IF '(' expr ')' stmt
   | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt
   | RETURN opt_expr { /* TODO: opt_expr is empty <=> return type is void. Or just type check. */}
   | assg
-  | invocation { /* TODO: make sure void  */ }
+  | ID '(' opt_expr_list ')' { /* TODO: make sure void  */ }
   | '{' opt_stmt_list '}'
  
 opt_assg: | assg
@@ -127,29 +139,28 @@ stmt_list: stmt ';' | stmt_list stmt ';'
 
 assg: id_with_optional_index '=' expr
 
-expr: un_op expr %prec '-'
-  | expr '/' expr
-  | expr '*' expr
-  | expr '+' expr
-  | expr '-' expr
-  | expr COMP_OP expr
-  | expr LOGICAL_AND expr
-  | expr LOGICAL_OR expr
-  | invocation { /* TODO: make sure not void */ }
-  | id_with_optional_index
-  | '(' expr ')'
-  | int_con
-  | FLOAT_CON
-opt_expr_list: | expr_list
-expr_list: expr | expr_list ',' expr
+expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
+  | '!' expr %prec '-' { $$ = new_boolean_expnode($1, $2, NULL); }
+  | expr '/' expr { $$ = new_arithmetic_expnode($2, $1, $3); }
+  | expr '*' expr { $$ = new_arithmetic_expnode($2, $1, $3); }
+  | expr '+' expr { $$ = new_arithmetic_expnode($2, $1, $3); }
+  | expr '-' expr { $$ = new_arithmetic_expnode($2, $1, $3); }
+  | expr COMP_OP expr { $$ = new_comparison_expnode($2, $1, $3); }
+  | expr LOGICAL_AND expr { $$ = new_boolean_expnode($2, $1, $3); }
+  | expr LOGICAL_OR expr { $$ = new_boolean_expnode($2, $1, $3); }
+  | ID '(' opt_expr_list ')' { $$ = new_invocation_expnode($1, $3, 0); }
+  | ID { $$ = new_id_expnode($1, NULL); }
+  | ID '[' expr ']' { $$ = new_id_expnode($1, $3); }
+  | '(' expr ')' { $$ = $2; }
+  | int_con { $$ = new_int_expnode(); }
+  | FLOAT_CON { $$ = new_float_expnode(); }
 
-
-invocation: ID '(' opt_expr_list ')' 
+opt_expr_list: { $$ = NULL; } | expr_list { $$ = $1; }
+expr_list: expr { $$ = expr_list_new($1); } 
+  | expr_list ',' expr { expr_list_insert($1, $3); }
 
 id_with_optional_index: ID
   | ID '[' expr ']'
-
-un_op: '-' | '!'
 
 int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON 
 
