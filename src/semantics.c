@@ -15,8 +15,9 @@ void print_error(char *message, ...) {
     va_list ap;
     va_start(ap, message);
     fprintf(stderr, "Line %d: Warning: ", line_num);
-    fprintf(stderr, message, ap);
+    vfprintf(stderr, message, ap);
     fprintf(stderr, "\n");
+    va_end(ap);
     status = 1;
 }
 
@@ -100,22 +101,8 @@ Env *dcl_map_new() {
 
 /* Don't rely on this. Only used for printing errors. */
 /* This eats a fuck-ton of memory.  TODO: Fix this */
-char *_type_str(enum SymType type) {
-    switch(type) {
-        case TYPE_VOID:
-            return strdup("void");
-        case TYPE_CHAR:
-            return strdup("char");
-        case TYPE_INT:
-            return strdup("int");
-        case TYPE_FLOAT:
-            return strdup("float");
-        case TYPE_BOOL:
-            return strdup("boolean");
-        case TYPE_FN:
-            return strdup("function");
-        case TYPE_FN_PROT:
-            return strdup("function prototype");
-    }
-    return strdup("UNKNOWN TYPE");
+const char *type_names[] = { "void", "char", "int", "float", "bool", "function", "function prototype" };
+
+const char *_type_str(enum SymType type) {
+    return type_names[type];
 }
