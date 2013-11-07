@@ -181,7 +181,8 @@ void validate_boolean_expression(ExpNode *node) {
 void validate_return_statement(ExpNode *node) {
     if (node && resolve_types(node->return_type, current_return_type) == -1)
         print_error("Return statement if of type %s, but return type of "
-        "enclosing function is %s", _type_str(node->return_type), _type_str(current_return_type));
+        "enclosing function is %s", _type_str(node->return_type),
+        _type_str(current_return_type));
     else if (!node && current_return_type != TYPE_VOID)
         print_error("Empty return statement in a non-void function");
 }
