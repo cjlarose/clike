@@ -157,7 +157,8 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
         if (index && resolve_types(index->return_type, TYPE_INT) == -1)
             print_error("Index used with variable %s is not "
             "type-compatible with int.", id);
-        return _new_expnode(sym->type, NULL, NULL, NULL, sym->is_array);
+        int is_array = sym->is_array == (index == NULL);
+        return _new_expnode(sym->type, NULL, NULL, NULL, is_array);
     }
     return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0);
 }
@@ -190,6 +191,7 @@ void validate_return_statement(ExpNode *node) {
 }
 
 void validate_assignment(ExpNode *lhs, ExpNode *rhs) {
-    if (resolve_types(lhs->return_type, rhs->return_type) == -1)
+    if (lhs->is_array != rhs->is_array 
+        || resolve_types(lhs->return_type, rhs->return_type) == -1)
         print_error("Left- and right-hand sides of assignment are not type-compatible");    
 }
