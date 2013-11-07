@@ -81,7 +81,6 @@ int Env_remove_prot(Env * env, char * id) {
 }
 
 void Env_free(Env * env) {
-    printf("FREE ENV\n");
     map_free(&env->table, Entry_free);
     map_free(&env->prot_table, Entry_free);
     //free(env);

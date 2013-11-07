@@ -94,6 +94,8 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
             print_error("Ignoring duplicate declaration of "
             "identifier %s.", id);
     }
+
+    Array_free(idx);
 }
 
 Env *dcl_map_new() {
@@ -119,5 +121,10 @@ void merge_into_scope(Env * env) {
         _add_to_scope(k, *((Symbol **) v));
     }
     map_apply(&env->table, merge);
+
+    //Env_free(env);
+    map_free(&env->table, NULL);
+    map_free(&env->prot_table, NULL);
+    free(env);
     return;
 }

@@ -31,6 +31,8 @@ void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
     int i;
     for (i = 0; i < to_remove->length; i++)
         Env_remove(dclx, *((char **) Array_get(to_remove, i)));
+
+    Array_free(to_remove);
 }
 
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
@@ -138,6 +140,8 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     map_apply(&dclx->table, &print_map);
     */
     dclx->prev = current_scope;
+
+    Array_free(idx);
 
     return dclx;
 
