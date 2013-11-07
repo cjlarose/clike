@@ -61,8 +61,14 @@ Symbol * Env_get_prot(Env * env, char * id) {
     return NULL;
 }
 
+void Symbol_free(Symbol *sym) {
+    if (sym->type_list)
+        Array_free(sym->type_list);
+}
+
 void Entry_free(void * id, void * sym) {
     free(id);
+    Symbol_free(sym);
     free(sym);
 }
 
@@ -75,6 +81,7 @@ int Env_remove_prot(Env * env, char * id) {
 }
 
 void Env_free(Env * env) {
+    printf("FREE ENV\n");
     map_free(&env->table, Entry_free);
     map_free(&env->prot_table, Entry_free);
     //free(env);

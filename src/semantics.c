@@ -33,6 +33,7 @@ void insert_symbol(char *id) {
     Symbol * sym = malloc(sizeof(Symbol));   
     sym->type = current_type;
     sym->is_array = 0;
+    sym->type_list = NULL;
     _add_to_scope(id, sym);
 }
 
@@ -40,6 +41,7 @@ void insert_array_symbol(char *id, int size) {
     Symbol * sym = malloc(sizeof(Symbol));
     sym->type = current_type; // + "*"
     sym->is_array = 1;
+    sym->type_list = NULL;
     _add_to_scope(id, sym);
 }
 
@@ -83,6 +85,7 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         char *id = *((char **) Array_get(idx, i));
         //printf("idx[%d] = %p\n", i, Array_get(idx, i));
         Symbol *sym = malloc(sizeof(Symbol));
+        sym->type_list = NULL;
         sym->type = current_type;
         sym->is_array = 0; // our grammar actually doesn't arrays in loc_dcl_lists
         printf("Inserting symbol %s of type %d into dcl_map %p\n", id, 

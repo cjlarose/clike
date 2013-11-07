@@ -46,4 +46,6 @@ int Env_remove(Env *env, char *id);
 int Env_remove_prot(Env *env, char *id);
 
 void Env_free(Env * env);
+
+void Symbol_free(Symbol * sym);
 #endif
