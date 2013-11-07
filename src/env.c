@@ -15,6 +15,7 @@ unsigned long long int fnv1_hash (void *ptr) {
 
 void Env_init(Env * env, Env * prev) {
     env->prev = prev; 
+    env->has_return_statement = 0;
     map_init(&env->table, &fnv1_hash, &key_eq, 4);
     map_init(&env->prot_table, &fnv1_hash, &key_eq, 4);
 }

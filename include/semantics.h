@@ -18,4 +18,5 @@ Env *dcl_map_new();
 
 void _add_to_scope(char *id, Symbol *sym);
 const char *_type_str(enum SymType type);
+void verify_scope_return();
 #endif

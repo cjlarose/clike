@@ -100,9 +100,13 @@ Env *dcl_map_new() {
 
 
 /* Don't rely on this. Only used for printing errors. */
-/* This eats a fuck-ton of memory.  TODO: Fix this */
 const char *type_names[] = { "void", "char", "int", "float", "bool", "function", "function prototype" };
 
 const char *_type_str(enum SymType type) {
     return type_names[type];
+}
+
+void verify_scope_return() {
+    if (current_return_type != TYPE_VOID && !current_scope->has_return_statement)
+        print_error("Non-void function has no return statement.");
 }

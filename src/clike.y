@@ -113,7 +113,7 @@ func_begin: type ID '(' id_list ')' {current_return_type = current_type;} loc_dc
   | void ID '(' ')' { current_return_type = current_type; } loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
   | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
 
-func: func_begin { current_scope = $1; } '{' loc_dcl_list { Env_merge_into(current_scope, $4); } opt_stmt_list '}'{ /* TODO: Verify fn body contains at least one return expr if non void (store on scope?) */ current_scope = current_scope->prev; }
+func: func_begin { current_scope = $1; } '{' loc_dcl_list { Env_merge_into(current_scope, $4); } opt_stmt_list '}'{ verify_scope_return(); current_scope = current_scope->prev; }
 
 type: CHAR {set_current_type(TYPE_CHAR); } | INT {set_current_type(TYPE_INT);} | FLOAT {set_current_type(TYPE_FLOAT);}
 

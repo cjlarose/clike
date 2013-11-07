@@ -185,6 +185,7 @@ void validate_return_statement(ExpNode *node) {
         _type_str(current_return_type));
     else if (!node && current_return_type != TYPE_VOID)
         print_error("Empty return statement in a non-void function");
+    current_scope->has_return_statement = 1; // hack
 }
 
 void validate_assignment(ExpNode *lhs, ExpNode *rhs) {

@@ -6,6 +6,7 @@ typedef struct Env {
     struct map table;
     struct map prot_table;
     struct Env * prev;
+    int has_return_statement;
 } Env;
 
 enum SymType {
