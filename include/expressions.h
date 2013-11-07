@@ -4,6 +4,7 @@
 #include "env.h"
 typedef struct ExpNode {
     enum SymType return_type;
+    int is_array;
     char * op;
     struct ExpNode *lhs;
     struct ExpNode *rhs;
