@@ -13,6 +13,10 @@ TOKENOUT_ARCHIVE=tokenout.tar.gz
 PARSER_EXEC=parse
 TMP_PARSER_ARCHIVE=parser
 PARSER_ARCHIVE=parser.tar.gz
+
+TMP_SEMANTICS_ARCHIVE=semantics
+SEMANTICS_ARCHIVE=semantics.tar.gz
+
 NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o nitty_gritty/build/array.o
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
@@ -89,6 +93,13 @@ $(PARSER_ARCHIVE): tokenout.l clike.y clike_fn.h clike_fn.c
 	tar zcvf $(PARSER_ARCHIVE) $(TMP_PARSER_ARCHIVE)
 	rm -rf $(TMP_PARSER_ARCHIVE)
 
+$(SEMANTICS_ARCHIVE):
+	make clean
+	mkdir -p $(TMP_SEMANTICS_ARCHIVE)
+	cp -R src nitty_gritty include Makefile $(TMP_SEMANTICS_ARCHIVE)
+	tar zcvf $(SEMANTICS_ARCHIVE) $(TMP_SEMANTICS_ARCHIVE) --exclude=".*" --exclude="*.swp"
+	rm -rf $(TMP_SEMANTICS_ARCHIVE)
+
 ################################################################################
 ## Testing                                                                    ##
 ################################################################################
@@ -125,5 +136,5 @@ sem_test2_illegal: $(PARSER_EXEC)
 ################################################################################
 
 clean:
-	rm -rf $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC) $(BUILD_DIR)
+	rm -rf $(SRC_DIR)/lex.yy.c $(LEXER_EXEC) $(ARCHIVE) $(SRC_DIR)/clike.tab.c $(INC_DIR)/clike.tab.h $(PARSER_EXEC) $(BUILD_DIR) $(SEMANTICS_ARCHIVE)
 	cd nitty_gritty && make clean
