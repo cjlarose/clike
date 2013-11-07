@@ -45,7 +45,5 @@ Symbol * Env_get_prot(Env * env, char * id);
 int Env_remove(Env *env, char *id);
 int Env_remove_prot(Env *env, char *id);
 
-void Env_merge_into(Env *env1, Env *env2);
-
 void Env_free(Env * env);
 #endif

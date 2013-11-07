@@ -110,3 +110,11 @@ void verify_scope_return() {
     if (current_return_type != TYPE_VOID && !current_scope->has_return_statement)
         print_error("Non-void function has no return statement.");
 }
+
+void merge_into_scope(Env * env) {
+    void merge(void *k, void **v) {
+        _add_to_scope(k, *((Symbol **) v));
+    }
+    map_apply(&env->table, merge);
+    return;
+}
