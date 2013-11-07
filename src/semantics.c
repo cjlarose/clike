@@ -23,7 +23,7 @@ void print_error(char *message, ...) {
 
 void _add_to_scope(char *id, Symbol * sym) {
     assert(current_scope);
-    printf("Inserting symbol %s of type %d\n", id, sym->type);
+    //printf("Inserting symbol %s of type %d\n", id, sym->type);
     if (!Env_put(current_scope, id, sym))
         print_error("Ignoring duplicate declaration of identifier "
         "%s.", id);
@@ -55,7 +55,7 @@ void insert_fn_prot(char *id, Array *tx) {
 }
 
 void type_list_insert(Array *tx) {
-    printf("Inserting type %d into type list\n", current_type);
+    //printf("Inserting type %d into type list\n", current_type);
     Array_append(tx, &current_type);
 }
 
@@ -88,8 +88,7 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
         sym->type_list = NULL;
         sym->type = current_type;
         sym->is_array = 0; // our grammar actually doesn't arrays in loc_dcl_lists
-        printf("Inserting symbol %s of type %d into dcl_map %p\n", id, 
-        sym->type, dcl_map);
+        //printf("Inserting symbol %s of type %d into dcl_map %p\n", id, sym->type, dcl_map);
         if (!Env_put(dcl_map, id, sym))
             print_error("Ignoring duplicate declaration of "
             "identifier %s.", id);
