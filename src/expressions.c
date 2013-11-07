@@ -186,3 +186,8 @@ void validate_return_statement(ExpNode *node) {
     else if (!node && current_return_type != TYPE_VOID)
         print_error("Empty return statement in a non-void function");
 }
+
+void validate_assignment(ExpNode *lhs, ExpNode *rhs) {
+    if (resolve_types(lhs->return_type, rhs->return_type) == -1)
+        print_error("Left- and right-hand sides of assignment are not type-compatible");    
+}

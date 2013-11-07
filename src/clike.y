@@ -77,6 +77,7 @@ enum SymType current_return_type;
 %type <arr_val> expr_list
 %type <arr_val> opt_expr_list
 %type <exp_node> opt_expr
+%type <exp_node> id_with_optional_index
 
 %expect 1 /* That damn dangling else */
 
@@ -139,8 +140,7 @@ opt_stmt: | stmt
 opt_stmt_list: | stmt_list
 stmt_list: stmt ';' | stmt_list stmt ';'
 
-assg: ID '=' expr {/* TODO: see to it that types match */}
-  | ID '[' expr ']' '=' expr {}
+assg: id_with_optional_index '=' expr { validate_assignment($1, $3); } 
 
 expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | '!' expr %prec '-' { $$ = new_boolean_expnode($1, $2, NULL); }
@@ -152,11 +152,13 @@ expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | expr LOGICAL_AND expr { $$ = new_boolean_expnode($2, $1, $3); }
   | expr LOGICAL_OR expr { $$ = new_boolean_expnode($2, $1, $3); }
   | ID '(' opt_expr_list ')' { $$ = new_invocation_expnode($1, $3, 0); }
-  | ID { $$ = new_id_expnode($1, NULL); }
-  | ID '[' expr ']' { $$ = new_id_expnode($1, $3); }
+  | id_with_optional_index { $$ = $1; }
   | '(' expr ')' { $$ = $2; }
   | int_con { $$ = new_int_expnode(); }
   | FLOAT_CON { $$ = new_float_expnode(); }
+
+id_with_optional_index: ID { $$ = new_id_expnode($1, NULL); }
+  | ID '[' expr ']' { $$ = new_id_expnode($1, $3); }
 
 opt_expr_list: { $$ = NULL; } | expr_list { $$ = $1; }
 expr_list: expr { $$ = expr_list_new($1); } 
