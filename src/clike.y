@@ -127,7 +127,7 @@ stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); }
   | IF '(' expr ')' stmt ELSE stmt { validate_boolean_expression($3); }
   | WHILE '(' expr ')' opt_stmt { validate_boolean_expression($3); }
   | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt { validate_boolean_expression($5); }
-  | RETURN opt_expr { /* TODO: opt_expr is empty <=> return type is void. Or just type check. */}
+  | RETURN opt_expr { validate_return_statement($2); }
   | assg
   | ID '(' opt_expr_list ')' { /* TODO: make sure void  */ }
   | '{' opt_stmt_list '}'

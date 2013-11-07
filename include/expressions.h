@@ -23,4 +23,5 @@ Array *expr_list_new(ExpNode * node);
 Array *expr_list_insert(Array *exprx, ExpNode * node);
 
 void validate_boolean_expression(ExpNode *node);
+void validate_return_statement(ExpNode *node);
 #endif

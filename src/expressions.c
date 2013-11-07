@@ -4,6 +4,7 @@
 #include "env.h"
 #include "array.h"
 extern Env *current_scope; 
+extern int current_return_type; 
 
 int resolve_types(enum SymType t1, enum SymType t2) {
     if (t1 == t2)
@@ -172,7 +173,15 @@ Array *expr_list_new(ExpNode * node) {
 }
 
 void validate_boolean_expression(ExpNode *node) {
-    if (node->return_type != TYPE_BOOL) 
+    if (node && node->return_type != TYPE_BOOL) 
         print_error("Expression used as conditional does not return type "
         "boolean.");
+}
+
+void validate_return_statement(ExpNode *node) {
+    if (node && resolve_types(node->return_type, current_return_type) == -1)
+        print_error("Return statement if of type %s, but return type of "
+        "enclosing function is %s", _type_str(node->return_type), _type_str(current_return_type));
+    else if (!node && current_return_type != TYPE_VOID)
+        print_error("Empty return statement in a non-void function");
 }
