@@ -139,7 +139,8 @@ opt_stmt: | stmt
 opt_stmt_list: | stmt_list
 stmt_list: stmt ';' | stmt_list stmt ';'
 
-assg: id_with_optional_index '=' expr {/* TODO: see to it that types match */}
+assg: ID '=' expr {/* TODO: see to it that types match */}
+  | ID '[' expr ']' '=' expr {}
 
 expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | '!' expr %prec '-' { $$ = new_boolean_expnode($1, $2, NULL); }
@@ -160,9 +161,6 @@ expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
 opt_expr_list: { $$ = NULL; } | expr_list { $$ = $1; }
 expr_list: expr { $$ = expr_list_new($1); } 
   | expr_list ',' expr { expr_list_insert($1, $3); }
-
-id_with_optional_index: ID
-  | ID '[' expr ']'
 
 int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON 
 
