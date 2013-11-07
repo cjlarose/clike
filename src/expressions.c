@@ -97,6 +97,7 @@ void _verify_types(char *fn_id, Array *tx, Array *expnx) {
         print_error("Invocation of function %s has too %s "
         "arguments.", fn_id, 
         tx->length > expnx->length ? "few" : "many");
+        return;
     }
 
     int i;
