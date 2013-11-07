@@ -130,7 +130,7 @@ stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); }
   | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt { validate_boolean_expression($5); }
   | RETURN opt_expr { validate_return_statement($2); }
   | assg
-  | ID '(' opt_expr_list ')' { /* TODO: make sure void  */ }
+  | ID '(' opt_expr_list ')' { new_invocation_expnode($1, $3, 1); }
   | '{' opt_stmt_list '}'
  
 opt_assg: | assg
