@@ -70,7 +70,7 @@ void Symbol_free(Symbol *sym) {
 }
 
 void Entry_free(void * id, void * sym) {
-    free(id);
+    //free(id);
     Symbol_free(sym);
     free(sym);
 }

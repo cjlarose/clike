@@ -6,12 +6,14 @@
 #include "declarations.h"
 #include "expressions.h"
 #include "env.h"
+#include "str_table.h"
 
 int status;
 Env *current_scope;
 enum SymType prev_type; 
 enum SymType current_type; 
 enum SymType current_return_type;
+extern StringTable str_table;
 
 %}
 
@@ -171,7 +173,7 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
-
+    str_table_init(&str_table);
     current_scope = Env_new(NULL);
 
 # ifdef DEBUG

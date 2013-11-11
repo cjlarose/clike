@@ -5,8 +5,10 @@
 %{
 #include "clike.tab.h"
 #include "clike_fn.h"
+#include "str_table.h"
 int line_num = 1;
 int status = 0;
+struct StringTable str_table;
 %}
 
 ID         [a-zA-Z_][a-zA-Z0-9_]*
@@ -50,19 +52,19 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 
 "//".*  // c++ style comments
 
-"\""(\\.|[^"])*"\"" {  yylval.sval = strdup(yytext); return STRING_LITERAL; } // string constants
+"\""(\\.|[^"])*"\"" {  yylval.sval = str_table_get(&str_table, yytext); return STRING_LITERAL; } // string constants
 
-"'"(\\.|[^'])*"'" { yylval.sval = strdup(yytext); return CHAR_LITERAL; } // char constants
+"'"(\\.|[^'])*"'" { yylval.sval = str_table_get(&str_table, yytext); return CHAR_LITERAL; } // char constants
 
-{ID}        { yylval.sval = strdup(yytext); return ID; } // identifiers
+{ID}        { yylval.sval = str_table_get(&str_table, yytext); return ID; } // identifiers
 
 "=" {  return *yytext; }
-{OPS}      {  yylval.sval = strdup(yytext); return *yytext; } // operators
+{OPS}      {  yylval.sval = str_table_get(&str_table, yytext); return *yytext; } // operators
 {ASSGOPS}    {return ASSIGNMENT_OP; }
-"||"     {  yylval.sval = strdup(yytext); return LOGICAL_OR; } // operators
-"&&"     {  yylval.sval = strdup(yytext); return LOGICAL_AND; } // operators
+"||"     {  yylval.sval = str_table_get(&str_table, yytext); return LOGICAL_OR; } // operators
+"&&"     {  yylval.sval = str_table_get(&str_table, yytext); return LOGICAL_AND; } // operators
 {BINOPS}    {  return BIN_OP; }
-{COMPOPS}    {  yylval.sval = strdup(yytext); return COMP_OP; }
+{COMPOPS}    {  yylval.sval = str_table_get(&str_table, yytext); return COMP_OP; }
 {SEPCHARS}   {  return *yytext; }
 
 "#" { return *yytext; }
@@ -74,6 +76,7 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 
 #if TOKENOUT_MAIN
 int main(int argc, char **argv) {
+    str_table_init(&str_table);
     /*
     yylex();
     yylex_destroy();
