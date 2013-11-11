@@ -41,6 +41,10 @@ $(BUILD_DIR)/expressions.o: $(SRC_DIR)/expressions.c
 	mkdir -p $(BUILD_DIR)
 	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/expressions.c -o $@ # makes expressions.o
 
+$(BUILD_DIR)/str_table.o: $(SRC_DIR)/str_table.c
+	mkdir -p $(BUILD_DIR)
+	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/str_table.c -o $@ # makes str_table.o
+
 .PHONY: nitty_gritty
 nitty_gritty:
 	cd nitty_gritty && make all

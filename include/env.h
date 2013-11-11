@@ -48,4 +48,8 @@ int Env_remove_prot(Env *env, char *id);
 void Env_free(Env * env);
 
 void Symbol_free(Symbol * sym);
+
+
+bool str_key_eq(void *ptr1, void *ptr2);
+unsigned long long int fnv1_hash (void *ptr);
 #endif
