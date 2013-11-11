@@ -3,8 +3,8 @@
 #include "map.h"
 #include "array.h"
 typedef struct Env {
-    struct map table;
-    struct map prot_table;
+    Map table;
+    Map prot_table;
     struct Env * prev;
     int has_return_statement;
 } Env;
