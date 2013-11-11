@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "env.h"
 
 bool key_eq(void *ptr1, void *ptr2) {
