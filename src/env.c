@@ -62,8 +62,10 @@ Symbol * Env_get_prot(Env * env, char * id) {
 }
 
 void Symbol_free(Symbol *sym) {
-    if (sym->type_list)
-        Array_free(sym->type_list);
+    if (sym->type_list) {
+        array_free(sym->type_list);
+        free(sym->type_list);
+    }
 }
 
 void Entry_free(void * id, void * sym) {

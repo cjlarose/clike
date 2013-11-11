@@ -11,28 +11,29 @@ extern Env *current_scope;
  *****************************************************************************/
 
 void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
-    Array *to_remove = Array_init(0, sizeof(char **));
+    Array *to_remove = array_new(0, sizeof(char **));
     // verify every id in decl list is in id list
     void check_id_list(void *k, void **v) {
         // ugly linear search
         int i;
         for (i = 0; i < idx->length; i++) {
-            char *id = *((char **) Array_get(idx, i));
+            char *id = *((char **) array_get(idx, i));
             if (strcmp(id, (char *) k) == 0)
                 return;
         }
         print_error("Variable %s found in declaration of function "
         "%s, but not found in identifier list. Continuing without declaration "
         "of %s.", (char *) k, fn_id, (char *) k);
-        Array_append(to_remove, &k);
+        array_append(to_remove, &k);
     }
     map_apply(&dclx->table, &check_id_list);
 
     int i;
     for (i = 0; i < to_remove->length; i++)
-        Env_remove(dclx, *((char **) Array_get(to_remove, i)));
+        Env_remove(dclx, *((char **) array_get(to_remove, i)));
 
-    Array_free(to_remove);
+    array_free(to_remove);
+    free(to_remove);
 }
 
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
@@ -57,13 +58,13 @@ Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
 
 Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
     // new type list
-    Array *tx = Array_init(idx->length, sizeof(enum SymType));
+    Array *tx = array_new(idx->length, sizeof(enum SymType));
 
     // verify every id in id list is in decl list
     //   every such id matches its type in the prototype
     int i;
     for (i = 0; i < idx->length; i++) {
-        char *id = *((char **) Array_get(idx, i));
+        char *id = *((char **) array_get(idx, i));
         Symbol *sym = Env_get(dclx, id);
         if (!sym) {
             print_error("Variable %s found in parameter list of "
@@ -75,7 +76,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
             Env_put(dclx, id, sym);
         } else if(prot) {
             // matches prototype type?
-            int prot_type = *((int *) Array_get(prot->type_list, i));
+            int prot_type = *((int *) array_get(prot->type_list, i));
             if (sym->type != prot_type) {
                 print_error("Variable %s declared as %s in %s's "
                 "declaration, but %s's prototype specifies that %s's type "
@@ -86,7 +87,7 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
         }
 
         // insert into type list
-        Array_set(tx, i, &sym->type);
+        array_set(tx, i, &sym->type);
     }
     return tx;
 }
@@ -116,7 +117,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     // hack
     if (!idx)
-        idx = Array_init(0, sizeof(char *));
+        idx = array_new(0, sizeof(char *));
 
     validate_dcl_list(fn_id, idx, dclx);
 
@@ -141,14 +142,15 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     */
     dclx->prev = current_scope;
 
-    Array_free(idx);
+    array_free(idx);
+    free(idx);
 
     return dclx;
 
     /*
     int i;
     for (i = 0; i < tx->length; i++) {
-        int type = *((int *) Array_get(tx, i));
+        int type = *((int *) array_get(tx, i));
         printf("tx[%d] = %s", i, _type_str(type));
     }
     */

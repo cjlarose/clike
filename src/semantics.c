@@ -50,17 +50,17 @@ void insert_fn_prot(char *id, Array *tx) {
     sym->type = TYPE_FN_PROT;
     sym->is_array = 0;
     sym->return_type = current_return_type;
-    sym->type_list = tx ? tx : Array_init(0, sizeof(enum SymType)); // hack
+    sym->type_list = tx ? tx : array_new(0, sizeof(enum SymType)); // hack
     _add_to_scope(id, sym);
 }
 
 void type_list_insert(Array *tx) {
     //printf("Inserting type %d into type list\n", current_type);
-    Array_append(tx, &current_type);
+    array_append(tx, &current_type);
 }
 
 Array *type_list_new() {
-    Array *tx = Array_init(0, sizeof(enum SymType));
+    Array *tx = array_new(0, sizeof(enum SymType));
     type_list_insert(tx);
     return tx;
 }
@@ -69,12 +69,12 @@ void id_list_insert(Array *idx, char *id) {
     // stored a stack variable in array?
     //char ** ptr = malloc(sizeof(char **));
     //*ptr = id;
-    Array_append(idx, &id);
-    assert(*((char **) Array_get(idx, idx->length - 1)) == id);
+    array_append(idx, &id);
+    assert(*((char **) array_get(idx, idx->length - 1)) == id);
 }
 
 Array *id_list_new(char *id) {
-    Array *idx = Array_init(0, sizeof(char *));
+    Array *idx = array_new(0, sizeof(char *));
     id_list_insert(idx, id);
     return idx;
 }
@@ -82,8 +82,8 @@ Array *id_list_new(char *id) {
 void dcl_map_insert(Env *dcl_map, Array *idx) {
     int i;
     for (i = 0; i < idx->length; i++) {
-        char *id = *((char **) Array_get(idx, i));
-        //printf("idx[%d] = %p\n", i, Array_get(idx, i));
+        char *id = *((char **) array_get(idx, i));
+        //printf("idx[%d] = %p\n", i, array_get(idx, i));
         Symbol *sym = malloc(sizeof(Symbol));
         sym->type_list = NULL;
         sym->type = current_type;
@@ -94,7 +94,8 @@ void dcl_map_insert(Env *dcl_map, Array *idx) {
             "identifier %s.", id);
     }
 
-    Array_free(idx);
+    array_free(idx);
+    free(idx);
 }
 
 Env *dcl_map_new() {

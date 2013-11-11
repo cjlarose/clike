@@ -102,8 +102,8 @@ void _verify_types(char *fn_id, Array *tx, Array *expnx) {
 
     int i;
     for (i = 0; i < tx->length; i++) {
-        enum SymType argument_type = *((enum SymType *) Array_get(tx, i));
-        ExpNode *node = Array_get(expnx, i);
+        enum SymType argument_type = *((enum SymType *) array_get(tx, i));
+        ExpNode *node = array_get(expnx, i);
         if (resolve_types(argument_type, node->return_type) == -1) {
             // TODO: type promotion of parameters
             print_error("Parameter %d of invocation of function "
@@ -116,7 +116,7 @@ void _verify_types(char *fn_id, Array *tx, Array *expnx) {
 
 ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
     if (!expnx)
-        expnx = Array_init(0, sizeof(ExpNode *));
+        expnx = array_new(0, sizeof(ExpNode *));
     Symbol *sym = Env_get(current_scope, fn_id);
     if (!sym)
         print_error("Attempt to invoke undeclared function %s. "
@@ -165,12 +165,12 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
 }
 
 Array *expr_list_insert(Array *exprx, ExpNode * node) {
-    Array_append(exprx, node);
+    array_append(exprx, node);
     return exprx;
 }
 
 Array *expr_list_new(ExpNode * node) {
-    Array *exprx = Array_init(0, sizeof(ExpNode *));
+    Array *exprx = array_new(0, sizeof(ExpNode *));
     expr_list_insert(exprx, node);
     return exprx;
 }
