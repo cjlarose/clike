@@ -121,7 +121,7 @@ void _merge_kv_into_scope(void *k, void **v) {
 }
 
 void merge_into_scope(Env * env) {
-    map_apply(&env->table, &_merge_kv_into_scope);
+    map_apply(&env->table, &_merge_kv_into_scope, NULL);
     //Env_free(env);
     map_free(&env->table, NULL);
     map_free(&env->prot_table, NULL);
