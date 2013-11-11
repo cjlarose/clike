@@ -116,12 +116,12 @@ void verify_scope_return() {
         print_error("Non-void function has no return statement.");
 }
 
-void merge_into_scope(Env * env) {
-    void merge(void *k, void **v) {
-        _add_to_scope(k, *((Symbol **) v));
-    }
-    map_apply(&env->table, merge);
+void _merge_kv_into_scope(void *k, void **v) {
+    _add_to_scope(k, *((Symbol **) v));
+}
 
+void merge_into_scope(Env * env) {
+    map_apply(&env->table, &_merge_kv_into_scope);
     //Env_free(env);
     map_free(&env->table, NULL);
     map_free(&env->prot_table, NULL);
