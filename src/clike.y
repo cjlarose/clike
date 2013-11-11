@@ -168,11 +168,6 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 
 %%
 
-/* total hack */
-set_current_type(enum SymType t) {
-    prev_type = current_type;
-    current_type = t;
-}
 
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {

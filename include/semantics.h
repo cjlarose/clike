@@ -22,4 +22,5 @@ void verify_scope_return();
 
 void merge_into_scope(Env *env);
 
+void set_current_type(enum SymType t);
 #endif

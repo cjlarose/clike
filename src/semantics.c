@@ -6,6 +6,7 @@
 #include "env.h"
 #include "array.h"
 extern int current_type;
+extern int prev_type;
 extern int current_return_type;
 extern Env *current_scope; 
 extern int line_num;
@@ -116,7 +117,7 @@ void verify_scope_return() {
         print_error("Non-void function has no return statement.");
 }
 
-void _merge_kv_into_scope(void *k, void **v) {
+void _merge_kv_into_scope(void *k, void **v, void *_) {
     _add_to_scope(k, *((Symbol **) v));
 }
 
@@ -127,4 +128,10 @@ void merge_into_scope(Env * env) {
     map_free(&env->prot_table, NULL);
     free(env);
     return;
+}
+
+/* total hack */
+void set_current_type(enum SymType t) {
+    prev_type = current_type;
+    current_type = t;
 }
