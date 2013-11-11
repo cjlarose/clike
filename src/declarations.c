@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include "semantics.h"
 #include "env.h"
 #include "array.h"
@@ -9,31 +10,40 @@ extern Env *current_scope;
 /*****************************************************************************
  * Function Declaration Validation                                           *
  *****************************************************************************/
+struct check_id_list_info {
+    Array *idx;
+    Array to_remove;
+    char *fn_id;
+};
+
+void _check_id_list(void *k, void **v, void *info_s) {
+    struct check_id_list_info *info = info_s;
+    // ugly linear search
+    int i;
+    for (i = 0; i < info->idx->length; i++) {
+        char *id = *((char **) array_get(info->idx, i));
+        if (strcmp(id, (char *) k) == 0)
+            return;
+    }
+    print_error("Variable %s found in declaration of function "
+    "%s, but not found in identifier list. Continuing without declaration "
+    "of %s.", (char *) k, info->fn_id, (char *) k);
+    array_append(&info->to_remove, &k);
+}
 
 void validate_dcl_list(char *fn_id, Array *idx, Env *dclx) {
-    Array *to_remove = array_new(0, sizeof(char **));
     // verify every id in decl list is in id list
-    void check_id_list(void *k, void **v) {
-        // ugly linear search
-        int i;
-        for (i = 0; i < idx->length; i++) {
-            char *id = *((char **) array_get(idx, i));
-            if (strcmp(id, (char *) k) == 0)
-                return;
-        }
-        print_error("Variable %s found in declaration of function "
-        "%s, but not found in identifier list. Continuing without declaration "
-        "of %s.", (char *) k, fn_id, (char *) k);
-        array_append(to_remove, &k);
-    }
-    map_apply(&dclx->table, &check_id_list);
+    struct check_id_list_info info;
+    info.idx = idx;
+    info.fn_id = fn_id;
+    array_init(&info.to_remove, 0, sizeof(char **));
+    map_apply(&dclx->table, &_check_id_list, &info);
 
     int i;
-    for (i = 0; i < to_remove->length; i++)
-        Env_remove(dclx, *((char **) array_get(to_remove, i)));
+    for (i = 0; i < info.to_remove.length; i++)
+        Env_remove(dclx, *((char **) array_get(&info.to_remove, i)));
 
-    array_free(to_remove);
-    free(to_remove);
+    array_free(&info.to_remove);
 }
 
 Symbol *validate_fn_against_prot(char *fn_id, Array *idx, Symbol *prot) {
