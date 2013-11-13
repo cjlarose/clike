@@ -24,3 +24,11 @@ char *str_table_get(StringTable *str_table, char * str) {
         return new_str;
     }
 }
+
+void free_entry(void *k, void *v) {
+    free(k);
+}
+
+void str_table_free(StringTable *str_table) {
+    map_free(str_table, &free_entry);
+}

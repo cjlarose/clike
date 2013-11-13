@@ -10,3 +10,5 @@ StringTable *str_table_new();
 // if in table, return
 // else, put copy in table, return
 char *str_table_get(StringTable *, char *str);
+
+void str_table_free(StringTable *);

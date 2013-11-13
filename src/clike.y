@@ -185,6 +185,7 @@ int main(int argc, char **argv) {
     yylex_destroy();
 
     Env_free(current_scope);
+    str_table_free(&str_table);
     return status;
 }
 #endif
