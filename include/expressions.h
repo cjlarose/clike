@@ -8,6 +8,15 @@ typedef struct ExpNode {
     char * op;
     struct ExpNode *lhs;
     struct ExpNode *rhs;
+    enum {
+        CONSTANT_EXPNODE,
+        BOOLEAN_EXPNODE,
+        COMP_EXPNODE,
+        ARITHMETIC_EXPNODE,
+        INVOCATION_EXPNODE,
+        ID_EXPNODE,
+        ASSIGNMENT_EXPNODE
+    } node_type;
 } ExpNode;
 
 ExpNode *new_int_expnode();

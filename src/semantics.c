@@ -15,7 +15,7 @@ extern int status;
 void print_error(char *message, ...) {
     va_list ap;
     va_start(ap, message);
-    fprintf(stderr, "Line %d: Warning: ", line_num);
+    fprintf(stderr, "Line %d: Error: ", line_num);
     vfprintf(stderr, message, ap);
     fprintf(stderr, "\n");
     va_end(ap);

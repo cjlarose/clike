@@ -17,22 +17,23 @@ int resolve_types(enum SymType t1, enum SymType t2) {
 }
 
 ExpNode *_new_expnode(enum SymType return_type, char *op, ExpNode *lhs, 
-    ExpNode *rhs, int is_array) {
+    ExpNode *rhs, int is_array, int node_type) {
     ExpNode *node = malloc(sizeof(ExpNode));
     node->return_type = return_type;
     node->op = op;
     node->lhs = lhs;
     node->rhs = rhs;
     node->is_array = is_array;
+    node->node_type = node_type;
     return node;
 }
 
 ExpNode *new_int_expnode() {
-    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0);
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
 }
 
 ExpNode *new_float_expnode() {
-    return _new_expnode(TYPE_FLOAT, NULL, NULL, NULL, 0);
+    return _new_expnode(TYPE_FLOAT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
 }
 
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
@@ -56,7 +57,7 @@ ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
                 bad_side == 1 ? "Left" : "Right", op); 
         }
     }
-    return _new_expnode(TYPE_BOOL, op, lhs, rhs, 0);
+    return _new_expnode(TYPE_BOOL, op, lhs, rhs, 0, BOOLEAN_EXPNODE);
 }
 
 ExpNode *new_comparison_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
@@ -66,7 +67,7 @@ ExpNode *new_comparison_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
         op, _type_str(lhs->return_type), 
         _type_str(rhs->return_type));
     }
-    return _new_expnode(TYPE_BOOL, op, lhs, rhs, 0);
+    return _new_expnode(TYPE_BOOL, op, lhs, rhs, 0, COMP_EXPNODE);
 }
 
 ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
@@ -90,7 +91,7 @@ ExpNode *new_arithmetic_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
             type = lhs->return_type;
         }
     }
-    return _new_expnode(type, op, lhs, rhs, 0);
+    return _new_expnode(type, op, lhs, rhs, 0, ARITHMETIC_EXPNODE);
 }
 
 void _verify_types(char *fn_id, Array *tx, Array *expnx) {
@@ -137,9 +138,9 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
         "is void.", fn_id, fn_id);
     else {
         _verify_types(fn_id, sym->type_list, expnx);
-        return _new_expnode(sym->return_type, NULL, NULL, NULL, 0);
+        return _new_expnode(sym->return_type, NULL, NULL, NULL, 0, INVOCATION_EXPNODE);
     }
-    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0); // keep the party gooooin
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, INVOCATION_EXPNODE); // keep the party gooooin
 }
 
 ExpNode *new_id_expnode(char *id, ExpNode *index) {
@@ -161,17 +162,18 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
             print_error("Index used with variable %s is not "
             "type-compatible with int.", id);
         int is_array = sym->is_array == (index == NULL);
-        return _new_expnode(sym->type, NULL, NULL, NULL, is_array);
+        return _new_expnode(sym->type, NULL, NULL, NULL, is_array, ID_EXPNODE);
     }
-    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0);
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, ID_EXPNODE);
 }
 
 ExpNode *new_assignment_expnode(ExpNode *lhs, ExpNode *rhs) {
+    int type = resolve_types(lhs->return_type, rhs->return_type);
     if (lhs->is_array != rhs->is_array 
-        || resolve_types(lhs->return_type, rhs->return_type) == -1)
+        || type == -1)
         print_error("Left- and right-hand sides of assignment are not "
         "type-compatible");    
-    return NULL;
+    return _new_expnode(type, NULL, lhs, rhs, 0, ASSIGNMENT_EXPNODE);
 }
 
 Array *expr_list_insert(Array *exprx, ExpNode * node) {
