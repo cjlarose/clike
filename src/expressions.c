@@ -166,6 +166,14 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
     return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0);
 }
 
+ExpNode *new_assignment_expnode(ExpNode *lhs, ExpNode *rhs) {
+    if (lhs->is_array != rhs->is_array 
+        || resolve_types(lhs->return_type, rhs->return_type) == -1)
+        print_error("Left- and right-hand sides of assignment are not "
+        "type-compatible");    
+    return NULL;
+}
+
 Array *expr_list_insert(Array *exprx, ExpNode * node) {
     array_append(exprx, node);
     return exprx;
@@ -191,11 +199,4 @@ void validate_return_statement(ExpNode *node) {
     else if (!node && current_return_type != TYPE_VOID)
         print_error("Empty return statement in a non-void function");
     current_scope->has_return_statement = 1; // hack
-}
-
-void validate_assignment(ExpNode *lhs, ExpNode *rhs) {
-    if (lhs->is_array != rhs->is_array 
-        || resolve_types(lhs->return_type, rhs->return_type) == -1)
-        print_error("Left- and right-hand sides of assignment are not "
-        "type-compatible");    
 }

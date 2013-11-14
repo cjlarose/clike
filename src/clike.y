@@ -7,6 +7,7 @@
 #include "expressions.h"
 #include "env.h"
 #include "str_table.h"
+#include "statements.h"
 
 int status;
 Env *current_scope;
@@ -24,6 +25,7 @@ extern StringTable str_table;
     void *ptrval; // TODO: remove this.
     struct ExpNode * exp_node;
     struct Array * arr_val;
+    struct StmtNodeContainer * stmt_node;
 }
 
 %token <ival> DEC_INT_CON /* constants */
@@ -80,6 +82,10 @@ extern StringTable str_table;
 %type <arr_val> opt_expr_list
 %type <exp_node> opt_expr
 %type <exp_node> id_with_optional_index
+%type <exp_node> assg
+%type <exp_node> opt_assg
+%type <stmt_node> stmt
+%type <stmt_node> opt_stmt
 
 %expect 1 /* That damn dangling else */
 
@@ -126,23 +132,23 @@ loc_dcl: type id_list ';' { $$ = $2; }
 id_list: ID { $$ = id_list_new($1); }
   | id_list ',' ID { id_list_insert($1, $3); }
 
-stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); }
-  | IF '(' expr ')' stmt ELSE stmt { validate_boolean_expression($3); }
-  | WHILE '(' expr ')' opt_stmt { validate_boolean_expression($3); }
-  | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt { validate_boolean_expression($5); }
-  | RETURN opt_expr { validate_return_statement($2); }
-  | assg
-  | ID '(' opt_expr_list ')' { new_invocation_expnode($1, $3, 1); }
-  | '{' opt_stmt_list '}'
+stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); $$ = new_if_node($3, $5, NULL); }
+  | IF '(' expr ')' stmt ELSE stmt { validate_boolean_expression($3); $$ = new_if_node($3, $5, $7); }
+  | WHILE '(' expr ')' opt_stmt { validate_boolean_expression($3); $$ = new_while_node($3, $5); }
+  | FOR '(' opt_assg ';' opt_expr ';' opt_assg ')' opt_stmt { validate_boolean_expression($5); $$ = new_for_node($3, $5, $7, $9); }
+  | RETURN opt_expr { validate_return_statement($2); $$ = new_return_node($2); }
+  | assg { $$ = new_assignment_node($1); }
+  | ID '(' opt_expr_list ')' { $$ = new_invocation_node(new_invocation_expnode($1, $3, 1)); }
+  | '{' opt_stmt_list '}' { $$ = NULL; }
  
-opt_assg: | assg
+opt_assg: {$$ = NULL; } | assg {$$ = $1; }
 opt_expr: {$$ = NULL; } | expr {$$ = $1; }
-opt_stmt: | stmt
+opt_stmt: {$$ = NULL; } | stmt {$$ = $1; }
 
 opt_stmt_list: | stmt_list
 stmt_list: stmt ';' | stmt_list stmt ';'
 
-assg: id_with_optional_index '=' expr { validate_assignment($1, $3); } 
+assg: id_with_optional_index '=' expr { $$ = new_assignment_expnode($1, $3); } 
 
 expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | '!' expr %prec '-' { $$ = new_boolean_expnode($1, $2, NULL); }
