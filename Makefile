@@ -18,6 +18,9 @@ TMP_SEMANTICS_ARCHIVE=semantics
 SEMANTICS_ARCHIVE=semantics.tar.gz
 
 NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o nitty_gritty/build/array.o
+COMPONENTS = env.c semantics.c declarations.c expressions.c str_table.c
+COMPONENT_OBJS = $(patsubst %, $(BUILD_DIR)/%, $(COMPONENTS:.c=.o))
+
 
 .PHONY: clean lex_test lex_test2 parse_test parse_test_legal
 
@@ -25,25 +28,9 @@ NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_grit
 ## Components                                                                 ##
 ################################################################################
 
-$(BUILD_DIR)/env.o: $(SRC_DIR)/env.c
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	mkdir -p $(BUILD_DIR)
-	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/env.c -o $@ # makes env.o
-
-$(BUILD_DIR)/semantics.o: $(SRC_DIR)/semantics.c
-	mkdir -p $(BUILD_DIR)
-	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/semantics.c -o $@ # makes semantics.o
-
-$(BUILD_DIR)/declarations.o: $(SRC_DIR)/declarations.c
-	mkdir -p $(BUILD_DIR)
-	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/declarations.c -o $@ # makes declarations.o
-
-$(BUILD_DIR)/expressions.o: $(SRC_DIR)/expressions.c
-	mkdir -p $(BUILD_DIR)
-	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/expressions.c -o $@ # makes expressions.o
-
-$(BUILD_DIR)/str_table.o: $(SRC_DIR)/str_table.c
-	mkdir -p $(BUILD_DIR)
-	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $(SRC_DIR)/str_table.c -o $@ # makes str_table.o
+	gcc -g -I $(INC_DIR) -I nitty_gritty/include -c $< -o $@
 
 .PHONY: nitty_gritty
 nitty_gritty:
@@ -68,8 +55,8 @@ $(INC_DIR)/clike.tab.h $(SRC_DIR)/clike.tab.c: $(SRC_DIR)/clike.y
 #$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c
 #	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) $^ -ly -lfl
 
-$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c nitty_gritty $(BUILD_DIR)/env.o $(BUILD_DIR)/semantics.o $(BUILD_DIR)/declarations.o $(BUILD_DIR)/expressions.o $(BUILD_DIR)/str_table.o
-	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) -I nitty_gritty/include $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(BUILD_DIR)/declarations.o $(BUILD_DIR)/semantics.o $(BUILD_DIR)/expressions.o $(BUILD_DIR)/env.o $(BUILD_DIR)/str_table.o $(NITTY_GRITTY_OBJS) $(SRC_DIR)/clike_fn.c
+$(PARSER_EXEC): $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c nitty_gritty $(COMPONENT_OBJS)
+	$(CC) $(CFLAGS) -o $@ -I $(INC_DIR) -I nitty_gritty/include $(SRC_DIR)/clike.tab.c $(SRC_DIR)/lex.yy.c $(SRC_DIR)/clike_fn.c $(COMPONENT_OBJS) $(NITTY_GRITTY_OBJS) 
 
 ################################################################################
 ## Debugging                                                                  ##
