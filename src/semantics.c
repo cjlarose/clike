@@ -5,6 +5,7 @@
 #include <string.h>
 #include "env.h"
 #include "array.h"
+#include "procedure.h"
 extern int current_type;
 extern int prev_type;
 extern int current_return_type;
@@ -134,4 +135,8 @@ void merge_into_scope(Env * env) {
 void set_current_type(enum SymType t) {
     prev_type = current_type;
     current_type = t;
+}
+
+void procedure_list_free(Array *procs) {
+    array_free(procs);
 }

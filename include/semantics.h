@@ -23,4 +23,6 @@ void verify_scope_return();
 void merge_into_scope(Env *env);
 
 void set_current_type(enum SymType t);
+
+void procedure_list_free(Array *procs);
 #endif

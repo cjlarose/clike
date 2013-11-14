@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
     if (!status)
         print_ir(current_scope, &procedure_list);
 
-    array_free(&procedure_list);
+    procedure_list_free(&procedure_list);
     Env_free(current_scope);
     str_table_free(&str_table);
     return status;
