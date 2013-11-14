@@ -210,3 +210,6 @@ void validate_return_statement(ExpNode *node) {
         print_error("Empty return statement in a non-void function");
     current_scope->has_return_statement = 1; // hack
 }
+
+void expr_free(ExpNode *node) {
+}

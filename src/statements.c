@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "expressions.h"
 #include "array.h"
 #include "statements.h"
@@ -8,7 +9,9 @@ StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *then_stmt,
     StmtNodeContainer *else_stmt) {
     StmtNodeContainer *cont = malloc(sizeof(StmtNodeContainer));
     cont->type = IF_STMT;
+    printf("COND CREATE: %p\n", condition);
     cont->node.if_stmt.condition = condition;
+    printf("THEN CREATE: %p\n", then_stmt);
     cont->node.if_stmt.then_stmt = then_stmt;
     cont->node.if_stmt.else_stmt = else_stmt;
     return cont;
@@ -76,4 +79,58 @@ Array *stmt_list_new(StmtNodeContainer *stmt) {
 }
 
 void stmt_free(StmtNodeContainer *stmt) {
+    Array *stmts;
+    printf("TYPE: %d\n", stmt->type);
+    switch (stmt->type) {
+        case IF_STMT:
+            printf("NODE: %p\n", &stmt->node);
+            printf("COND: %p\n", &stmt->node.if_stmt.condition);
+            printf("COND: %p\n", stmt->node.if_stmt.condition);
+            expr_free(stmt->node.if_stmt.condition);
+            printf("THEN: %p\n", &stmt->node.if_stmt.then_stmt);
+            stmt_free(stmt->node.if_stmt.then_stmt);
+            /*
+            if (stmt->node.if_stmt.else_stmt)
+                stmt_free(stmt->node.if_stmt.else_stmt);
+            */
+            break;
+        /*
+        case WHILE_STMT:
+            expr_free(stmt->node.while_stmt.condition);
+            if (stmt->node.while_stmt.body)
+                stmt_free(stmt->node.while_stmt.body);
+            break;
+        case FOR_STMT:
+            if (stmt->node.for_stmt.initialization)
+                expr_free(stmt->node.for_stmt.initialization);
+            if (stmt->node.for_stmt.condition)
+                expr_free(stmt->node.for_stmt.condition);
+            if (stmt->node.for_stmt.loop_expression)
+                expr_free(stmt->node.for_stmt.loop_expression);
+            if (stmt->node.for_stmt.body)
+                stmt_free(stmt->node.for_stmt.body);
+            break;
+        case RETURN_STMT:
+            if (stmt->node.return_stmt.expr)
+                expr_free(stmt->node.return_stmt.expr);
+            break;
+        case ASSIGNMENT_STMT:
+            expr_free(stmt->node.assg_stmt.expr);
+            break;
+        case INVOCATION_STMT:
+            expr_free(stmt->node.invoc_stmt.expr);
+            break;
+        case BLOCK_STMT:
+            stmts = stmt->node.block_stmt.stmts;
+            if (stmts) {
+                int i;
+                for (i = 0; i < stmts->length; i++)
+                    stmt_free(array_get(stmts, i));
+                array_free(stmts);
+            }
+            break;
+        */
+        default:
+            break;
+    }
 }

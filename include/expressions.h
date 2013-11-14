@@ -37,4 +37,6 @@ Array *expr_list_insert(Array *exprx, ExpNode * node);
 
 void validate_boolean_expression(ExpNode *node);
 void validate_return_statement(ExpNode *node);
+
+void expr_free(ExpNode *node);
 #endif
