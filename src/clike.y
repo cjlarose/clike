@@ -9,6 +9,7 @@
 #include "str_table.h"
 #include "statements.h"
 #include "procedure.h"
+#include "ir.h"
 
 int status;
 Env *current_scope;
@@ -203,6 +204,9 @@ int main(int argc, char **argv) {
     if (bison_status)
         status = bison_status;
     yylex_destroy();
+
+    if (!status)
+        print_ir(current_scope, &procedure_list);
 
     array_free(&procedure_list);
     Env_free(current_scope);
