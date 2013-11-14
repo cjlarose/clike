@@ -5,7 +5,7 @@
 typedef struct ExpNode {
     enum SymType return_type;
     int is_array;
-    char * op;
+    char * op; // usually operator, sometimes id
     struct ExpNode *lhs;
     struct ExpNode *rhs;
     enum {
@@ -17,6 +17,8 @@ typedef struct ExpNode {
         ID_EXPNODE,
         ASSIGNMENT_EXPNODE
     } node_type;
+    Array *expns; // used only for invocation nodes
+    struct ExpNode *index; // used only for id nodes
 } ExpNode;
 
 ExpNode *new_int_expnode();

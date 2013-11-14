@@ -138,9 +138,13 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
         "is void.", fn_id, fn_id);
     else {
         _verify_types(fn_id, sym->type_list, expnx);
-        return _new_expnode(sym->return_type, NULL, NULL, NULL, 0, INVOCATION_EXPNODE);
+        ExpNode *node = _new_expnode(sym->return_type, fn_id, NULL, NULL, 0, 
+            INVOCATION_EXPNODE);
+        node->expns = expnx;
+        return node;
     }
-    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, INVOCATION_EXPNODE); // keep the party gooooin
+    // this won't make it to code generation anyway.
+    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, INVOCATION_EXPNODE); 
 }
 
 ExpNode *new_id_expnode(char *id, ExpNode *index) {
@@ -162,8 +166,12 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
             print_error("Index used with variable %s is not "
             "type-compatible with int.", id);
         int is_array = sym->is_array == (index == NULL);
-        return _new_expnode(sym->type, NULL, NULL, NULL, is_array, ID_EXPNODE);
+        ExpNode *node = _new_expnode(sym->type, id, NULL, NULL, is_array, 
+            ID_EXPNODE);
+        node->index = index;
+        return node;
     }
+    // won't make it to code generation
     return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, ID_EXPNODE);
 }
 
