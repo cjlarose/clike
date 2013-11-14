@@ -31,3 +31,10 @@ StmtNodeContainer *new_invocation_node(ExpNode *expr) {
 StmtNodeContainer *new_block_node(Array *stmts) {
     return NULL;
 }
+
+Array *stmt_list_new(StmtNodeContainer *stmt) {
+    return NULL;
+}
+
+void stmt_list_insert(Array *stmts, StmtNodeContainer *stmt) {
+}

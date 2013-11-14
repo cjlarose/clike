@@ -72,4 +72,7 @@ StmtNodeContainer *new_return_node(ExpNode *expr);
 StmtNodeContainer *new_assignment_node(ExpNode *expr);
 StmtNodeContainer *new_invocation_node(ExpNode *expr);
 StmtNodeContainer *new_block_node(Array *stmts);
+
+Array *stmt_list_new(StmtNodeContainer *stmt);
+void stmt_list_insert(Array *stmts, StmtNodeContainer *stmt);
 #endif
