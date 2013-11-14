@@ -8,6 +8,7 @@
 #include "env.h"
 #include "str_table.h"
 #include "statements.h"
+#include "procedure.h"
 
 int status;
 Env *current_scope;
@@ -15,6 +16,7 @@ enum SymType prev_type;
 enum SymType current_type; 
 enum SymType current_return_type;
 extern StringTable str_table;
+Array procedure_list;
 
 %}
 
@@ -26,6 +28,7 @@ extern StringTable str_table;
     struct ExpNode * exp_node;
     struct Array * arr_val;
     struct StmtNodeContainer * stmt_node;
+    struct Procedure * procedure_val;
 }
 
 %token <ival> DEC_INT_CON /* constants */
@@ -88,6 +91,7 @@ extern StringTable str_table;
 %type <stmt_node> opt_stmt
 %type <arr_val> stmt_list
 %type <arr_val> opt_stmt_list
+%type <procedure_val> func
 
 %expect 1 /* That damn dangling else */
 
@@ -123,7 +127,14 @@ func_begin: type ID '(' id_list ')' {current_return_type = current_type;} loc_dc
   | void ID '(' ')' { current_return_type = current_type; } loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
   | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
 
-func: func_begin { current_scope = $1; } '{' loc_dcl_list { merge_into_scope($4); } opt_stmt_list '}'{ verify_scope_return(); Env_free(current_scope); current_scope = current_scope->prev; }
+func: func_begin { current_scope = $1; } '{' loc_dcl_list { merge_into_scope($4); } opt_stmt_list '}'{ 
+    verify_scope_return(); 
+    //Env_free(current_scope); 
+    Procedure proc;
+    procedure_init(&proc, current_scope, $6);
+    array_append(&procedure_list, &proc);
+    current_scope = current_scope->prev;
+}
 
 type: CHAR {set_current_type(TYPE_CHAR); } | INT {set_current_type(TYPE_INT);} | FLOAT {set_current_type(TYPE_FLOAT);}
 
@@ -182,6 +193,7 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
     str_table_init(&str_table);
+    array_init(&procedure_list, 0, sizeof(Procedure));
     current_scope = Env_new(NULL);
 
 # ifdef DEBUG
