@@ -193,8 +193,8 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
     str_table_init(&str_table);
-    array_init(&procedure_list, 0, sizeof(Procedure));
     current_scope = Env_new(NULL);
+    array_init(&procedure_list, 0, sizeof(Procedure));
 
 # ifdef DEBUG
     yydebug = 1;
@@ -204,6 +204,7 @@ int main(int argc, char **argv) {
         status = bison_status;
     yylex_destroy();
 
+    array_free(&procedure_list);
     Env_free(current_scope);
     str_table_free(&str_table);
     return status;
