@@ -30,5 +30,5 @@ void free_entry(void *k, void *v) {
 }
 
 void str_table_free(StringTable *str_table) {
-    map_free(str_table, &free_entry);
+    map_free(&str_table->table, &free_entry);
 }
