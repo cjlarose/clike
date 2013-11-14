@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "expressions.h"
 #include "array.h"
 #include "statements.h"
@@ -72,4 +73,7 @@ Array *stmt_list_new(StmtNodeContainer *stmt) {
     Array *arr = array_new(0, sizeof(StmtNodeContainer *));
     stmt_list_insert(arr, stmt);
     return arr;
+}
+
+void stmt_free(StmtNodeContainer *stmt) {
 }

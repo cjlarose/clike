@@ -6,6 +6,8 @@
 #include "env.h"
 #include "array.h"
 #include "procedure.h"
+#include "statements.h"
+
 extern int current_type;
 extern int prev_type;
 extern int current_return_type;
@@ -138,5 +140,21 @@ void set_current_type(enum SymType t) {
 }
 
 void procedure_list_free(Array *procs) {
+    int i, j;
+    for (i = 0; i < procs->length; i++) {
+        Procedure *proc = array_get(procs, i);
+
+        // free env
+        Env_free(proc->env);
+        free(proc->env);
+
+        // free stmts list
+        if (proc->stmts) {
+            for (j = 0; j < proc->stmts->length; j++)
+                stmt_free((StmtNodeContainer *) array_get(proc->stmts, j));
+            array_free(proc->stmts);
+            free(proc->stmts);
+        }
+    }
     array_free(procs);
 }
