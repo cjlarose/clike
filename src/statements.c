@@ -2,7 +2,7 @@
 #include "array.h"
 #include "statements.h"
 
-StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *if_stmt, 
+StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *then_stmt, 
     StmtNodeContainer *else_stmt) {
     return NULL;
 }

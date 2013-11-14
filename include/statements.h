@@ -16,7 +16,7 @@ struct StmtNodeContainer;
 
 typedef struct IfStatement {
     ExpNode *condition;
-    struct StmtNodeContainer *if_stmt;
+    struct StmtNodeContainer *then_stmt;
     struct StmtNodeContainer *else_stmt;
 } IfStatement;
 
@@ -63,7 +63,7 @@ typedef struct StmtNodeContainer {
     union StatementNode node;
 } StmtNodeContainer;
 
-StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *if_stmt, 
+StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *then_stmt, 
     StmtNodeContainer *else_stmt);
 StmtNodeContainer *new_while_node(ExpNode *condition, StmtNodeContainer *body);
 StmtNodeContainer *new_for_node(ExpNode *initialization, ExpNode *condition, 
