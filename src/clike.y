@@ -86,6 +86,8 @@ extern StringTable str_table;
 %type <exp_node> opt_assg
 %type <stmt_node> stmt
 %type <stmt_node> opt_stmt
+%type <arr_val> stmt_list
+%type <arr_val> opt_stmt_list
 
 %expect 1 /* That damn dangling else */
 
@@ -145,8 +147,8 @@ opt_assg: {$$ = NULL; } | assg {$$ = $1; }
 opt_expr: {$$ = NULL; } | expr {$$ = $1; }
 opt_stmt: {$$ = NULL; } | stmt {$$ = $1; }
 
-opt_stmt_list: | stmt_list
-stmt_list: stmt ';' | stmt_list stmt ';'
+opt_stmt_list: { $$ = NULL; } | stmt_list { $$ = $1; }
+stmt_list: stmt ';' { $$ = stmt_list_new($1); }  | stmt_list stmt ';' { stmt_list_insert($1, $2); $$ = $1;}
 
 assg: id_with_optional_index '=' expr { $$ = new_assignment_expnode($1, $3); } 
 
