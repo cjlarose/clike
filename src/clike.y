@@ -141,7 +141,7 @@ stmt: IF '(' expr ')' stmt { validate_boolean_expression($3); $$ = new_if_node($
   | RETURN opt_expr { validate_return_statement($2); $$ = new_return_node($2); }
   | assg { $$ = new_assignment_node($1); }
   | ID '(' opt_expr_list ')' { $$ = new_invocation_node(new_invocation_expnode($1, $3, 1)); }
-  | '{' opt_stmt_list '}' { $$ = NULL; }
+  | '{' opt_stmt_list '}' { $$ = new_block_node($2); }
  
 opt_assg: {$$ = NULL; } | assg {$$ = $1; }
 opt_expr: {$$ = NULL; } | expr {$$ = $1; }
