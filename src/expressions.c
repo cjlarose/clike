@@ -16,7 +16,8 @@ int resolve_types(enum SymType t1, enum SymType t2) {
     return -1;
 }
 
-ExpNode *_new_expnode(enum SymType return_type, char *op, ExpNode *lhs, ExpNode *rhs, int is_array) {
+ExpNode *_new_expnode(enum SymType return_type, char *op, ExpNode *lhs, 
+    ExpNode *rhs, int is_array) {
     ExpNode *node = malloc(sizeof(ExpNode));
     node->return_type = return_type;
     node->op = op;
@@ -147,7 +148,8 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
         print_error("Variable %s used before declaration. "
         "Proceeding with the assumption that the type of %s is int.", 
          id, id);
-    else if (sym->type != TYPE_CHAR && sym->type != TYPE_INT && sym->type != TYPE_FLOAT)
+    else if (sym->type != TYPE_CHAR && sym->type != TYPE_INT && 
+        sym->type != TYPE_FLOAT)
         print_error("Variable %s is of a type than cannot be used"
         " as part of an expression.", id);
     else {
@@ -194,5 +196,6 @@ void validate_return_statement(ExpNode *node) {
 void validate_assignment(ExpNode *lhs, ExpNode *rhs) {
     if (lhs->is_array != rhs->is_array 
         || resolve_types(lhs->return_type, rhs->return_type) == -1)
-        print_error("Left- and right-hand sides of assignment are not type-compatible");    
+        print_error("Left- and right-hand sides of assignment are not "
+        "type-compatible");    
 }
