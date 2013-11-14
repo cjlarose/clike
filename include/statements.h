@@ -12,28 +12,28 @@ enum StatementType {
     BLOCK_STMT
 };
 
-struct StatementNodeContainer;
+struct StmtNodeContainer;
 
 typedef struct IfStatement {
     ExpNode *condition;
-    struct StatementNodeContainer *if_stmt;
-    struct StatementNodeContainer *else_stmt;
+    struct StmtNodeContainer *if_stmt;
+    struct StmtNodeContainer *else_stmt;
 } IfStatement;
 
 typedef struct WhileStatement {
     ExpNode *condition;
-    struct StatementNodeContainer *body;
+    struct StmtNodeContainer *body;
 } WhileStatement;
 
 typedef struct ForStatement {
     ExpNode *initialization;
     ExpNode *condition;
     ExpNode *loop_expression;
-    struct StatementNodeContainer *body;
+    struct StmtNodeContainer *body;
 } ForStatement;
 
 typedef struct ReturnStatement {
-    ExpNode *value;
+    ExpNode *expr;
 } ReturnStatement;
 
 typedef struct AssignmentStatement {
@@ -58,8 +58,18 @@ union StatementNode {
     BlockStatement block_stmt;
 };
 
-typedef struct StatementNodeContainer {
+typedef struct StmtNodeContainer {
     enum StatementType type;
     union StatementNode node;
-} StatementNodeContainer;
+} StmtNodeContainer;
+
+StmtNodeContainer *new_if_node(ExpNode *condition, StmtNodeContainer *if_stmt, 
+    StmtNodeContainer *else_stmt);
+StmtNodeContainer *new_while_node(ExpNode *condition, StmtNodeContainer *body);
+StmtNodeContainer *new_for_node(ExpNode *initialization, ExpNode *condition, 
+    ExpNode *loop_expression, StmtNodeContainer *body);
+StmtNodeContainer *new_return_node(ExpNode *expr);
+StmtNodeContainer *new_assignment_node(ExpNode *expr);
+StmtNodeContainer *new_invocation_node(ExpNode *expr);
+StmtNodeContainer *new_block_node(Array *stmts);
 #endif
