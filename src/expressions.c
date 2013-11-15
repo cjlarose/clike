@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "expressions.h"
 #include "semantics.h"
 #include "env.h"
@@ -18,7 +19,7 @@ int resolve_types(enum SymType t1, enum SymType t2) {
 
 ExpNode *_new_expnode(enum SymType return_type, char *op, ExpNode *lhs, 
     ExpNode *rhs, int is_array, int node_type) {
-    ExpNode *node = malloc(sizeof(ExpNode));
+    ExpNode *node = calloc(1, sizeof(ExpNode));
     node->return_type = return_type;
     node->op = op;
     node->lhs = lhs;
@@ -212,4 +213,15 @@ void validate_return_statement(ExpNode *node) {
 }
 
 void expr_free(ExpNode *node) {
+    if (node->lhs)
+        expr_free(node->lhs);
+    if (node->rhs)
+        expr_free(node->rhs);
+    if (node->expns) {
+        array_free(node->expns);
+        free(node->expns);
+    }
+    if (node->index)
+        expr_free(node->index);
+    free(node);
 }
