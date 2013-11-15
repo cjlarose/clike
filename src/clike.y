@@ -210,6 +210,7 @@ int main(int argc, char **argv) {
 
     procedure_list_free(&procedure_list);
     Env_free(current_scope);
+    free(current_scope);
     str_table_free(&str_table);
     return status;
 }
