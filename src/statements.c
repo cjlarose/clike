@@ -67,6 +67,7 @@ StmtNodeContainer *new_block_node(Array *stmts) {
 
 void stmt_list_insert(Array *stmts, StmtNodeContainer *stmt) {
     array_append(stmts, stmt);
+    free(stmt);
 }
 
 Array *stmt_list_new(StmtNodeContainer *stmt) {
