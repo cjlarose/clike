@@ -151,7 +151,7 @@ void procedure_list_free(Array *procs) {
         // free stmts list
         if (proc->stmts) {
             for (j = 0; j < proc->stmts->length; j++)
-                stmt_free((StmtNodeContainer *) array_get(proc->stmts, j));
+                stmt_free(*((StmtNodeContainer **) array_get(proc->stmts, j)));
             array_free(proc->stmts);
             free(proc->stmts);
         }

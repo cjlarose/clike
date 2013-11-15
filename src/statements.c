@@ -66,12 +66,11 @@ StmtNodeContainer *new_block_node(Array *stmts) {
 }
 
 void stmt_list_insert(Array *stmts, StmtNodeContainer *stmt) {
-    array_append(stmts, stmt);
-    free(stmt);
+    array_append(stmts, &stmt);
 }
 
 Array *stmt_list_new(StmtNodeContainer *stmt) {
-    Array *arr = array_new(0, sizeof(StmtNodeContainer));
+    Array *arr = array_new(0, sizeof(StmtNodeContainer *));
     stmt_list_insert(arr, stmt);
     return arr;
 }
@@ -115,9 +114,10 @@ void stmt_free(StmtNodeContainer *stmt) {
             if (stmts) {
                 int i;
                 for (i = 0; i < stmts->length; i++)
-                    stmt_free(array_get(stmts, i));
+                    stmt_free(*((StmtNodeContainer **) array_get(stmts, i)));
                 array_free(stmts);
             }
             break;
     }
+    free(stmt);
 }
