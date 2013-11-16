@@ -18,9 +18,12 @@ char *next_tmp_var_name() {
     return str_table_get(&str_table, buffer);
 }
 
-// just populate var_names appropriately
-void expr_to_ir(ExpNode *expr, Map *var_names) {
-    //printf("EXPRESSION of type %d!\n", expr->node_type);
+void print_map(void *k, void **v, void *_) {
+    printf("Expr %p => Var %s\n", k, *((char **) v));
+}
+
+char *print_expr_ir(ExpNode *expr, Map *var_names) {
+    //map_apply(var_names, &print_map, NULL);
     char buffer[CONST_BUFFER_SIZE];
     switch (expr->node_type) {
         case CONSTANT_EXPNODE: // leaf
@@ -29,74 +32,41 @@ void expr_to_ir(ExpNode *expr, Map *var_names) {
                 snprintf(buffer, CONST_BUFFER_SIZE, "%d", expr->int_val);
             else
                 snprintf(buffer, CONST_BUFFER_SIZE, "%f", expr->float_val);
-            map_insert(var_names, expr, str_table_get(&str_table, buffer));
+            return str_table_get(&str_table, buffer);
             break;
-        case BOOLEAN_EXPNODE:
-            //printf("BOOL EXPR!\n");
-            break;
-        case COMP_EXPNODE:
-            //printf("COMP EXPR!\n");
-            break;
-        case ARITHMETIC_EXPNODE:
-            //printf("MATH EXPR!\n");
-            expr_to_ir(expr->lhs, var_names);
-            if (expr->rhs)
-                expr_to_ir(expr->rhs, var_names);
-            map_insert(var_names, expr, next_tmp_var_name());
-            break;
-        case INVOCATION_EXPNODE:
-            //printf("INVOCATION EXPR!\n");
-            break;
-        case ID_EXPNODE: // leaf
-            //printf("ID EXPR!\n");
-            map_insert(var_names, expr, expr->op);
-            break;
-        case ASSIGNMENT_EXPNODE:
-            //printf("ASSIGNMENT EXPR!\n");
-            expr_to_ir(expr->lhs, var_names);
-            expr_to_ir(expr->rhs, var_names);
-            break;
-        default:
-            break;
-    }
-}
-
-void print_map(void *k, void **v, void *_) {
-    printf("Expr %p => Var %s\n", k, *((char **) v));
-}
-
-void print_expr_ir(ExpNode *expr, Map *var_names) {
-    //map_apply(var_names, &print_map, NULL);
-    switch (expr->node_type) {
-        case ASSIGNMENT_EXPNODE:
-            print_expr_ir(expr->lhs, var_names);
-            print_expr_ir(expr->rhs, var_names);
-            printf("%s = %s\n", *((char **) map_find(var_names, expr->lhs)), 
-                *((char **) map_find(var_names, expr->rhs)));
-            break;
-        case ARITHMETIC_EXPNODE:
-            print_expr_ir(expr->lhs, var_names);
+        case ARITHMETIC_EXPNODE: {
+            char *return_var = next_tmp_var_name();
+            char *lhs_var = print_expr_ir(expr->lhs, var_names);
             if (expr->rhs) { 
-                print_expr_ir(expr->rhs, var_names);
+                char *rhs_var = print_expr_ir(expr->rhs, var_names);
                 printf("%s = %s %s %s\n", 
-                    *((char **) map_find(var_names, expr)), 
-                    *((char **) map_find(var_names, expr->lhs)), 
+                    return_var,
+                    lhs_var,
                     expr->op, 
-                    *((char **) map_find(var_names, expr->rhs)));
+                    rhs_var);
             } else 
                 printf("%s = %s %s\n", 
-                    *((char **) map_find(var_names, expr)), 
+                    return_var,
                     expr->op, 
-                    *((char **) map_find(var_names, expr->lhs)));
+                    lhs_var);
+            return return_var;
             break;
-        default:
+        } case ID_EXPNODE: // leaf
+            return expr->op;
+            break;
+        case ASSIGNMENT_EXPNODE: {
+            char *lhs_var = print_expr_ir(expr->lhs, var_names);
+            char *rhs_var = print_expr_ir(expr->rhs, var_names);
+            printf("%s = %s\n", lhs_var, rhs_var);
+            break;
+        } default:
             break;
     }
+    return NULL;
 }
 
 void assg_stmt_to_ir(AssignmentStatement *stmt, Map *var_names) {
     //printf("ASSIGNMENT STMT!\n");
-    expr_to_ir(stmt->expr, var_names);
     print_expr_ir(stmt->expr, var_names);
 }
 
