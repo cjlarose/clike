@@ -176,8 +176,8 @@ expr: '-' expr %prec '-' { $$ = new_arithmetic_expnode($1, $2, NULL); }
   | ID '(' opt_expr_list ')' { $$ = new_invocation_expnode($1, $3, 0); }
   | id_with_optional_index { $$ = $1; }
   | '(' expr ')' { $$ = $2; }
-  | int_con { $$ = new_int_expnode(); }
-  | FLOAT_CON { $$ = new_float_expnode(); }
+  | int_con { $$ = new_int_expnode($1); }
+  | FLOAT_CON { $$ = new_float_expnode($1); }
 
 id_with_optional_index: ID { $$ = new_id_expnode($1, NULL); }
   | ID '[' expr ']' { $$ = new_id_expnode($1, $3); }

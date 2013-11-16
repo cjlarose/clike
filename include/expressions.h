@@ -19,10 +19,12 @@ typedef struct ExpNode {
     } node_type;
     Array *expns; // used only for invocation nodes
     struct ExpNode *index; // used only for id nodes
+    int int_val; // used only for int_expnode
+    double float_val; // used only for float_expnode
 } ExpNode;
 
-ExpNode *new_int_expnode();
-ExpNode *new_float_expnode();
+ExpNode *new_int_expnode(int val);
+ExpNode *new_float_expnode(double val);
 //new_char_expnode(); not in grammar?
 
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs);

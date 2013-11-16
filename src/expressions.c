@@ -29,12 +29,16 @@ ExpNode *_new_expnode(enum SymType return_type, char *op, ExpNode *lhs,
     return node;
 }
 
-ExpNode *new_int_expnode() {
-    return _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
+ExpNode *new_int_expnode(int val) {
+    ExpNode *node = _new_expnode(TYPE_INT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
+    node->int_val = val;
+    return node;
 }
 
-ExpNode *new_float_expnode() {
-    return _new_expnode(TYPE_FLOAT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
+ExpNode *new_float_expnode(double val) {
+    ExpNode *node = _new_expnode(TYPE_FLOAT, NULL, NULL, NULL, 0, CONSTANT_EXPNODE);
+    node->float_val = val;
+    return node;
 }
 
 ExpNode *new_boolean_expnode(char *op, ExpNode *lhs, ExpNode *rhs) {
