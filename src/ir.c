@@ -22,7 +22,7 @@ void print_map(void *k, void **v, void *_) {
     printf("Expr %p => Var %s\n", k, *((char **) v));
 }
 
-char *print_expr_ir(ExpNode *expr, Map *var_names) {
+char *print_expr_ir(ExpNode *expr) {
     //map_apply(var_names, &print_map, NULL);
     char buffer[CONST_BUFFER_SIZE];
     switch (expr->node_type) {
@@ -36,9 +36,9 @@ char *print_expr_ir(ExpNode *expr, Map *var_names) {
             break;
         case ARITHMETIC_EXPNODE: {
             char *return_var = next_tmp_var_name();
-            char *lhs_var = print_expr_ir(expr->lhs, var_names);
+            char *lhs_var = print_expr_ir(expr->lhs);
             if (expr->rhs) { 
-                char *rhs_var = print_expr_ir(expr->rhs, var_names);
+                char *rhs_var = print_expr_ir(expr->rhs);
                 printf("%s = %s %s %s\n", 
                     return_var,
                     lhs_var,
@@ -55,8 +55,8 @@ char *print_expr_ir(ExpNode *expr, Map *var_names) {
             return expr->op;
             break;
         case ASSIGNMENT_EXPNODE: {
-            char *lhs_var = print_expr_ir(expr->lhs, var_names);
-            char *rhs_var = print_expr_ir(expr->rhs, var_names);
+            char *lhs_var = print_expr_ir(expr->lhs);
+            char *rhs_var = print_expr_ir(expr->rhs);
             printf("%s = %s\n", lhs_var, rhs_var);
             break;
         } default:
@@ -65,16 +65,16 @@ char *print_expr_ir(ExpNode *expr, Map *var_names) {
     return NULL;
 }
 
-void assg_stmt_to_ir(AssignmentStatement *stmt, Map *var_names) {
+void assg_stmt_to_ir(AssignmentStatement *stmt) {
     //printf("ASSIGNMENT STMT!\n");
-    print_expr_ir(stmt->expr, var_names);
+    print_expr_ir(stmt->expr);
 }
 
-void statement_to_ir(StmtNodeContainer *stmt, Map *var_names) {
+void statement_to_ir(StmtNodeContainer *stmt) {
     printf("PRINTING IR FOR STMT %p of type %d\n", stmt, stmt->type);
     switch (stmt->type) {
         case ASSIGNMENT_STMT:
-            assg_stmt_to_ir(&stmt->node.assg_stmt, var_names);
+            assg_stmt_to_ir(&stmt->node.assg_stmt);
             break;
         default:
             break;
@@ -83,13 +83,11 @@ void statement_to_ir(StmtNodeContainer *stmt, Map *var_names) {
 
 void print_ir_procedure(Env *env, Array *stmts) {
     printf("PRINTING IR FOR ENV %p\n", env);
-    Map var_names;// expnode *=> var name
-    map_init(&var_names, NULL, NULL, 4);
     int i;
     if (stmts)
         for (i = 0; i < stmts->length; i++) {
             StmtNodeContainer *stmt = *((StmtNodeContainer **) array_get(stmts, i));
-            statement_to_ir(stmt, &var_names);
+            statement_to_ir(stmt);
         }
 }
 
