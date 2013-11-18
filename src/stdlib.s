@@ -10,52 +10,25 @@ fav_num:
     .double 12.345678
 .text
 printint:
-    # fn prologue
-    addiu $sp, $sp, -24   # allocate stack space -- default of 24 here
-    sw    $fp, 0($sp)     # save caller's frame pointer
-    sw    $ra, 4($sp)     # save return address
-    addiu $fp, $sp, 20    # setup my frame pointer
-
     li $v0, 1             # system call code for print_int
     syscall               # print it
-
-    # Epilogue
-    lw    $ra, 4($sp)     # get return address from stack
-    lw    $fp, 0($sp)     # restore the caller's frame pointer
-    addiu $sp, $sp, 24    # restore the caller's stack pointer
     jr    $ra             # return to caller's code
 
 printchar:
-    # fn prologue
-    addiu $sp, $sp, -24   # allocate stack space -- default of 24 here
-    sw    $fp, 0($sp)     # save caller's frame pointer
-    sw    $ra, 4($sp)     # save return address
-    addiu $fp, $sp, 20    # setup my frame pointer
-
     li $v0, 11             # system call code for print_char
     syscall               # print it
-
-    # Epilogue
-    lw    $ra, 4($sp)     # get return address from stack
-    lw    $fp, 0($sp)     # restore the caller's frame pointer
-    addiu $sp, $sp, 24    # restore the caller's stack pointer
     jr    $ra             # return to caller's code
 
 printdouble:
-    # fn prologue
-    addiu $sp, $sp, -24   # allocate stack space -- default of 24 here
-    sw    $fp, 0($sp)     # save caller's frame pointer
-    sw    $ra, 4($sp)     # save return address
-    addiu $fp, $sp, 20    # setup my frame pointer
-
-    li $v0, 3             # system call code for print_double
     l.d $f12, 0($a0)      # copy words at a0 and a0+4 to $f12 and $f13
+    li $v0, 3             # system call code for print_double
     syscall               # print it
+    jr    $ra             # return to caller's code
 
-    # Epilogue
-    lw    $ra, 4($sp)     # get return address from stack
-    lw    $fp, 0($sp)     # restore the caller's frame pointer
-    addiu $sp, $sp, 24    # restore the caller's stack pointer
+toint:
+    l.d $f12, 0($a0)      # copy words at a0 and a0+4 to $f12 and $f13
+    floor.w.d $f12, $f12  # compute the floor (as a word), store in $f12
+    mfc1 $v0, $f12        # move f12 in fp coproc to v0
     jr    $ra             # return to caller's code
 
 main:
@@ -94,6 +67,14 @@ main:
 
     la $a0, fav_num
     jal printdouble
+
+    li $a0 10
+    jal printchar
+
+    la $a0, fav_num
+    jal toint
+    move $a0, $v0
+    jal printint
     #li $v0, 1             # system call code for print_int
     #li $a0, 5             # integer to print 
     #syscall               # print it
