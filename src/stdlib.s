@@ -6,7 +6,7 @@
 .data
 str:
     .asciiz "the answer = "
-fav_num:
+fav_float:
     .double 12.345678
 .text
 printint:
@@ -30,6 +30,13 @@ toint:
     floor.w.d $f12, $f12  # compute the floor (as a word), store in $f12
     mfc1 $v0, $f12        # move f12 in fp coproc to v0
     jr    $ra             # return to caller's code
+
+todouble:
+    mtc1 $a0, $f14        # move the int in a0 to f12
+    cvt.d.w $f14, $f14    # convert f12 from int to double
+    mfc1 $v0, $f14
+    mfc1 $v1, $f15
+    jr $ra
 
 main:
     # Function prologue -- even main has one
@@ -65,16 +72,30 @@ main:
     li $a0 10
     jal printchar
 
-    la $a0, fav_num
+    la $a0, fav_float
     jal printdouble
 
     li $a0 10
     jal printchar
 
-    la $a0, fav_num
+    la $a0, fav_float
     jal toint
     move $a0, $v0
     jal printint
+
+    li $a0 10
+    jal printchar
+
+    li $a0, 56
+    jal todouble
+    # now v0 and v1 store the new double
+    # now overwrite fav_float
+    la $a0, fav_float
+    #sw $v0, 0($a0)
+    #sw $v1, 4($a0)
+
+    #jal printdouble 
+
     #li $v0, 1             # system call code for print_int
     #li $a0, 5             # integer to print 
     #syscall               # print it
