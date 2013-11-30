@@ -24,6 +24,7 @@ typedef struct Symbol {
     int is_array; // 1 if true
     int return_type;
     Array *type_list;
+    Env *scope;
 } Symbol;
 
 /*
