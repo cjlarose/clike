@@ -18,6 +18,14 @@ char *next_tmp_var_name() {
     return str_table_get(&str_table, buffer);
 }
 
+char *next_tmp_symbol(Env *env) {
+    char *name = next_tmp_var_name();
+    Symbol *sym = malloc(sizeof(Symbol));
+    sym->scope = NULL; 
+    Env_put(env, name, sym);
+    return name;
+}
+
 void print_map(void *k, void **v, void *_) {
     printf("Expr %p => Var %s\n", k, *((char **) v));
 }
@@ -65,16 +73,71 @@ char *print_expr_ir(ExpNode *expr) {
     return NULL;
 }
 
-void assg_stmt_to_ir(AssignmentStatement *stmt) {
-    //printf("ASSIGNMENT STMT!\n");
-    print_expr_ir(stmt->expr);
+Instruction *concat_inst(Instruction *lhs, Instruction *rhs) {
+    Instruction *node = lhs;
+    while (node != NULL)
+        node = node->next;
+    node->next = rhs;
+    return lhs;
 }
 
-void statement_to_ir(StmtNodeContainer *stmt) {
+Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
+    char buffer[CONST_BUFFER_SIZE];
+    switch (expr->node_type) {
+        case CONSTANT_EXPNODE: // leaf
+            //printf("CONST EXPR!\n");
+            if (expr->return_type == TYPE_INT)
+                snprintf(buffer, CONST_BUFFER_SIZE, "%d", expr->int_val);
+            else
+                snprintf(buffer, CONST_BUFFER_SIZE, "%f", expr->float_val);
+            return str_table_get(&str_table, buffer);
+            break;
+        case ARITHMETIC_EXPNODE: {
+            Instruction *inst_cont = malloc(sizeof(Instruction));
+            inst_cont->type = ARITHMETIC_INST;
+            ArithmeticInstruction *inst = inst_cont->value = 
+                calloc(1, sizeof(ArithmeticInstruction)); 
+            inst_cont->next = NULL;
+
+            inst->return_symbol = next_tmp_symbol(env);
+            inst->op = expr->op;
+
+            char *lhs_sym, *rhs_sym;
+            Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
+            Instruction *rhs = NULL;
+            if (expr->rhs)
+                rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
+
+            if (result_sym)
+                *result_sym = inst->return_symbol;
+            // prepend lhs and rhs and inst_cont
+            return concat_inst(concat_inst(lhs, rhs), inst_cont);
+            break;
+        } case ID_EXPNODE: // leaf
+            return expr->op;
+            break;
+        case ASSIGNMENT_EXPNODE: {
+            char *lhs_var = print_expr_ir(expr->lhs);
+            char *rhs_var = print_expr_ir(expr->rhs);
+            printf("%s = %s\n", lhs_var, rhs_var);
+            break;
+        } default:
+            break;
+    }
+    return NULL;
+}
+
+void assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
+    //printf("ASSIGNMENT STMT!\n");
+    //print_expr_ir(stmt->expr);
+    expr_to_ir(env, stmt->expr, NULL);
+}
+
+void statement_to_ir(Env *env, StmtNodeContainer *stmt) {
     printf("PRINTING IR FOR STMT %p of type %d\n", stmt, stmt->type);
     switch (stmt->type) {
         case ASSIGNMENT_STMT:
-            assg_stmt_to_ir(&stmt->node.assg_stmt);
+            assg_stmt_to_ir(env, &stmt->node.assg_stmt);
             break;
         default:
             break;
@@ -87,7 +150,7 @@ void print_ir_procedure(Env *env, Array *stmts) {
     if (stmts)
         for (i = 0; i < stmts->length; i++) {
             StmtNodeContainer *stmt = *((StmtNodeContainer **) array_get(stmts, i));
-            statement_to_ir(stmt);
+            statement_to_ir(env, stmt);
         }
 }
 
