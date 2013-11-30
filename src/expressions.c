@@ -146,6 +146,7 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
         ExpNode *node = _new_expnode(sym->return_type, fn_id, NULL, NULL, 0, 
             INVOCATION_EXPNODE);
         node->expns = expnx;
+        node->symbol = sym;
         return node;
     }
     // this won't make it to code generation anyway.
@@ -174,6 +175,7 @@ ExpNode *new_id_expnode(char *id, ExpNode *index) {
         ExpNode *node = _new_expnode(sym->type, id, NULL, NULL, is_array, 
             ID_EXPNODE);
         node->index = index;
+        node->symbol = sym;
         return node;
     }
     // won't make it to code generation

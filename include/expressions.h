@@ -17,10 +17,21 @@ typedef struct ExpNode {
         ID_EXPNODE,
         ASSIGNMENT_EXPNODE
     } node_type;
-    Array *expns; // used only for invocation nodes
-    struct ExpNode *index; // used only for id nodes
-    int int_val; // used only for int_expnode
-    double float_val; // used only for float_expnode
+
+    // used only for id and invocation
+    Symbol *symbol;
+
+    // used only for invocation nodes
+    Array *expns;           
+
+    // used only for id nodes
+    struct ExpNode *index; 
+
+    // used only for int_expnode
+    int int_val;            
+
+    // used only for float_expnode
+    double float_val; 
 } ExpNode;
 
 ExpNode *new_int_expnode(int val);
