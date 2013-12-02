@@ -33,47 +33,57 @@ void print_map(void *k, void **v, void *_) {
     printf("Expr %p => Var %s\n", k, *((char **) v));
 }
 
-char *print_expr_ir(ExpNode *expr) {
-    //map_apply(var_names, &print_map, NULL);
-    char buffer[CONST_BUFFER_SIZE];
-    switch (expr->node_type) {
-        case CONSTANT_EXPNODE: // leaf
-            //printf("CONST EXPR!\n");
-            if (expr->return_type == TYPE_INT)
-                snprintf(buffer, CONST_BUFFER_SIZE, "%d", expr->int_val);
-            else
-                snprintf(buffer, CONST_BUFFER_SIZE, "%f", expr->float_val);
-            return str_table_get(&str_table, buffer);
-            break;
-        case ARITHMETIC_EXPNODE: {
-            char *return_var = next_tmp_var_name();
-            char *lhs_var = print_expr_ir(expr->lhs);
-            if (expr->rhs) { 
-                char *rhs_var = print_expr_ir(expr->rhs);
-                printf("%s = %s %s %s\n", 
-                    return_var,
-                    lhs_var,
-                    expr->op, 
-                    rhs_var);
-            } else 
-                printf("%s = %s %s\n", 
-                    return_var,
-                    expr->op, 
-                    lhs_var);
-            return return_var;
-            break;
-        } case ID_EXPNODE: // leaf
-            return expr->op;
-            break;
-        case ASSIGNMENT_EXPNODE: {
-            char *lhs_var = print_expr_ir(expr->lhs);
-            char *rhs_var = print_expr_ir(expr->rhs);
-            printf("%s = %s\n", lhs_var, rhs_var);
-            break;
-        } default:
-            break;
+void print_ir_list(Instruction *node) {
+    while (node) {
+        switch(node->type) {
+            case ARITHMETIC_INST: {
+                ArithmeticInstruction *inst = node->value;
+                printf("%s = %s %s %s\n",
+                    inst->return_symbol,
+                    inst->lhs,
+                    inst->op,
+                    inst->rhs
+                );
+                break;
+            } case COPY_INST: {
+                CopyInstruction *inst = node->value;
+                printf("%s = %s\n",
+                    inst->lhs,
+                    inst->rhs
+                );
+                break;
+            } case JUMP_INST: {
+                JumpInstruction *inst = node->value;
+                char *dest = ((LabelInstruction *) inst->destination->value)->name;
+                if (inst->condition)
+                    printf("if %s goto %s\n", inst->condition, dest);
+                else
+                    printf("goto %s\n", dest);
+                break;
+            } case INVOC_INST: {
+                InvocationInstruction *inst = node->value;
+                printf("%s(", inst->fn);
+                int i;
+                for (i = 0; i < inst->params->length; i++)
+                    printf("%s, ", *((char **) array_get(inst->params, i)));
+                printf(")\n");
+                break;
+            } case LOAD_INT_INST: {
+                LoadIntInstruction *inst = node->value;
+                printf("%s = %d\n", inst->return_symbol, inst->val);
+                break;
+            } case LOAD_FLOAT_INST: {
+                LoadFloatInstruction *inst = node->value;
+                printf("%s = %f\n", inst->return_symbol, inst->val);
+                break;
+            } case LABEL_INST: {
+                LabelInstruction *inst = node->value;
+                printf("%s:\n", inst->name);
+                break;
+            }
+        }
+        node = node->next;
     }
-    return NULL;
 }
 
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
@@ -239,7 +249,8 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
 void assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
     //printf("ASSIGNMENT STMT!\n");
     //print_expr_ir(stmt->expr);
-    expr_to_ir(env, stmt->expr, NULL);
+    Instruction *expr_inst = expr_to_ir(env, stmt->expr, NULL);
+    print_ir_list(expr_inst);
 }
 
 void statement_to_ir(Env *env, StmtNodeContainer *stmt) {
