@@ -49,11 +49,17 @@ Instruction *label_instruction_new(char *name) {
 }
 
 Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
-    return NULL;
+    JumpInstruction *inst = malloc(sizeof(JumpInstruction));
+    inst->condition = sym;
+    inst->destination = destination;
+    return _instruction_new(JUMP_INST, inst);
 }
 
 Instruction *uncond_jump_instruction_new(Instruction *destination) {
-    return NULL;
+    JumpInstruction *inst = malloc(sizeof(JumpInstruction));
+    inst->condition = NULL;
+    inst->destination = destination;
+    return _instruction_new(JUMP_INST, inst);
 }
 
 Instruction *invocation_instruction_new(char *fn_name, Array *params) {
