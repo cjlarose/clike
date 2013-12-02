@@ -113,7 +113,9 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return concat_inst(concat_inst(lhs, rhs), inst_cont);
             break;
         } case ID_EXPNODE: // leaf
-            return expr->op;
+            if (result_sym)
+                *result_sym = expr->op;
+            return NULL;
             break;
         case ASSIGNMENT_EXPNODE: {
             printf("Entering assignment expnode\n");
