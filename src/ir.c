@@ -84,7 +84,11 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 inst = load_int_instruction_new(expr->int_val);
             else
                 inst = load_float_instruction_new(expr->float_val);
-            ((LoadIntInstruction *) inst->value)->return_symbol = next_tmp_symbol(env);
+
+            char **ret_sym = &((LoadIntInstruction *) inst->value)->return_symbol;
+            *ret_sym = next_tmp_symbol(env);
+            if (result_sym)
+                *result_sym = *ret_sym;
             return inst;
             break;
         } case ARITHMETIC_EXPNODE: {
