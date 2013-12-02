@@ -1,13 +1,13 @@
 #include "instruction.h"
 
-Instruction *concat_inst(Instruction *lhs, Instruction *rhs) {
+Instruction *concat_inst(Instruction *inst1, ...) {
     /*
     Instruction *node = lhs;
     while (node != NULL)
         node = node->next;
     node->next = rhs;
     */
-    return lhs;
+    return NULL;
 }
 
 Instruction *_instruction_new(int type, void *value) {
@@ -46,4 +46,11 @@ Instruction *label_instruction_new(char *name) {
     LabelInstruction *inst = malloc(sizeof(LabelInstruction));
     inst->name = name;
     return _instruction_new(LABEL_INST, inst);
+}
+
+Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
+    return NULL;
+}
+Instruction *uncond_jump_instruction_new(Instruction *destination) {
+    return NULL;
 }

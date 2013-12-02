@@ -42,9 +42,11 @@ typedef struct {
     char *name;
 } LabelInstruction;
 
+struct Instruction;
+
 typedef struct {
     char *condition;
-    LabelInstruction *destination;
+    struct Instruction *destination;
 } JumpInstruction;
 
 typedef struct {
@@ -76,10 +78,12 @@ typedef struct Instruction {
     struct Instruction *next;
 } Instruction;
 
-Instruction *concat_inst(Instruction *lhs, Instruction *rhs);
+Instruction *concat_inst(Instruction *inst1, ...);
 Instruction *arithmetic_instruction_new();
 Instruction *copy_instruction_new(char *lhs, char *rhs);
 Instruction *load_int_instruction_new(int n);
 Instruction *load_float_instruction_new(double n);
 Instruction *label_instruction_new(char *name);
+Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
+Instruction *uncond_jump_instruction_new(Instruction *destination);
 #endif

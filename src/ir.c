@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "array.h"
 #include "map.h"
 #include "env.h"
@@ -91,6 +92,75 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 *result_sym = *ret_sym;
             return inst;
             break;
+        } case BOOLEAN_EXPNODE: {
+            // truth_val = 0
+            // evaluate shit, jump to true if true
+            // goto end
+            // true:
+            //   truth_val = 1
+            // end:
+
+            char *truth_var = next_tmp_symbol(env);
+
+            Instruction *init = load_int_instruction_new(0);
+            ((LoadIntInstruction *) init->value)->return_symbol = truth_var;
+
+            Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
+            Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
+
+            char *lhs_sym, *rhs_sym;
+            Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym); 
+            Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym); 
+
+            Instruction *evaluate;
+            if (!strcmp(expr->op, "||")) {
+                // do first
+                // if first, jump to true
+                // do second
+                // if second, jump to true
+                Instruction *jump1 = cond_jump_instruction_new(lhs_sym, true_label);
+                Instruction *jump2 = cond_jump_instruction_new(rhs_sym, true_label);
+                evaluate = concat_inst(lhs, jump1, rhs, jump2);
+            } else {//if (!strcmp(expr->op, "&&")) {
+                // do first
+                // do second
+                // preform &
+                // if true, jump to true
+                char *and_symbol;
+                Instruction *and = arithmetic_instruction_new();
+                ArithmeticInstruction *and_inst = and->value;
+                and_inst->op = "&";
+                and_inst->lhs = lhs_sym;
+                and_inst->rhs = rhs_sym;
+                and_inst->return_symbol = and_symbol = next_tmp_symbol(env);
+
+                Instruction *jump = cond_jump_instruction_new(and_symbol, true_label);
+                evaluate = concat_inst(lhs, rhs, and, jump);
+            }
+
+            Instruction *goto_end = uncond_jump_instruction_new(end_label);
+
+            char *load_one_var = next_tmp_symbol(env);
+            Instruction *load_one = load_int_instruction_new(1);
+            ((LoadIntInstruction *) init->value)->return_symbol = load_one_var;
+            Instruction *set_true = copy_instruction_new(truth_var, load_one_var);
+
+            // init
+            // evaluate
+            // goto end
+            // true:
+            // set_to_1
+            // end:
+            return concat_inst(
+                init,
+                evaluate,
+                goto_end,
+                true_label,
+                load_one_var,
+                set_true,
+                end_label
+            );
+            break;    
         } case ARITHMETIC_EXPNODE: {
             printf("Entering math expnode\n");
             Instruction *inst_cont = arithmetic_instruction_new();
