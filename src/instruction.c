@@ -51,6 +51,14 @@ Instruction *label_instruction_new(char *name) {
 Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
     return NULL;
 }
+
 Instruction *uncond_jump_instruction_new(Instruction *destination) {
     return NULL;
+}
+
+Instruction *invocation_instruction_new(char *fn_name, Array *params) {
+    InvocationInstruction *inst = malloc(sizeof(InvocationInstruction));
+    inst->fn = fn_name;
+    inst->params = params;
+    return _instruction_new(INVOC_INST, inst);
 }

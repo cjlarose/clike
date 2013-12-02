@@ -51,7 +51,7 @@ typedef struct {
 
 typedef struct {
     char *fn;
-    Array params;
+    Array *params;
 } InvocationInstruction;
 
 typedef struct {
@@ -86,4 +86,5 @@ Instruction *load_float_instruction_new(double n);
 Instruction *label_instruction_new(char *name);
 Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
 Instruction *uncond_jump_instruction_new(Instruction *destination);
+Instruction *invocation_instruction_new(char *fn_name, Array *params);
 #endif
