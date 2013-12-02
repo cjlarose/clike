@@ -7,6 +7,7 @@
 #include "statements.h"
 #include "expressions.h"
 #include "str_table.h"
+#include "instruction.h"
 #define TMP_VAR_NAME_BUFFER_SIZE 12
 #define CONST_BUFFER_SIZE 64
 extern StringTable str_table;
@@ -73,14 +74,6 @@ char *print_expr_ir(ExpNode *expr) {
     return NULL;
 }
 
-Instruction *concat_inst(Instruction *lhs, Instruction *rhs) {
-    Instruction *node = lhs;
-    while (node != NULL)
-        node = node->next;
-    node->next = rhs;
-    return lhs;
-}
-
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
     char buffer[CONST_BUFFER_SIZE];
     switch (expr->node_type) {
@@ -93,11 +86,8 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return str_table_get(&str_table, buffer);
             break;
         case ARITHMETIC_EXPNODE: {
-            Instruction *inst_cont = malloc(sizeof(Instruction));
-            inst_cont->type = ARITHMETIC_INST;
-            ArithmeticInstruction *inst = inst_cont->value = 
-                calloc(1, sizeof(ArithmeticInstruction)); 
-            inst_cont->next = NULL;
+            Instruction *inst_cont = arithmetic_instruction_new();
+            ArithmeticInstruction *inst = inst_cont->value;
 
             inst->return_symbol = next_tmp_symbol(env);
             inst->op = expr->op;

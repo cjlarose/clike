@@ -18,7 +18,7 @@ TMP_SEMANTICS_ARCHIVE=semantics
 SEMANTICS_ARCHIVE=semantics.tar.gz
 
 NITTY_GRITTY_OBJS=nitty_gritty/build/map.o nitty_gritty/build/utils.o nitty_gritty/build/linked_list.o nitty_gritty/build/array.o
-COMPONENTS = env.c semantics.c declarations.c expressions.c str_table.c statements.c procedure.c ir.c
+COMPONENTS = env.c semantics.c declarations.c expressions.c str_table.c statements.c procedure.c ir.c instruction.c
 COMPONENT_OBJS = $(patsubst %, $(BUILD_DIR)/%, $(COMPONENTS:.c=.o))
 
 
