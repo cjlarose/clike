@@ -209,9 +209,9 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             Instruction *param_eval = NULL;
             int i;
             for (i = 0; i < expr->expns->length; i++) {
-                ExpNode *expr = array_get(expr->expns, i);
                 char *sym_name;
-                param_eval = concat_inst(param_eval, expr_to_ir(env, expr, &sym_name));
+                ExpNode *exp = array_get(expr->expns, i);
+                param_eval = concat_inst(param_eval, expr_to_ir(env, exp, &sym_name));
                 array_append(sym_list, &sym_name);
             }
             Instruction *invocation = invocation_instruction_new(expr->op, sym_list);
