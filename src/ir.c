@@ -145,12 +145,15 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             ((LoadIntInstruction *) init->value)->return_symbol = load_one_var;
             Instruction *set_true = copy_instruction_new(truth_var, load_one_var);
 
+            if (result_sym)
+                *result_sym = truth_var;
             // init
             // evaluate
             // goto end
             // true:
             // set_to_1
             // end:
+
             return concat_inst(
                 init,
                 evaluate,
@@ -161,6 +164,24 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 end_label
             );
             break;    
+        } case COMP_EXPNODE: {
+            // return value should be 0 or 1
+            char *return_symbol = next_tmp_symbol(env);
+            if (result_sym)
+                *result_sym = return_symbol;
+
+            char *lhs_sym, *rhs_sym;
+            Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
+            Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
+
+            Instruction *inst_cont = arithmetic_instruction_new();
+            ArithmeticInstruction *inst = inst_cont->value;
+            inst->return_symbol = return_symbol;
+            inst->lhs = lhs_sym;
+            inst->rhs = rhs_sym;
+            inst->op = expr->op;
+
+            return concat_inst(lhs, rhs, inst_cont);
         } case ARITHMETIC_EXPNODE: {
             printf("Entering math expnode\n");
             Instruction *inst_cont = arithmetic_instruction_new();
@@ -180,7 +201,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // prepend lhs and rhs and inst_cont
             inst->lhs = lhs_sym;
             inst->rhs = rhs_sym;
-            return concat_inst(concat_inst(lhs, rhs), inst_cont);
+            return concat_inst(lhs, rhs, inst_cont);
             break;
         } case ID_EXPNODE: // leaf
             if (result_sym)
