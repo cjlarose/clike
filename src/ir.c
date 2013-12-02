@@ -21,8 +21,9 @@ char *next_tmp_var_name() {
 
 char *next_tmp_symbol(Env *env) {
     char *name = next_tmp_var_name();
-    Symbol *sym = malloc(sizeof(Symbol));
+    Symbol *sym = calloc(1, sizeof(Symbol));
     sym->scope = NULL; 
+    sym->type = TYPE_INT; // unused
     Env_put(env, name, sym);
     return name;
 }

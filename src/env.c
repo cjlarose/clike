@@ -39,7 +39,7 @@ int Env_put(Env * env, char * id, Symbol * sym) {
         if (map_find(&env->prot_table, id) != NULL)
             return 0;
 
-    sym->scope = env;
+    //sym->scope = env;
 
     if (sym->type == TYPE_FN_PROT)
         map_insert(&env->prot_table, id, sym);
