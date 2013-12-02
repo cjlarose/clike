@@ -1,17 +1,28 @@
 #include <stdarg.h>
+#include <stdio.h>
 #include "instruction.h"
 
 Instruction *concat_inst(int count, ...) {
     va_list inst_list;
+    int i;
+    Instruction *head, *current_node;
+    head = current_node = NULL;
+
     va_start(inst_list, count);
+    for (i = 0; i < count; i++) {
+        Instruction *inst = va_arg(inst_list, Instruction *);
+        if (!inst)
+            continue;
+        if (head == NULL)
+            head = current_node = inst;
+        else {
+            while (current_node->next)
+                current_node = current_node->next;
+            current_node->next = inst;
+        }
+    }
     va_end(inst_list);
-    /*
-    Instruction *node = lhs;
-    while (node != NULL)
-        node = node->next;
-    node->next = rhs;
-    */
-    return NULL;
+    return head;
 }
 
 Instruction *_instruction_new(int type, void *value) {

@@ -100,6 +100,8 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             *ret_sym = next_tmp_symbol(env);
             if (result_sym)
                 *result_sym = *ret_sym;
+            //printf("Printing const expnode\n");
+            //print_ir_list(inst);
             return inst;
             break;
         } case BOOLEAN_EXPNODE: {
@@ -213,7 +215,11 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // prepend lhs and rhs and inst_cont
             inst->lhs = lhs_sym;
             inst->rhs = rhs_sym;
-            return concat_inst(3, lhs, rhs, inst_cont);
+            //printf("Printing math expnode\n");
+            //printf("%p %p %p\n", lhs, rhs, inst_cont);
+            Instruction *result = concat_inst(3, lhs, rhs, inst_cont);
+            //print_ir_list(result);
+            return result;
             break;
         } case INVOCATION_EXPNODE: {
             Array *sym_list = array_new(0, sizeof(char **));
@@ -239,7 +245,10 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
             Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);
-            return concat_inst(3, lhs, rhs, cpy_inst);
+            printf("Printing assignment expnode\n");
+            Instruction *result = concat_inst(3, lhs, rhs, cpy_inst);
+            //print_ir_list(result);
+            return result;
             break;
         } default:
             break;
