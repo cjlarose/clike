@@ -41,3 +41,9 @@ Instruction *load_float_instruction_new(double n) {
     inst->val = n;
     return _instruction_new(LOAD_FLOAT_INST, inst);
 }
+
+Instruction *label_instruction_new(char *name) {
+    LabelInstruction *inst = malloc(sizeof(LabelInstruction));
+    inst->name = name;
+    return _instruction_new(LABEL_INST, inst);
+}

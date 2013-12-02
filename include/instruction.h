@@ -39,8 +39,12 @@ typedef struct {
 } CopyInstruction;
 
 typedef struct {
+    char *name;
+} LabelInstruction;
+
+typedef struct {
     char *condition;
-    char *destination;
+    LabelInstruction *destination;
 } JumpInstruction;
 
 typedef struct {
@@ -65,7 +69,8 @@ typedef struct Instruction {
         JUMP_INST,
         INVOC_INST,
         LOAD_INT_INST,
-        LOAD_FLOAT_INST
+        LOAD_FLOAT_INST,
+        LABEL_INST
     } type;
     void *value;
     struct Instruction *next;
@@ -76,4 +81,5 @@ Instruction *arithmetic_instruction_new();
 Instruction *copy_instruction_new(char *lhs, char *rhs);
 Instruction *load_int_instruction_new(int n);
 Instruction *load_float_instruction_new(double n);
+Instruction *label_instruction_new(char *name);
 #endif
