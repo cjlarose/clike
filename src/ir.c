@@ -111,6 +111,8 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             if (result_sym)
                 *result_sym = inst->return_symbol;
             // prepend lhs and rhs and inst_cont
+            inst->lhs = lhs_sym;
+            inst->rhs = rhs_sym;
             return concat_inst(concat_inst(lhs, rhs), inst_cont);
             break;
         } case ID_EXPNODE: // leaf
