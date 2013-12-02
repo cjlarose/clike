@@ -130,7 +130,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 // if second, jump to true
                 Instruction *jump1 = cond_jump_instruction_new(lhs_sym, true_label);
                 Instruction *jump2 = cond_jump_instruction_new(rhs_sym, true_label);
-                evaluate = concat_inst(lhs, jump1, rhs, jump2);
+                evaluate = concat_inst(4, lhs, jump1, rhs, jump2);
             } else {//if (!strcmp(expr->op, "&&")) {
                 // do first
                 // do second
@@ -145,7 +145,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 and_inst->return_symbol = and_symbol = next_tmp_symbol(env);
 
                 Instruction *jump = cond_jump_instruction_new(and_symbol, true_label);
-                evaluate = concat_inst(lhs, rhs, and, jump);
+                evaluate = concat_inst(4, lhs, rhs, and, jump);
             }
 
             Instruction *goto_end = uncond_jump_instruction_new(end_label);
@@ -165,6 +165,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // end:
 
             return concat_inst(
+                7,
                 init,
                 evaluate,
                 goto_end,
@@ -191,7 +192,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             inst->rhs = rhs_sym;
             inst->op = expr->op;
 
-            return concat_inst(lhs, rhs, inst_cont);
+            return concat_inst(3, lhs, rhs, inst_cont);
             break;
         } case ARITHMETIC_EXPNODE: {
             printf("Entering math expnode\n");
@@ -212,7 +213,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // prepend lhs and rhs and inst_cont
             inst->lhs = lhs_sym;
             inst->rhs = rhs_sym;
-            return concat_inst(lhs, rhs, inst_cont);
+            return concat_inst(3, lhs, rhs, inst_cont);
             break;
         } case INVOCATION_EXPNODE: {
             Array *sym_list = array_new(0, sizeof(char **));
@@ -221,11 +222,11 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             for (i = 0; i < expr->expns->length; i++) {
                 char *sym_name;
                 ExpNode *exp = array_get(expr->expns, i);
-                param_eval = concat_inst(param_eval, expr_to_ir(env, exp, &sym_name));
+                param_eval = concat_inst(2, param_eval, expr_to_ir(env, exp, &sym_name));
                 array_append(sym_list, &sym_name);
             }
             Instruction *invocation = invocation_instruction_new(expr->op, sym_list);
-            return concat_inst(param_eval, invocation);
+            return concat_inst(2, param_eval, invocation);
             break;
         } case ID_EXPNODE: // leaf
             if (result_sym)
@@ -238,7 +239,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
             Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);
-            return concat_inst(concat_inst(lhs, rhs), cpy_inst);
+            return concat_inst(3, lhs, rhs, cpy_inst);
             break;
         } default:
             break;

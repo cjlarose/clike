@@ -78,7 +78,7 @@ typedef struct Instruction {
     struct Instruction *next;
 } Instruction;
 
-Instruction *concat_inst(Instruction *inst1, ...);
+Instruction *concat_inst(int count, ...);
 Instruction *arithmetic_instruction_new();
 Instruction *copy_instruction_new(char *lhs, char *rhs);
 Instruction *load_int_instruction_new(int n);

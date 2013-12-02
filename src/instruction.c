@@ -1,6 +1,10 @@
+#include <stdarg.h>
 #include "instruction.h"
 
-Instruction *concat_inst(Instruction *inst1, ...) {
+Instruction *concat_inst(int count, ...) {
+    va_list inst_list;
+    va_start(inst_list, count);
+    va_end(inst_list);
     /*
     Instruction *node = lhs;
     while (node != NULL)
