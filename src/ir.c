@@ -225,16 +225,24 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             Array *sym_list = array_new(0, sizeof(char **));
             Instruction *param_eval = NULL;
             int i;
+            printf("count: %d\n", expr->expns->length);
             for (i = 0; i < expr->expns->length; i++) {
                 char *sym_name;
                 ExpNode *exp = array_get(expr->expns, i);
                 param_eval = concat_inst(2, param_eval, expr_to_ir(env, exp, &sym_name));
+                printf("INVOC: %s\n", sym_name);
                 array_append(sym_list, &sym_name);
             }
-            Instruction *invocation = invocation_instruction_new(expr->op, sym_list);
+
+            char *return_symbol = next_tmp_symbol(env);
+            Instruction *invocation = invocation_instruction_new(return_symbol, expr->op, sym_list);
+            if (result_sym)
+                *result_sym = return_symbol;
+
             return concat_inst(2, param_eval, invocation);
             break;
         } case ID_EXPNODE: // leaf
+            printf("ID_EXPNODE: %s\n", expr->op);
             if (result_sym)
                 *result_sym = expr->op;
             return NULL;
@@ -242,8 +250,10 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
         case ASSIGNMENT_EXPNODE: {
             printf("Entering assignment expnode\n");
             char *lhs_sym, *rhs_sym;
+            lhs_sym = rhs_sym = NULL;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
+            printf("LHS: %p, RHS: %p\n", lhs_sym, rhs_sym);
             Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);
             printf("Printing assignment expnode\n");
             Instruction *result = concat_inst(3, lhs, rhs, cpy_inst);

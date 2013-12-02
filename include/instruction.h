@@ -50,6 +50,7 @@ typedef struct {
 } JumpInstruction;
 
 typedef struct {
+    char *return_symbol;
     char *fn;
     Array *params;
 } InvocationInstruction;
@@ -86,5 +87,5 @@ Instruction *load_float_instruction_new(double n);
 Instruction *label_instruction_new(char *name);
 Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
 Instruction *uncond_jump_instruction_new(Instruction *destination);
-Instruction *invocation_instruction_new(char *fn_name, Array *params);
+Instruction *invocation_instruction_new(char *result_sym, char *fn_name, Array *params);
 #endif

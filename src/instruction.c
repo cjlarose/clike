@@ -77,8 +77,9 @@ Instruction *uncond_jump_instruction_new(Instruction *destination) {
     return _instruction_new(JUMP_INST, inst);
 }
 
-Instruction *invocation_instruction_new(char *fn_name, Array *params) {
+Instruction *invocation_instruction_new(char *result_symbol, char *fn_name, Array *params) {
     InvocationInstruction *inst = malloc(sizeof(InvocationInstruction));
+    inst->return_symbol = result_symbol;
     inst->fn = fn_name;
     inst->params = params;
     return _instruction_new(INVOC_INST, inst);
