@@ -48,12 +48,24 @@ typedef struct {
     Array params;
 } InvocationInstruction;
 
+typedef struct {
+    char *return_symbol;
+    int val;
+} LoadIntInstruction;
+
+typedef struct {
+    char *return_symbol;
+    double val;
+} LoadFloatInstruction;
+
 typedef struct Instruction {
     enum {
         ARITHMETIC_INST,
         COPY_INST,
         JUMP_INST,
-        INVOC_INST
+        INVOC_INST,
+        LOAD_INT_INST,
+        LOAD_FLOAT_INST
     } type;
     void *value;
     struct Instruction *next;
@@ -61,4 +73,7 @@ typedef struct Instruction {
 
 Instruction *concat_inst(Instruction *lhs, Instruction *rhs);
 Instruction *arithmetic_instruction_new();
+Instruction *copy_instruction_new(char *lhs, char *rhs);
+Instruction *load_int_instruction_new(int n);
+Instruction *load_float_instruction_new(double n);
 #endif

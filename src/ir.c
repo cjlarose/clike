@@ -76,18 +76,18 @@ char *print_expr_ir(ExpNode *expr) {
 }
 
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
-    char buffer[CONST_BUFFER_SIZE];
     switch (expr->node_type) {
-        case CONSTANT_EXPNODE: // leaf
-            //printf("CONST EXPR!\n");
-            //if (expr->return_type == TYPE_INT)
-            //    snprintf(buffer, CONST_BUFFER_SIZE, "%d", expr->int_val);
-            //else
-            //    snprintf(buffer, CONST_BUFFER_SIZE, "%f", expr->float_val);
-            //return str_table_get(&str_table, buffer);
-            return NULL;
+        case CONSTANT_EXPNODE: { // leaf
+            printf("CONST EXPR!\n");
+            Instruction *inst;
+            if (expr->return_type == TYPE_INT)
+                inst = load_int_instruction_new(expr->int_val);
+            else
+                inst = load_float_instruction_new(expr->float_val);
+            ((LoadIntInstruction *) inst->value)->return_symbol = next_tmp_symbol(env);
+            return inst;
             break;
-        case ARITHMETIC_EXPNODE: {
+        } case ARITHMETIC_EXPNODE: {
             printf("Entering math expnode\n");
             Instruction *inst_cont = arithmetic_instruction_new();
             ArithmeticInstruction *inst = inst_cont->value;
@@ -112,8 +112,8 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return expr->op;
             break;
         case ASSIGNMENT_EXPNODE: {
-            char *lhs_sym, *rhs_sym;
             printf("Entering assignment expnode\n");
+            char *lhs_sym, *rhs_sym;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
             Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);

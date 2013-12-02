@@ -29,3 +29,15 @@ Instruction *copy_instruction_new(char *lhs, char *rhs) {
     cpy_inst->rhs = rhs;
     return _instruction_new(COPY_INST, cpy_inst);
 }
+
+Instruction *load_int_instruction_new(int n) {
+    LoadIntInstruction *inst = malloc(sizeof(LoadIntInstruction));
+    inst->val = n;
+    return _instruction_new(LOAD_INT_INST, inst);
+}
+
+Instruction *load_float_instruction_new(double n) {
+    LoadIntInstruction *inst = malloc(sizeof(LoadIntInstruction));
+    inst->val = n;
+    return _instruction_new(LOAD_FLOAT_INST, inst);
+}
