@@ -131,6 +131,10 @@ Instruction *return_stmt_to_ir(Env *env, ReturnStatement *stmt) {
     return concat_inst(2, inst, return_inst);
 }
 
+Instruction *invocation_stmt_to_ir(Env *env, InvocationStatement *stmt) {
+    return expr_to_ir(env, stmt->expr, NULL);
+}
+
 Instruction *block_stmt_to_ir(Env *env, BlockStatement *stmt) {
     if (!stmt->stmts)
         return NULL;
@@ -169,6 +173,9 @@ Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
             break;
         case ASSIGNMENT_STMT:
             return assg_stmt_to_ir(env, &stmt->node.assg_stmt);
+            break;
+        case INVOCATION_STMT:
+            return invocation_stmt_to_ir(env, &stmt->node.invoc_stmt);
             break;
         case BLOCK_STMT:
             return block_stmt_to_ir(env, &stmt->node.block_stmt);
