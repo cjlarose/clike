@@ -31,6 +31,7 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     // then code
     // end:
 
+    /*
     printf("Condition: %p\n", condition);
     print_ir_list(condition);
     printf("Jump To True: %p\n", jump_to_true);
@@ -46,6 +47,7 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     printf("End Label: %p\n", end_label);
     print_ir_list(end_label);
     printf("End\n");
+    */
 
     return concat_inst(
         7,

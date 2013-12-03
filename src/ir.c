@@ -8,6 +8,7 @@
 #include "str_table.h"
 #include "instruction.h"
 #include "statements.h"
+#include "ir_statement.h"
 #define TMP_VAR_NAME_BUFFER_SIZE 12
 extern StringTable str_table;
 
