@@ -228,7 +228,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             printf("count: %d\n", expr->expns->length);
             for (i = 0; i < expr->expns->length; i++) {
                 char *sym_name;
-                ExpNode *exp = array_get(expr->expns, i);
+                ExpNode *exp = *((ExpNode **) array_get(expr->expns, i));
                 param_eval = concat_inst(2, param_eval, expr_to_ir(env, exp, &sym_name));
                 printf("INVOC: %s\n", sym_name);
                 array_append(sym_list, &sym_name);

@@ -110,7 +110,7 @@ void _verify_types(char *fn_id, Array *tx, Array *expnx) {
     int i;
     for (i = 0; i < tx->length; i++) {
         enum SymType argument_type = *((enum SymType *) array_get(tx, i));
-        ExpNode *node = array_get(expnx, i);
+        ExpNode *node = *((ExpNode **) array_get(expnx, i));
         if (resolve_types(argument_type, node->return_type) == -1) {
             // TODO: type promotion of parameters
             print_error("Parameter %d of invocation of function "
@@ -192,7 +192,7 @@ ExpNode *new_assignment_expnode(ExpNode *lhs, ExpNode *rhs) {
 }
 
 Array *expr_list_insert(Array *exprx, ExpNode * node) {
-    array_append(exprx, node);
+    array_append(exprx, &node);
     return exprx;
 }
 
