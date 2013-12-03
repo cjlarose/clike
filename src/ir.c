@@ -87,6 +87,7 @@ void print_ir_list(Instruction *node) {
 }
 
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
+    printf("NODE TYPE : %d\n", expr->node_type);
     switch (expr->node_type) {
         case CONSTANT_EXPNODE: { // leaf
             printf("CONST EXPR!\n");
@@ -105,6 +106,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return inst;
             break;
         } case BOOLEAN_EXPNODE: {
+            printf("Entering boolean expnode\n");
             // truth_val = 0
             // evaluate shit, jump to true if true
             // goto end
@@ -122,9 +124,12 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
 
             char *lhs_sym, *rhs_sym;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym); 
-            Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym); 
+            Instruction *rhs = NULL;
+            if (expr->rhs)
+                rhs = expr_to_ir(env, expr->rhs, &rhs_sym); 
 
             Instruction *evaluate;
+            printf("Before evaluate\n");
             if (!strcmp(expr->op, "||")) {
                 // do first
                 // if first, jump to true
@@ -133,7 +138,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 Instruction *jump1 = cond_jump_instruction_new(lhs_sym, true_label);
                 Instruction *jump2 = cond_jump_instruction_new(rhs_sym, true_label);
                 evaluate = concat_inst(4, lhs, jump1, rhs, jump2);
-            } else {//if (!strcmp(expr->op, "&&")) {
+            } else if (!strcmp(expr->op, "&&")) {
                 // do first
                 // if first, jump to maybe
                 // goto end
@@ -149,7 +154,18 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
 
                 evaluate = concat_inst(6, lhs, jump_to_maybe, jump_to_end, 
                     maybe_label, rhs, jump_to_true);
+            } else {
+                printf("NEGATION\n");
+                // (boolean negation)
+                // do first
+                // if first, jump to end
+                // jump to true
+                Instruction *jump_to_end = cond_jump_instruction_new(lhs_sym, end_label);
+                Instruction *jump_to_true = uncond_jump_instruction_new(true_label);
+                printf("CONCAT %p %p %p\n", lhs, jump_to_end, jump_to_true);
+                evaluate = concat_inst(3, lhs, jump_to_end, jump_to_true);
             }
+            printf("After evaluate\n");
 
             Instruction *goto_end = uncond_jump_instruction_new(end_label);
 
@@ -167,6 +183,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // set_to_1
             // end:
 
+            printf("Entering boolean expnode\n");
             return concat_inst(
                 7,
                 init,
@@ -180,6 +197,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             break;    
         } case COMP_EXPNODE: {
             // return value should be 0 or 1
+            printf("Entering comp expnode\n");
             char *return_symbol = next_tmp_symbol(env);
             if (result_sym)
                 *result_sym = return_symbol;
@@ -195,6 +213,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             inst->rhs = rhs_sym;
             inst->op = expr->op;
 
+            printf("Exiting comp expnode\n");
             return concat_inst(3, lhs, rhs, inst_cont);
             break;
         } case ARITHMETIC_EXPNODE: {
@@ -208,18 +227,19 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             char *lhs_sym, *rhs_sym;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = NULL;
-            if (expr->rhs)
+            inst->lhs = lhs_sym;
+            if (expr->rhs) {
                 rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
+                inst->rhs = rhs_sym;
+            }
 
             if (result_sym)
                 *result_sym = inst->return_symbol;
             // prepend lhs and rhs and inst_cont
-            inst->lhs = lhs_sym;
-            inst->rhs = rhs_sym;
-            //printf("Printing math expnode\n");
             //printf("%p %p %p\n", lhs, rhs, inst_cont);
             Instruction *result = concat_inst(3, lhs, rhs, inst_cont);
             //print_ir_list(result);
+            printf("Exiting math expnode\n");
             return result;
             break;
         } case INVOCATION_EXPNODE: {
