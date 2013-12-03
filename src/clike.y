@@ -12,6 +12,7 @@
 #include "ir.h"
 
 int status;
+Env *global_scope;
 Env *current_scope;
 enum SymType prev_type; 
 enum SymType current_type; 
@@ -194,7 +195,7 @@ int_con: OCT_INT_CON | HEX_INT_CON | DEC_INT_CON
 #ifndef TOKENOUT_MAIN
 int main(int argc, char **argv) {
     str_table_init(&str_table);
-    current_scope = Env_new(NULL);
+    current_scope = global_scope = Env_new(NULL);
     array_init(&procedure_list, 0, sizeof(Procedure));
 
 # ifdef DEBUG
