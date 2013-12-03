@@ -1,0 +1,10 @@
+TODO FOR INTERMEDIATE CODE GENERATION
+=====================================
+
+[ ] Type promotion, demotion between char and int types
+[ ] Char nodes
+[ ] Type & scope annocations in IR
+[ ] Pass doubles by reference
+[ ] Array indicies
+[ ] Labels should be globally unique
+[ ] Temporaries should be locally unique
