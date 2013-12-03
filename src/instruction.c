@@ -84,3 +84,9 @@ Instruction *invocation_instruction_new(char *result_symbol, char *fn_name, Arra
     inst->params = params;
     return _instruction_new(INVOC_INST, inst);
 }
+
+Instruction *return_instruction_new(char *return_symbol) {
+    ReturnInstruction *inst = malloc(sizeof(ReturnInstruction));
+    inst->return_symbol = return_symbol;
+    return _instruction_new(RETURN_INST, inst);
+}

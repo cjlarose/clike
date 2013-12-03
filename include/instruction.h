@@ -65,6 +65,10 @@ typedef struct {
     double val;
 } LoadFloatInstruction;
 
+typedef struct {
+    char *return_symbol;
+} ReturnInstruction;
+
 typedef struct Instruction {
     enum {
         ARITHMETIC_INST,
@@ -73,7 +77,8 @@ typedef struct Instruction {
         INVOC_INST,
         LOAD_INT_INST,
         LOAD_FLOAT_INST,
-        LABEL_INST
+        LABEL_INST,
+        RETURN_INST
     } type;
     void *value;
     struct Instruction *next;
@@ -88,4 +93,5 @@ Instruction *label_instruction_new(char *name);
 Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
 Instruction *uncond_jump_instruction_new(Instruction *destination);
 Instruction *invocation_instruction_new(char *result_sym, char *fn_name, Array *params);
+Instruction *return_instruction_new(char *return_sym);
 #endif
