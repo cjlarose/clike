@@ -67,9 +67,7 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     return boolean_eval(env, stmt->condition, then_stmt, else_stmt);
 }
 
-Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
-    // expr non-null, body nullable
-    
+Instruction *while_eval(Env *env, ExpNode *condition, Instruction *loop_body) {
     // loop begin:
     // condition
     // if condition goto body: 
@@ -82,15 +80,23 @@ Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
     Instruction *loop_begin = label_instruction_new(next_tmp_symbol(env));
     Instruction *goto_loop_begin = uncond_jump_instruction_new(loop_begin);
 
-    Instruction *loop_body = statement_to_ir(env, stmt->body);
     Instruction *then_stmt = concat_inst(2, loop_body, goto_loop_begin);
 
     Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
     Instruction *goto_end = uncond_jump_instruction_new(end_label);
 
-    Instruction *main_body = boolean_eval(env, stmt->condition, then_stmt, 
+    Instruction *main_body = boolean_eval(env, condition, then_stmt, 
         goto_end);
     return concat_inst(3, loop_begin, main_body, end_label);
+}
+
+Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
+    // expr non-null, body nullable
+    Instruction *loop_body = statement_to_ir(env, stmt->body);
+    return while_eval(env, stmt->condition, loop_body);
+}
+
+Instruction *for_stmt_to_ir(Env *env, ForStatement *stmt) {
 }
 
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
@@ -108,6 +114,9 @@ Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
             break;
         case WHILE_STMT:
             return while_stmt_to_ir(env, &stmt->node.while_stmt);
+            break;
+        case FOR_STMT:
+            return for_stmt_to_ir(env, &stmt->node.for_stmt);
             break;
         case ASSIGNMENT_STMT:
             return assg_stmt_to_ir(env, &stmt->node.assg_stmt);
