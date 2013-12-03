@@ -131,6 +131,20 @@ Instruction *return_stmt_to_ir(Env *env, ReturnStatement *stmt) {
     return concat_inst(2, inst, return_inst);
 }
 
+Instruction *block_stmt_to_ir(Env *env, BlockStatement *stmt) {
+    if (!stmt->stmts)
+        return NULL;
+
+    Instruction *all = NULL;
+    int i = 0;
+    for (; i < stmt->stmts->length; i++) {
+        StmtNodeContainer *s = *((StmtNodeContainer **) array_get(stmt->stmts, i));
+        Instruction *current_inst = statement_to_ir(env, s);
+        all = concat_inst(2, all, current_inst);
+    }
+    return all;
+}
+
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
     //printf("ASSIGNMENT STMT!\n");
     //print_expr_ir(stmt->expr);
@@ -155,6 +169,9 @@ Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
             break;
         case ASSIGNMENT_STMT:
             return assg_stmt_to_ir(env, &stmt->node.assg_stmt);
+            break;
+        case BLOCK_STMT:
+            return block_stmt_to_ir(env, &stmt->node.block_stmt);
             break;
         default:
             break;
