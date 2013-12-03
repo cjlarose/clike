@@ -330,27 +330,16 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     print_ir_list(end_label);
     printf("End\n");
 
-    if (else_stmt)
-        return concat_inst(
-            7,
-            condition,
-            jump_to_true,
-            else_stmt,
-            jump_to_end,
-            true_label,
-            then_stmt,
-            end_label
-        );
-    else
-        return concat_inst(
-            6,
-            condition,
-            jump_to_true,
-            jump_to_end,
-            true_label,
-            then_stmt,
-            end_label
-        );
+    return concat_inst(
+        7,
+        condition,
+        jump_to_true,
+        else_stmt,
+        jump_to_end,
+        true_label,
+        then_stmt,
+        end_label
+    );
 }
 
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
