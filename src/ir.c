@@ -154,7 +154,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
 
             char *load_one_var = next_tmp_symbol(env);
             Instruction *load_one = load_int_instruction_new(1);
-            ((LoadIntInstruction *) init->value)->return_symbol = load_one_var;
+            ((LoadIntInstruction *) load_one->value)->return_symbol = load_one_var;
             Instruction *set_true = copy_instruction_new(truth_var, load_one_var);
 
             if (result_sym)
@@ -294,12 +294,20 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     // end:
 
     printf("Condition: %p\n", condition);
+    print_ir_list(condition);
     printf("Jump To True: %p\n", jump_to_true);
+    print_ir_list(jump_to_true);
     printf("Else Stmt: %p\n", else_stmt);
+    print_ir_list(else_stmt);
     printf("Jump To End: %p\n", jump_to_end);
+    print_ir_list(jump_to_end);
     printf("True Label: %p\n", true_label);
+    print_ir_list(true_label);
     printf("Then Stmt: %p\n", then_stmt);
+    print_ir_list(then_stmt);
     printf("End Label: %p\n", end_label);
+    print_ir_list(end_label);
+    printf("End\n");
 
     if (else_stmt)
         return concat_inst(
