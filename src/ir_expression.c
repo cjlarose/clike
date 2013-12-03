@@ -174,10 +174,12 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 array_append(sym_list, &sym_name);
             }
 
-            char *return_symbol = next_tmp_symbol(env);
-            Instruction *invocation = invocation_instruction_new(return_symbol, expr->op, sym_list);
-            if (result_sym)
+            char *return_symbol = NULL;
+            if (result_sym) {
+                return_symbol = next_tmp_symbol(env);
                 *result_sym = return_symbol;
+            }
+            Instruction *invocation = invocation_instruction_new(return_symbol, expr->op, sym_list);
 
             return concat_inst(2, param_eval, invocation);
             break;

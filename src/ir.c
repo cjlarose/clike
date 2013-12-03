@@ -61,7 +61,9 @@ void print_ir_list(Instruction *node) {
                 break;
             } case INVOC_INST: {
                 InvocationInstruction *inst = node->value;
-                printf("%s = %s(", inst->return_symbol, inst->fn);
+                if (inst->return_symbol)
+                    printf("%s = ", inst->return_symbol);
+                printf("%s(", inst->fn);
                 int i;
                 for (i = 0; i < inst->params->length; i++)
                     printf("%s, ", *((char **) array_get(inst->params, i)));
