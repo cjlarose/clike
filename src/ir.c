@@ -135,19 +135,20 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 evaluate = concat_inst(4, lhs, jump1, rhs, jump2);
             } else {//if (!strcmp(expr->op, "&&")) {
                 // do first
-                // do second
-                // preform &
-                // if true, jump to true
-                char *and_symbol;
-                Instruction *and = arithmetic_instruction_new();
-                ArithmeticInstruction *and_inst = and->value;
-                and_inst->op = "&";
-                and_inst->lhs = lhs_sym;
-                and_inst->rhs = rhs_sym;
-                and_inst->return_symbol = and_symbol = next_tmp_symbol(env);
+                // if first, jump to maybe
+                // goto end
 
-                Instruction *jump = cond_jump_instruction_new(and_symbol, true_label);
-                evaluate = concat_inst(4, lhs, rhs, and, jump);
+                // maybe:
+                // do second
+                // if second, jump to true
+                // (goto end)
+                Instruction *maybe_label = label_instruction_new(next_tmp_symbol(env));
+                Instruction *jump_to_maybe = cond_jump_instruction_new(lhs_sym, maybe_label);
+                Instruction *jump_to_end = uncond_jump_instruction_new(end_label);
+                Instruction *jump_to_true = cond_jump_instruction_new(rhs_sym, true_label);
+
+                evaluate = concat_inst(6, lhs, jump_to_maybe, jump_to_end, 
+                    maybe_label, rhs, jump_to_true);
             }
 
             Instruction *goto_end = uncond_jump_instruction_new(end_label);
