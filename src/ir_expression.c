@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include "ir.h"
 #include "instruction.h"
 #include "expressions.h"
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
+    if (!expr)
+        return NULL;
     printf("NODE TYPE : %d\n", expr->node_type);
     switch (expr->node_type) {
         case CONSTANT_EXPNODE: { // leaf
