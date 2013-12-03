@@ -120,6 +120,17 @@ Instruction *for_stmt_to_ir(Env *env, ForStatement *stmt) {
     );
 }
 
+Instruction *return_stmt_to_ir(Env *env, ReturnStatement *stmt) {
+    char *return_symbol = NULL;
+    Instruction *inst = NULL;
+    if (stmt->expr)
+        inst = expr_to_ir(env, stmt->expr, &return_symbol);
+
+    Instruction *return_inst = return_instruction_new(return_symbol);
+
+    return concat_inst(2, inst, return_inst);
+}
+
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
     //printf("ASSIGNMENT STMT!\n");
     //print_expr_ir(stmt->expr);
@@ -138,6 +149,9 @@ Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
             break;
         case FOR_STMT:
             return for_stmt_to_ir(env, &stmt->node.for_stmt);
+            break;
+        case RETURN_STMT:
+            return return_stmt_to_ir(env, &stmt->node.return_stmt);
             break;
         case ASSIGNMENT_STMT:
             return assg_stmt_to_ir(env, &stmt->node.assg_stmt);

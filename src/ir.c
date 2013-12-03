@@ -79,6 +79,13 @@ void print_ir_list(Instruction *node) {
                 LabelInstruction *inst = node->value;
                 printf("%s:\n", inst->name);
                 break;
+            } case RETURN_INST: {
+                ReturnInstruction *inst = node->value;
+                printf("return");
+                if (inst->return_symbol)
+                    printf(" %s", inst->return_symbol);
+                printf("\n");
+                break;
             }
         }
         node = node->next;
