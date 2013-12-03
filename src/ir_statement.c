@@ -6,13 +6,11 @@
 #include "ir_statement.h"
 #include "ir_expression.h"
 
-Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
+Instruction *boolean_eval(Env *env, ExpNode *condition_expr, 
+    Instruction *then_stmt, Instruction *else_stmt) {
+
     char *condition_var = next_tmp_symbol(env);
-    Instruction *condition = expr_to_ir(env, stmt->condition, &condition_var);
-    Instruction *then_stmt = statement_to_ir(env, stmt->then_stmt);
-    Instruction *else_stmt = NULL;
-    if (stmt->else_stmt)
-        else_stmt = statement_to_ir(env, stmt->else_stmt);
+    Instruction *condition = expr_to_ir(env, condition_expr, &condition_var);
 
     Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
     Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
@@ -61,6 +59,21 @@ Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
     );
 }
 
+Instruction *if_stmt_to_ir(Env *env, IfStatement *stmt) {
+    Instruction *then_stmt = statement_to_ir(env, stmt->then_stmt);
+    Instruction *else_stmt = NULL;
+    if (stmt->else_stmt)
+        else_stmt = statement_to_ir(env, stmt->else_stmt);
+    return boolean_eval(env, stmt->condition, then_stmt, else_stmt);
+}
+
+Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
+    // expr non-null, body nullable
+    //char *condition_var = next_tmp_symbol(env);
+    //Instruction *condition = expr_to_ir(env, stmt->condition, &condition_var);
+    return NULL;
+}
+
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
     //printf("ASSIGNMENT STMT!\n");
     //print_expr_ir(stmt->expr);
@@ -73,6 +86,9 @@ Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
     switch (stmt->type) {
         case IF_STMT:
             return if_stmt_to_ir(env, &stmt->node.if_stmt);
+            break;
+        case WHILE_STMT:
+            return while_stmt_to_ir(env, &stmt->node.while_stmt);
             break;
         case ASSIGNMENT_STMT:
             return assg_stmt_to_ir(env, &stmt->node.assg_stmt);
