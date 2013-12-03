@@ -10,7 +10,9 @@ Instruction *boolean_eval(Env *env, ExpNode *condition_expr,
     Instruction *then_stmt, Instruction *else_stmt) {
 
     char *condition_var = next_tmp_symbol(env);
-    Instruction *condition = expr_to_ir(env, condition_expr, &condition_var);
+    Instruction *condition = NULL;
+    if (condition_expr)
+        condition = expr_to_ir(env, condition_expr, &condition_var);
 
     Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
     Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
@@ -97,6 +99,17 @@ Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
 }
 
 Instruction *for_stmt_to_ir(Env *env, ForStatement *stmt) {
+    // all members can be null
+    Instruction *init = NULL;
+    if (stmt->initialization)
+        init = expr_to_ir(env, stmt->initialization, NULL);
+
+    return concat_inst(
+        2,
+        init,
+        while_eval(env, stmt->condition, 
+            concat_inst(2, stmt->body, stmt->loop_expression))
+    );
 }
 
 Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
