@@ -100,15 +100,23 @@ Instruction *while_stmt_to_ir(Env *env, WhileStatement *stmt) {
 
 Instruction *for_stmt_to_ir(Env *env, ForStatement *stmt) {
     // all members can be null
-    Instruction *init = NULL;
+    Instruction *init, *loop_body, *loop_expression;
+    init = loop_body = loop_expression = NULL;
+
     if (stmt->initialization)
         init = expr_to_ir(env, stmt->initialization, NULL);
+
+    if (stmt->body)
+        loop_body = statement_to_ir(env, stmt->body);
+
+    if (stmt->loop_expression)
+        loop_expression = expr_to_ir(env, stmt->loop_expression, NULL);
 
     return concat_inst(
         2,
         init,
         while_eval(env, stmt->condition, 
-            concat_inst(2, stmt->body, stmt->loop_expression))
+            concat_inst(2, loop_body, loop_expression))
     );
 }
 
