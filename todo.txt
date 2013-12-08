@@ -5,6 +5,7 @@ TODO FOR INTERMEDIATE CODE GENERATION
 [ ] Char nodes
 [ ] Type & scope annotations in IR
 [ ] Pass doubles by reference
-[ ] Array indicies
+[x] Array indicies RHS
+[ ] Array indicies LHS
 [ ] Labels should be globally unique
 [ ] Temporaries should be locally unique
