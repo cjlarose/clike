@@ -185,8 +185,21 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             break;
         } case ID_EXPNODE: // leaf
             printf("ID_EXPNODE: %s\n", expr->op);
-            if (result_sym)
-                *result_sym = expr->op;
+            if (expr->index == NULL) {
+                if (result_sym)
+                    *result_sym = expr->op;
+            } else {
+                char *return_symbol = next_tmp_symbol(env);
+                if (result_sym)
+                    *result_sym = return_symbol; 
+
+                char *index_sym = NULL;
+                Instruction *index_code = expr_to_ir(env, expr->index, &index_sym);
+                return concat_inst(2,
+                    index_code,
+                    array_element_instruction_new(expr->op, index_sym, return_symbol)
+                );
+            }
             return NULL;
             break;
         case ASSIGNMENT_EXPNODE: {

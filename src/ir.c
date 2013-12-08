@@ -88,6 +88,10 @@ void print_ir_list(Instruction *node) {
                     printf(" %s", inst->return_symbol);
                 printf("\n");
                 break;
+            } case ARRAY_EL_INST: {
+                ArrayElementInstruction *inst = node->value;
+                printf("%s = %s[%s]\n", inst->return_symbol, inst->arr, 
+                    inst->index);
             }
         }
         node = node->next;

@@ -27,11 +27,15 @@ invocation
 typedef struct {
     char *return_symbol;
     char *lhs;
-    char *lhs_offset;
     char *rhs;
-    char *rhs_offset;
     char *op;
 } ArithmeticInstruction;
+
+typedef struct {
+    char *arr;
+    char *index;
+    char *return_symbol;
+} ArrayElementInstruction;
 
 typedef struct {
     char *lhs;
@@ -78,7 +82,8 @@ typedef struct Instruction {
         LOAD_INT_INST,
         LOAD_FLOAT_INST,
         LABEL_INST,
-        RETURN_INST
+        RETURN_INST,
+        ARRAY_EL_INST
     } type;
     void *value;
     struct Instruction *next;
@@ -94,4 +99,5 @@ Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
 Instruction *uncond_jump_instruction_new(Instruction *destination);
 Instruction *invocation_instruction_new(char *result_sym, char *fn_name, Array *params);
 Instruction *return_instruction_new(char *return_sym);
+Instruction *array_element_instruction_new(char *arr, char *index, char *return_sym);
 #endif

@@ -90,3 +90,11 @@ Instruction *return_instruction_new(char *return_symbol) {
     inst->return_symbol = return_symbol;
     return _instruction_new(RETURN_INST, inst);
 }
+
+Instruction *array_element_instruction_new(char *arr, char *index, char *return_symbol) {
+    ArrayElementInstruction *inst = malloc(sizeof(ArrayElementInstruction));
+    inst->arr = arr;
+    inst->index = index;
+    inst->return_symbol = return_symbol;
+    return _instruction_new(ARRAY_EL_INST, inst);
+}
