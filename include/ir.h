@@ -4,5 +4,6 @@
 #include "env.h"
 char *next_tmp_var_name();
 char *next_tmp_symbol(Env *env);
+void make_ir(Env *global_scope, Array *procedures);
 void print_ir(Env *global_scope, Array *procedures);
 #endif

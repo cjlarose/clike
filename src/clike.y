@@ -207,8 +207,13 @@ int main(int argc, char **argv) {
         status = bison_status;
     yylex_destroy();
 
-    if (!status)
+    if (!status) {
+        make_ir(current_scope, &procedure_list);
+        // if -im
         print_ir(current_scope, &procedure_list);
+        // else
+        //print_mips(current_scope, &procedure_list);
+    }
 
     //procedure_list_free(&procedure_list);
     Env_free(current_scope);

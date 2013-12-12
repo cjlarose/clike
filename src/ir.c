@@ -98,23 +98,30 @@ void print_ir_list(Instruction *node) {
     }
 }
 
-void print_ir_procedure(char *id, Env *env, Array *stmts) {
-    printf("PRINTING IR FOR ENV %p %s\n", env, id);
+Instruction *procedure_to_ir(char *id, Env *env, Array *stmts) {
+    Instruction *result = NULL;
     int i;
     if (stmts)
         for (i = 0; i < stmts->length; i++) {
             StmtNodeContainer *stmt = *((StmtNodeContainer **) array_get(stmts, i));
-            Instruction *result = statement_to_ir(env, stmt);
-            if (result)
-                print_ir_list(result);
+            result = concat_inst(2, result, statement_to_ir(env, stmt));
         }
+    return result;
 }
 
 void print_ir(Env *global_scope, Array *procedures) {
-    printf("PRINTING INTERMEDIATE CODE\n");
     int i;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);
-        print_ir_procedure(proc->id, proc->env, proc->stmts);
+        printf("%s\n", proc->id);
+        print_ir_list(proc->code);
+    }
+}
+
+void make_ir(Env *global_scope, Array *procedures) {
+    int i;
+    for (i = 0; i < procedures->length; i++) {
+        Procedure *proc = array_get(procedures, i);
+        proc->code = procedure_to_ir(proc->id, proc->env, proc->stmts);
     }
 }
