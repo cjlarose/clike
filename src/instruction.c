@@ -38,10 +38,11 @@ Instruction *arithmetic_instruction_new() {
         calloc(1, sizeof(ArithmeticInstruction)));
 }
 
-Instruction *copy_instruction_new(char *lhs, char *rhs) {
+Instruction *copy_instruction_new(char *lhs, char *rhs, char *index) {
     CopyInstruction *cpy_inst = malloc(sizeof(CopyInstruction));
     cpy_inst->lhs = lhs;
     cpy_inst->rhs = rhs;
+    cpy_inst->index = index;
     return _instruction_new(COPY_INST, cpy_inst);
 }
 

@@ -47,10 +47,17 @@ void print_ir_list(Instruction *node) {
                 break;
             } case COPY_INST: {
                 CopyInstruction *inst = node->value;
-                printf("%s = %s\n",
-                    inst->lhs,
-                    inst->rhs
-                );
+                if (inst->index)
+                    printf("%s[%s] = %s\n",
+                        inst->lhs,
+                        inst->index,
+                        inst->rhs
+                    );
+                else
+                    printf("%s = %s\n",
+                        inst->lhs,
+                        inst->rhs
+                    );
                 break;
             } case JUMP_INST: {
                 JumpInstruction *inst = node->value;

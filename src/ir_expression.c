@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "ir.h"
 #include "instruction.h"
 #include "expressions.h"
+
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
     if (!expr)
         return NULL;
@@ -91,7 +93,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             char *load_one_var = next_tmp_symbol(env);
             Instruction *load_one = load_int_instruction_new(1);
             ((LoadIntInstruction *) load_one->value)->return_symbol = load_one_var;
-            Instruction *set_true = copy_instruction_new(truth_var, load_one_var);
+            Instruction *set_true = copy_instruction_new(truth_var, load_one_var, NULL);
 
             if (result_sym)
                 *result_sym = truth_var;
@@ -204,15 +206,19 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             break;
         case ASSIGNMENT_EXPNODE: {
             //printf("Entering assignment expnode\n");
-            char *lhs_sym, *rhs_sym;
-            lhs_sym = rhs_sym = NULL;
-            Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
+            char *lhs_sym, *rhs_sym, *index_sym;
+            lhs_sym = rhs_sym = index_sym = NULL;
+
+            assert(expr->lhs->node_type == ID_EXPNODE);
+            Instruction *index_inst = NULL;
+            if (expr->lhs->index != NULL)
+                index_inst = expr_to_ir(env, expr->lhs->index, &index_sym);
+            lhs_sym = expr->lhs->op;
+
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
             //printf("LHS: %p, RHS: %p\n", lhs_sym, rhs_sym);
-            Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);
-            //printf("Printing assignment expnode\n");
-            Instruction *result = concat_inst(3, lhs, rhs, cpy_inst);
-            //print_ir_list(result);
+            Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym, index_sym);
+            Instruction *result = concat_inst(3, index_inst, rhs, cpy_inst);
             return result;
             break;
         } default:

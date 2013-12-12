@@ -40,6 +40,7 @@ typedef struct {
 typedef struct {
     char *lhs;
     char *rhs;
+    char *index;
 } CopyInstruction;
 
 typedef struct {
@@ -91,7 +92,7 @@ typedef struct Instruction {
 
 Instruction *concat_inst(int count, ...);
 Instruction *arithmetic_instruction_new();
-Instruction *copy_instruction_new(char *lhs, char *rhs);
+Instruction *copy_instruction_new(char *lhs, char *rhs, char *index);
 Instruction *load_int_instruction_new(int n);
 Instruction *load_float_instruction_new(double n);
 Instruction *label_instruction_new(char *name);
