@@ -110,9 +110,10 @@ Instruction *procedure_to_ir(char *id, Env *env, Array *stmts) {
 }
 
 void print_ir(Env *global_scope, Array *procedures) {
-    int i;
+    int i, j;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);
+        Symbol *sym = Env_get(global_scope, proc->id);
         switch (proc->return_type) {
             case VOID_TYPE:
                 printf("void");
@@ -126,7 +127,23 @@ void print_ir(Env *global_scope, Array *procedures) {
             default:
                 break;
         }
-        printf(" %s () {\n", proc->id);
+        printf(" %s (", proc->id);
+        for (j = 0; j < sym->type_list->length; j++) {
+            switch (*((int *) array_get(sym->type_list, j))) {
+                case TYPE_CHAR:
+                case TYPE_INT:
+                    printf("i32");
+                    break;
+                case TYPE_FLOAT:
+                    printf("double *");
+                    break;
+            }
+            //printf(" %p, ", sym->param_list);
+            printf(" %s", *((char **) array_get(sym->param_list, j)));
+            if (j < sym->type_list->length - 1)
+                printf(", ");
+        }
+        printf(") {\n");
         print_ir_list(proc->code);
         printf("}\n");
     }

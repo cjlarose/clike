@@ -102,12 +102,13 @@ Array *validate_id_list(char *fn_id, Array *idx, Env *dclx, Symbol *prot) {
     return tx;
 }
 
-void insert_fn_into_global_symtable(char *fn_id, Array *tx) {
+void insert_fn_into_global_symtable(char *fn_id, Array *tx, Array *idx) {
     Symbol * sym = malloc(sizeof(Symbol));
     sym->type = TYPE_FN;
     sym->is_array = 0;
     sym->return_type = current_return_type;
     sym->type_list = tx;
+    sym->param_list = idx;
     _add_to_scope(fn_id, sym);
 }
 
@@ -140,7 +141,7 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
 
     Array *tx = validate_id_list(fn_id, idx, dclx, prot);
 
-    insert_fn_into_global_symtable(fn_id, tx);
+    insert_fn_into_global_symtable(fn_id, tx, idx);
 
     /*
     printf("DCLX");
@@ -152,8 +153,8 @@ Env *validate_fn_dcl(char *fn_id, Array *idx, Env *dclx) {
     */
     dclx->prev = current_scope;
 
-    array_free(idx);
-    free(idx);
+    //array_free(idx);
+    //free(idx);
 
     return dclx;
 
