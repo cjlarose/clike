@@ -128,7 +128,7 @@ void print_ir(Env *global_scope, Array *procedures) {
             default:
                 break;
         }
-        printf(" %s (", proc->id);
+        printf(" %s(", proc->id);
         for (j = 0; j < sym->type_list->length; j++) {
             switch (*((int *) array_get(sym->type_list, j))) {
                 case TYPE_CHAR:

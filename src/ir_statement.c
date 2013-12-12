@@ -157,7 +157,7 @@ Instruction *assg_stmt_to_ir(Env *env, AssignmentStatement *stmt) {
 }
 
 Instruction *statement_to_ir(Env *env, StmtNodeContainer *stmt) {
-    printf("PRINTING IR FOR STMT %p of type %d\n", stmt, stmt->type);
+    //printf("PRINTING IR FOR STMT %p of type %d\n", stmt, stmt->type);
     switch (stmt->type) {
         case IF_STMT:
             return if_stmt_to_ir(env, &stmt->node.if_stmt);

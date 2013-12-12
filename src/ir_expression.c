@@ -6,10 +6,10 @@
 Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
     if (!expr)
         return NULL;
-    printf("NODE TYPE : %d\n", expr->node_type);
+    //printf("NODE TYPE : %d\n", expr->node_type);
     switch (expr->node_type) {
         case CONSTANT_EXPNODE: { // leaf
-            printf("CONST EXPR!\n");
+            //printf("CONST EXPR!\n");
             Instruction *inst;
             if (expr->return_type == TYPE_INT)
                 inst = load_int_instruction_new(expr->int_val);
@@ -25,7 +25,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return inst;
             break;
         } case BOOLEAN_EXPNODE: {
-            printf("Entering boolean expnode\n");
+            //printf("Entering boolean expnode\n");
             // truth_val = 0
             // evaluate shit, jump to true if true
             // goto end
@@ -48,7 +48,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 rhs = expr_to_ir(env, expr->rhs, &rhs_sym); 
 
             Instruction *evaluate;
-            printf("Before evaluate\n");
+            //printf("Before evaluate\n");
             if (!strcmp(expr->op, "||")) {
                 // do first
                 // if first, jump to true
@@ -74,17 +74,17 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
                 evaluate = concat_inst(6, lhs, jump_to_maybe, jump_to_end, 
                     maybe_label, rhs, jump_to_true);
             } else {
-                printf("NEGATION\n");
+                //printf("NEGATION\n");
                 // (boolean negation)
                 // do first
                 // if first, jump to end
                 // jump to true
                 Instruction *jump_to_end = cond_jump_instruction_new(lhs_sym, end_label);
                 Instruction *jump_to_true = uncond_jump_instruction_new(true_label);
-                printf("CONCAT %p %p %p\n", lhs, jump_to_end, jump_to_true);
+                //printf("CONCAT %p %p %p\n", lhs, jump_to_end, jump_to_true);
                 evaluate = concat_inst(3, lhs, jump_to_end, jump_to_true);
             }
-            printf("After evaluate\n");
+            //printf("After evaluate\n");
 
             Instruction *goto_end = uncond_jump_instruction_new(end_label);
 
@@ -102,7 +102,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             // set_to_1
             // end:
 
-            printf("Entering boolean expnode\n");
+            //printf("Entering boolean expnode\n");
             return concat_inst(
                 7,
                 init,
@@ -116,7 +116,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             break;    
         } case COMP_EXPNODE: {
             // return value should be 0 or 1
-            printf("Entering comp expnode\n");
+            //printf("Entering comp expnode\n");
             char *return_symbol = next_tmp_symbol(env);
             if (result_sym)
                 *result_sym = return_symbol;
@@ -132,11 +132,11 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             inst->rhs = rhs_sym;
             inst->op = expr->op;
 
-            printf("Exiting comp expnode\n");
+            //printf("Exiting comp expnode\n");
             return concat_inst(3, lhs, rhs, inst_cont);
             break;
         } case ARITHMETIC_EXPNODE: {
-            printf("Entering math expnode\n");
+            //printf("Entering math expnode\n");
             Instruction *inst_cont = arithmetic_instruction_new();
             ArithmeticInstruction *inst = inst_cont->value;
 
@@ -158,19 +158,19 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             //printf("%p %p %p\n", lhs, rhs, inst_cont);
             Instruction *result = concat_inst(3, lhs, rhs, inst_cont);
             //print_ir_list(result);
-            printf("Exiting math expnode\n");
+            //printf("Exiting math expnode\n");
             return result;
             break;
         } case INVOCATION_EXPNODE: {
             Array *sym_list = array_new(0, sizeof(char **));
             Instruction *param_eval = NULL;
             int i;
-            printf("count: %d\n", expr->expns->length);
+            //printf("count: %d\n", expr->expns->length);
             for (i = 0; i < expr->expns->length; i++) {
                 char *sym_name;
                 ExpNode *exp = *((ExpNode **) array_get(expr->expns, i));
                 param_eval = concat_inst(2, param_eval, expr_to_ir(env, exp, &sym_name));
-                printf("INVOC: %s\n", sym_name);
+                //printf("INVOC: %s\n", sym_name);
                 array_append(sym_list, &sym_name);
             }
 
@@ -184,7 +184,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return concat_inst(2, param_eval, invocation);
             break;
         } case ID_EXPNODE: // leaf
-            printf("ID_EXPNODE: %s\n", expr->op);
+            //printf("ID_EXPNODE: %s\n", expr->op);
             if (expr->index == NULL) {
                 if (result_sym)
                     *result_sym = expr->op;
@@ -203,14 +203,14 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             return NULL;
             break;
         case ASSIGNMENT_EXPNODE: {
-            printf("Entering assignment expnode\n");
+            //printf("Entering assignment expnode\n");
             char *lhs_sym, *rhs_sym;
             lhs_sym = rhs_sym = NULL;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
-            printf("LHS: %p, RHS: %p\n", lhs_sym, rhs_sym);
+            //printf("LHS: %p, RHS: %p\n", lhs_sym, rhs_sym);
             Instruction *cpy_inst = copy_instruction_new(lhs_sym, rhs_sym);
-            printf("Printing assignment expnode\n");
+            //printf("Printing assignment expnode\n");
             Instruction *result = concat_inst(3, lhs, rhs, cpy_inst);
             //print_ir_list(result);
             return result;
