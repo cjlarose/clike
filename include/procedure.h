@@ -3,9 +3,10 @@
 #include "env.h"
 #include "array.h"
 typedef struct Procedure {
+    char *id;
     Env *env;
     Array *stmts;
 } Procedure;
 
-void procedure_init(Procedure *fn, Env *env, Array *stmts);
+void procedure_init(Procedure *fn, char *id, Env *env, Array *stmts);
 #endif

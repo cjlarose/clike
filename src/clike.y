@@ -19,6 +19,7 @@ enum SymType current_type;
 enum SymType current_return_type;
 extern StringTable str_table;
 Array procedure_list;
+char *function_name;
 
 %}
 
@@ -122,18 +123,18 @@ f_prot: ID '(' type_list ')' { insert_fn_prot($1, $3); current_type = 0; }
 type_list: type { current_return_type = prev_type; $$ = type_list_new(); } 
   | type_list ',' type {type_list_insert($1); $$ = $1; }
 
-func_begin: type ID '(' id_list ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); } 
-  | void ID '(' id_list ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); }
-  | ID '(' id_list ')' loc_dcl_list { $$ = validate_fn_dcl($1, $3, $5); }
-  | type ID '(' ')' {current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
-  | void ID '(' ')' { current_return_type = current_type; } loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
-  | ID '(' ')' loc_dcl_list { $$ = validate_fn_dcl($1, NULL, $4); } 
+func_begin: type ID '(' id_list ')' { function_name = $2; current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); } 
+  | void ID '(' id_list ')' { function_name = $2; current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, $4, $7); }
+  | ID '(' id_list ')' loc_dcl_list { function_name = $1; $$ = validate_fn_dcl($1, $3, $5); }
+  | type ID '(' ')' { function_name = $2; current_return_type = current_type;} loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
+  | void ID '(' ')' { function_name = $2; current_return_type = current_type; } loc_dcl_list { $$ = validate_fn_dcl($2, NULL, $6); }
+  | ID '(' ')' loc_dcl_list { function_name = $1; $$ = validate_fn_dcl($1, NULL, $4); } 
 
 func: func_begin { current_scope = $1; } '{' loc_dcl_list { merge_into_scope($4); } opt_stmt_list '}'{ 
     verify_scope_return(); 
     //Env_free(current_scope); 
     Procedure proc;
-    procedure_init(&proc, current_scope, $6);
+    procedure_init(&proc, function_name, current_scope, $6);
     array_append(&procedure_list, &proc);
     current_scope = current_scope->prev;
 }

@@ -98,8 +98,8 @@ void print_ir_list(Instruction *node) {
     }
 }
 
-void print_ir_procedure(Env *env, Array *stmts) {
-    printf("PRINTING IR FOR ENV %p\n", env);
+void print_ir_procedure(char *id, Env *env, Array *stmts) {
+    printf("PRINTING IR FOR ENV %p %s\n", env, id);
     int i;
     if (stmts)
         for (i = 0; i < stmts->length; i++) {
@@ -115,6 +115,6 @@ void print_ir(Env *global_scope, Array *procedures) {
     int i;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);
-        print_ir_procedure(proc->env, proc->stmts);
+        print_ir_procedure(proc->id, proc->env, proc->stmts);
     }
 }
