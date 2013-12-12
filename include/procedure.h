@@ -8,6 +8,11 @@ typedef struct Procedure {
     Env *env;
     Array *stmts;
     Instruction *code;
+    enum {
+        VOID_TYPE,
+        INT_32,
+        FLOAT_64
+    } return_type;
 } Procedure;
 
 void procedure_init(Procedure *fn, char *id, Env *env, Array *stmts);

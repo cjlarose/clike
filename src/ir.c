@@ -113,8 +113,22 @@ void print_ir(Env *global_scope, Array *procedures) {
     int i;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);
-        printf("%s\n", proc->id);
+        switch (proc->return_type) {
+            case VOID_TYPE:
+                printf("void");
+                break;
+            case INT_32:
+                printf("i32");
+                break;
+            case FLOAT_64:
+                printf("double");
+                break;
+            default:
+                break;
+        }
+        printf(" %s () {\n", proc->id);
         print_ir_list(proc->code);
+        printf("}\n");
     }
 }
 
@@ -122,6 +136,21 @@ void make_ir(Env *global_scope, Array *procedures) {
     int i;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);
+        Symbol *sym = Env_get(global_scope, proc->id);
+        switch (sym->return_type) {
+            case TYPE_VOID:
+                proc->return_type = VOID_TYPE;
+                break;
+            case TYPE_CHAR:
+            case TYPE_INT:
+                proc->return_type = INT_32;
+                break;
+            case TYPE_FLOAT:
+                proc->return_type = FLOAT_64;
+                break;
+            defaut:
+                break;
+        }
         proc->code = procedure_to_ir(proc->id, proc->env, proc->stmts);
     }
 }
