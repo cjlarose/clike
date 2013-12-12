@@ -34,6 +34,7 @@ void print_map(void *k, void **v, void *_) {
 
 void print_ir_list(Instruction *node) {
     while (node) {
+        printf("    ");
         switch(node->type) {
             case ARITHMETIC_INST: {
                 ArithmeticInstruction *inst = node->value;
