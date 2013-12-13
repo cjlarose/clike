@@ -101,7 +101,7 @@ void allocate_local(void *k, void **v, void *data) {
         info->size += size - (info->size % size);
 
     int *size_ptr = malloc(sizeof(int)); // this is embarrasing
-    *size_ptr = size;
+    *size_ptr = info->size;
     map_insert(info->map, k, size_ptr);
     info->size += size;
 }
@@ -124,7 +124,15 @@ LocalAllocInfo *allocate_locals(Procedure *proc) {
 
 void print_inst_node(Map *locals, Instruction *node) {
     switch (node->type) {
-        case JUMP_INST: {
+        case COPY_INST: {
+            // TODO: inst->index
+            CopyInstruction *inst = node->value;
+            int offset_l = **((int **) map_find(locals, inst->lhs));
+            int offset_r = **((int **) map_find(locals, inst->rhs));
+            print_inst("lw", "$t0, %d($fp)", offset_l);
+            print_inst("sw", "$t0, %d($fp)", offset_r);
+            break;
+        } case JUMP_INST: {
             JumpInstruction *inst = node->value;
             char *dest = ((LabelInstruction *) inst->destination->value)->name;
             if (inst->condition) {
@@ -133,6 +141,12 @@ void print_inst_node(Map *locals, Instruction *node) {
                 print_inst("bne", "$t0, $zero, %s", dest);
             } else
                 print_inst("j", "%s", dest);
+            break;
+        } case LOAD_INT_INST: {
+            LoadIntInstruction *inst = node->value;
+            int offset = **((int **) map_find(locals, inst->return_symbol));
+            print_inst("addi", "$t0, $zero, %d", inst->val);
+            print_inst("sw", "$t0, %d($fp)", offset);
             break;
         } case LABEL_INST: {
             LabelInstruction *inst = node->value;
