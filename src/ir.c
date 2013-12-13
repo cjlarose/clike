@@ -38,12 +38,19 @@ void print_ir_list(Instruction *node) {
         switch(node->type) {
             case ARITHMETIC_INST: {
                 ArithmeticInstruction *inst = node->value;
-                printf("%s = %s %s %s\n",
-                    inst->return_symbol,
-                    inst->lhs,
-                    inst->op,
-                    inst->rhs
-                );
+                if (inst->rhs)
+                    printf("%s = %s %s %s\n",
+                        inst->return_symbol,
+                        inst->lhs,
+                        inst->op,
+                        inst->rhs
+                    );
+                else
+                    printf("%s = %s %s\n",
+                        inst->return_symbol,
+                        inst->op,
+                        inst->lhs
+                    );
                 break;
             } case COPY_INST: {
                 CopyInstruction *inst = node->value;
