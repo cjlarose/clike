@@ -58,18 +58,14 @@ int get_frame_size(int local_storage, int num_args) {
     return size;
 }
 
-void print_prologue(Procedure *proc) {
-    int num_args = 4;
-    int frame_size = get_frame_size(0, num_args);
+void print_prologue(Procedure *proc, int num_args, int frame_size) {
     print_inst("subu", "$sp, $sp, %d", frame_size);
     print_inst("sw", "$ra, %d($sp)", 4 * num_args + 4);
     print_inst("sw", "$fp, %d($sp)", 4 * num_args);
     print_inst("addiu", "$fp, $sp, %d", frame_size - 4);
 }
 
-void print_epilogue(Procedure *proc) {
-    int num_args = 4;
-    int frame_size = get_frame_size(0, num_args);
+void print_epilogue(Procedure *proc, int num_args, int frame_size) {
     print_inst("lw", "$ra, %d($sp)", 4 * num_args + 4);
     print_inst("lw", "$fp, %d($sp)", 4 * num_args);
     print_inst("addiu", "$sp, $sp, %d", frame_size);
@@ -77,10 +73,13 @@ void print_epilogue(Procedure *proc) {
 }
 
 void print_procedure(Procedure *proc) {
+    int num_args = 4;
+    int frame_size = get_frame_size(0, num_args);
+
     printf("%s:\n", proc->id);
-    print_prologue(proc);
+    print_prologue(proc, num_args, frame_size);
     printf("CODE\n");
-    print_epilogue(proc);
+    print_epilogue(proc, num_args, frame_size);
     //Instruction *inst = proc->code;
     //for (; inst; inst = inst->next) {
     //    printf("%d\n", inst->type);
