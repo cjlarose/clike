@@ -129,8 +129,8 @@ void print_inst_node(Map *locals, Instruction *node) {
             CopyInstruction *inst = node->value;
             int offset_l = **((int **) map_find(locals, inst->lhs));
             int offset_r = **((int **) map_find(locals, inst->rhs));
-            print_inst("lw", "$t0, %d($fp)", offset_l);
-            print_inst("sw", "$t0, %d($fp)", offset_r);
+            print_inst("lw", "$t0, %d($fp)", offset_r);
+            print_inst("sw", "$t0, %d($fp)", offset_l);
             break;
         } case JUMP_INST: {
             JumpInstruction *inst = node->value;
