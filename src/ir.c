@@ -127,7 +127,7 @@ Instruction *procedure_to_ir(char *id, Env *env, Array *stmts) {
 void print_global_var(void *k, void **v, void *info) {
     Env *env = info;
     char *id = k;
-    Symbol *sym = Env_get(env, k);
+    Symbol *sym = *((Symbol **) v);
     switch (sym->type) {
         case TYPE_CHAR:
         case TYPE_INT:
