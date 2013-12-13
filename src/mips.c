@@ -122,6 +122,28 @@ LocalAllocInfo *allocate_locals(Procedure *proc) {
     return info;
 }
 
+void print_inst_node(Map *locals, Instruction *node) {
+    switch (node->type) {
+        case JUMP_INST: {
+            JumpInstruction *inst = node->value;
+            char *dest = ((LabelInstruction *) inst->destination->value)->name;
+            if (inst->condition) {
+                int offset = **((int **) map_find(locals, inst->condition));
+                print_inst("lw", "$t0, %d($fp)", offset);
+                print_inst("bne", "$t0, $zero, %s", dest);
+            } else
+                print_inst("j", "%s", dest);
+            break;
+        } case LABEL_INST: {
+            LabelInstruction *inst = node->value;
+            printf("    %s:\n", inst->name);
+            break;
+        } default:
+            printf("%d\n", node->type);
+            break;
+    }
+}
+
 void print_procedure(Procedure *proc) {
     int num_args = 4; // TODO: get correct num args
     LocalAllocInfo *locals = allocate_locals(proc);
@@ -129,12 +151,10 @@ void print_procedure(Procedure *proc) {
 
     printf("%s:\n", proc->id);
     print_prologue(proc, num_args, frame_size);
-    printf("CODE\n");
+    Instruction *inst = proc->code;
+    for (; inst; inst = inst->next)
+        print_inst_node(locals->map, inst);
     print_epilogue(proc, num_args, frame_size);
-    //Instruction *inst = proc->code;
-    //for (; inst; inst = inst->next) {
-    //    printf("%d\n", inst->type);
-    //}
 }
 
 void print_mips(Env *global_scope, Array *procedures) {
