@@ -126,6 +126,8 @@ LocalAllocInfo *allocate_locals(Procedure *proc) {
 void print_inst_node(Map *locals, Instruction *node) {
     switch (node->type) {
         case ARITHMETIC_INST: {
+            // -x / * + - 
+            // "<="|">="|"=="|"!="|">"|"<"
             ArithmeticInstruction *inst = node->value;
             int offset_d = **((int **) map_find(locals, inst->return_symbol));
             int offset_l = **((int **) map_find(locals, inst->lhs));
@@ -135,6 +137,8 @@ void print_inst_node(Map *locals, Instruction *node) {
                 print_inst("lw", "$t1, %d($fp)", offset_r);
                 if (strcmp(inst->op, "<") == 0)
                     print_inst("slt", "$t2, $t0, $t1");
+                else
+                    printf("Unknown operator");
 
                 //printf("%s = %s %s %s\n",
                 //    inst->return_symbol,
