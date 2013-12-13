@@ -4,6 +4,7 @@
 #include "env.h"
 #include "procedure.h"
 #include "instruction.h"
+#include "map.h"
 
 void print_data(void *k, void **v, void *info) {
     Env *env = info;
@@ -72,9 +73,48 @@ void print_epilogue(Procedure *proc, int num_args, int frame_size) {
     print_inst("jr", "$ra");
 }
 
+
+typedef struct LocalAllocInfo {
+    int size;
+    Map *map;
+} LocalAllocInfo;
+
+// map name -> offset from sp
+void allocate_local(void *k, void **v, void *data) {
+    LocalAllocInfo *info = data;
+    Symbol *sym = *((Symbol **) v);
+    int size = 0;
+    switch (sym->type) {
+        case TYPE_CHAR:
+        case TYPE_INT:
+        case TYPE_BOOL:
+            size = 4;
+            break;
+        case TYPE_FLOAT:
+            size = 8;
+            break;
+        default:
+            break;
+    }
+
+    if (info->size % size != 0)
+        info->size += size - (info->size % size);
+
+    map_insert(&info->map, k, info->size);
+    info->size += size;
+}
+
+LocalAllocInfo *allocate_locals(Procedure *proc) {
+    LocalAllocInfo *info = malloc(sizeof(LocalAllocInfo));
+    info->size = 0;
+    map_init(&info->map, NULL, NULL, 4);
+    map_apply(proc->env, &allocate_local, info);
+}
+
 void print_procedure(Procedure *proc) {
-    int num_args = 4;
-    int frame_size = get_frame_size(0, num_args);
+    int num_args = 4; // TODO: get correct num args
+    LocalAllocInfo *locals = allocate_locals(proc);
+    int frame_size = get_frame_size(locals->size, num_args);
 
     printf("%s:\n", proc->id);
     print_prologue(proc, num_args, frame_size);
