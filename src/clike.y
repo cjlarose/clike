@@ -10,6 +10,7 @@
 #include "statements.h"
 #include "procedure.h"
 #include "ir.h"
+#include "mips.h"
 
 int status;
 Env *global_scope;
@@ -212,7 +213,7 @@ int main(int argc, char **argv) {
         // if -im
         print_ir(current_scope, &procedure_list);
         // else
-        //print_mips(current_scope, &procedure_list);
+        print_mips(current_scope, &procedure_list);
     }
 
     //procedure_list_free(&procedure_list);
