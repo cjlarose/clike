@@ -66,13 +66,36 @@ void print_ir_list(Instruction *node) {
                         inst->rhs
                     );
                 break;
-            } case JUMP_INST: {
-                JumpInstruction *inst = node->value;
+            } case COND_JUMP_INST: {
+                ConditionalJumpInstruction *inst = node->value;
                 char *dest = ((LabelInstruction *) inst->destination->value)->name;
-                if (inst->condition)
-                    printf("if %s goto %s\n", inst->condition, dest);
-                else
-                    printf("goto %s\n", dest);
+                char *op_str;
+                switch (inst->op) {
+                    case OP_EQ:
+                        op_str = "==";
+                        break;
+                    case OP_NEQ:
+                        op_str = "!=";
+                        break;
+                    case OP_GT:
+                        op_str = ">";
+                        break;
+                    case OP_GE:
+                        op_str = ">=";
+                        break;
+                    case OP_LT:
+                        op_str = "<";
+                        break;
+                    case OP_LE:
+                        op_str = "<=";
+                        break;
+                }
+                printf("if %s %s %s goto %s\n", inst->lhs, op_str, inst->rhs, dest);
+                break;
+            } case UNCOND_JUMP_INST: {
+                UnconditionalJumpInstruction *inst = node->value;
+                char *dest = ((LabelInstruction *) inst->destination->value)->name;
+                printf("goto %s\n", dest);
                 break;
             } case INVOC_INST: {
                 InvocationInstruction *inst = node->value;

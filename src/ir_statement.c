@@ -9,16 +9,20 @@
 Instruction *boolean_eval(Env *env, ExpNode *condition_expr, 
     Instruction *then_stmt, Instruction *else_stmt) {
 
-    char *condition_var = next_tmp_symbol(env);
-    Instruction *condition = NULL;
-    if (condition_expr)
-        condition = expr_to_ir(env, condition_expr, &condition_var);
+    //char *condition_var = next_tmp_symbol(env);
+    //Instruction *condition = NULL;
+    //if (condition_expr)
+        //condition = expr_to_ir(env, condition_expr, &condition_var);
+
+    char *lhs_sym, *rhs_sym;
+    Instruction *lhs = expr_to_ir(env, condition_expr->lhs, &lhs_sym);
+    Instruction *rhs = expr_to_ir(env, condition_expr->rhs, &rhs_sym);
 
     Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
     Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
 
-    Instruction *jump_to_true = cond_jump_instruction_new(condition_var, 
-        true_label);
+    Instruction *jump_to_true = cond_jump_instruction_new(condition_expr->op, 
+        lhs_sym, rhs_sym, true_label);
     Instruction *jump_to_end = uncond_jump_instruction_new(end_label);
 
     // for ifs with else stmts
@@ -51,7 +55,8 @@ Instruction *boolean_eval(Env *env, ExpNode *condition_expr,
 
     return concat_inst(
         7,
-        condition,
+        lhs,
+        rhs,
         jump_to_true,
         else_stmt,
         jump_to_end,

@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include "instruction.h"
 
 Instruction *concat_inst(int count, ...) {
@@ -64,18 +65,33 @@ Instruction *label_instruction_new(char *name) {
     return _instruction_new(LABEL_INST, inst);
 }
 
-Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
-    JumpInstruction *inst = malloc(sizeof(JumpInstruction));
-    inst->condition = sym;
+Instruction *cond_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination) {
+    ConditionalJumpInstruction *inst = malloc(sizeof(ConditionalJumpInstruction));
+
+    comp_op op_enum = 0;
+    if (strcmp(op, "==") == 0)
+        op_enum = OP_EQ;
+    else if (strcmp(op, "!=") == 0)
+        op_enum = OP_NEQ;
+    else if (strcmp(op, ">") == 0)
+        op_enum = OP_GT;
+    else if (strcmp(op, ">=") == 0)
+        op_enum = OP_GE;
+    else if (strcmp(op, "<") == 0)
+        op_enum = OP_LT;
+    else /*if (strcmp(op, "<=") == 0)*/
+        op_enum = OP_LE;
+
+    inst->lhs = lhs;
+    inst->rhs = rhs;
     inst->destination = destination;
-    return _instruction_new(JUMP_INST, inst);
+    return _instruction_new(COND_JUMP_INST, inst);
 }
 
 Instruction *uncond_jump_instruction_new(Instruction *destination) {
-    JumpInstruction *inst = malloc(sizeof(JumpInstruction));
-    inst->condition = NULL;
+    UnconditionalJumpInstruction *inst = malloc(sizeof(UnconditionalJumpInstruction));
     inst->destination = destination;
-    return _instruction_new(JUMP_INST, inst);
+    return _instruction_new(UNCOND_JUMP_INST, inst);
 }
 
 Instruction *invocation_instruction_new(char *result_symbol, char *fn_name, Array *params) {
