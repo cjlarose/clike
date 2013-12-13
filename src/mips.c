@@ -18,13 +18,13 @@ void print_data(void *k, void **v, void *info) {
     switch (sym->type) {
         case TYPE_CHAR:
         case TYPE_INT:
-            printf("%s:", k);
+            printf("%s:", id);
             for (i = 0; i < length; i++)
                 printf(" .word");
             printf("\n");
             break;
         case TYPE_FLOAT:
-            printf("%s:", k);
+            printf("%s:", id);
             for (i = 0; i < length; i++)
                 printf(" .double");
             printf("\n");
@@ -79,7 +79,7 @@ typedef struct LocalAllocInfo {
     Map *map;
 } LocalAllocInfo;
 
-// map name -> offset from sp
+// map name -> offset from fp
 void allocate_local(void *k, void **v, void *data) {
     LocalAllocInfo *info = data;
     Symbol *sym = *((Symbol **) v);
@@ -100,15 +100,26 @@ void allocate_local(void *k, void **v, void *data) {
     if (info->size % size != 0)
         info->size += size - (info->size % size);
 
-    map_insert(&info->map, k, info->size);
+    int *size_ptr = malloc(sizeof(int)); // this is embarrasing
+    *size_ptr = size;
+    map_insert(info->map, k, size_ptr);
     info->size += size;
+}
+
+void print_size(void *k, void **v, void *info) {
+    char *id = k;
+    int *size = *((int **) v);
+    printf("%s => %d\n", id, *size);
 }
 
 LocalAllocInfo *allocate_locals(Procedure *proc) {
     LocalAllocInfo *info = malloc(sizeof(LocalAllocInfo));
     info->size = 0;
-    map_init(&info->map, NULL, NULL, 4);
-    map_apply(proc->env, &allocate_local, info);
+    info->map = map_new(&fnv1_hash, &str_key_eq, 4);
+    map_apply(&(proc->env->table), &allocate_local, info);
+
+    //map_apply(info->map, &print_size, NULL);
+    return info;
 }
 
 void print_procedure(Procedure *proc) {
