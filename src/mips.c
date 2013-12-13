@@ -128,6 +128,7 @@ void print_inst_node(Map *locals, Instruction *node) {
         case ARITHMETIC_INST: {
             // -x / * + - 
             // "<="|">="|"=="|"!="|">"|"<"
+            /*
             ArithmeticInstruction *inst = node->value;
             int offset_d = **((int **) map_find(locals, inst->return_symbol));
             int offset_l = **((int **) map_find(locals, inst->lhs));
@@ -149,14 +150,17 @@ void print_inst_node(Map *locals, Instruction *node) {
             }
             // TODO: unary operators
             print_inst("sw", "$t2, %d($fp)", offset_d);
+            */
             break;
         } case COPY_INST: {
             // TODO: inst->index
+            /*
             CopyInstruction *inst = node->value;
             int offset_l = **((int **) map_find(locals, inst->lhs));
             int offset_r = **((int **) map_find(locals, inst->rhs));
             print_inst("lw", "$t0, %d($fp)", offset_r);
             print_inst("sw", "$t0, %d($fp)", offset_l);
+            */
             break;
         } case JUMP_INST: {
             JumpInstruction *inst = node->value;
