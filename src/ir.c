@@ -124,7 +124,28 @@ Instruction *procedure_to_ir(char *id, Env *env, Array *stmts) {
     return result;
 }
 
+void print_global_var(void *k, void **v, void *info) {
+    Env *env = info;
+    char *id = k;
+    Symbol *sym = Env_get(env, k);
+    switch (sym->type) {
+        case TYPE_CHAR:
+        case TYPE_INT:
+            printf("global i32 %s", k);
+            break;
+        case TYPE_FLOAT:
+            printf("global double %s", k);
+            break;
+        default:
+            break;
+    }
+    if (sym->is_array)
+        printf("[%d]", sym->array_length);
+    printf("\n");
+}
+
 void print_ir(Env *global_scope, Array *procedures) {
+    map_apply(&global_scope->table, &print_global_var, global_scope);
     int i, j;
     for (i = 0; i < procedures->length; i++) {
         Procedure *proc = array_get(procedures, i);

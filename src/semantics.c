@@ -46,6 +46,7 @@ void insert_array_symbol(char *id, int size) {
     sym->type = current_type; // + "*"
     sym->is_array = 1;
     sym->type_list = NULL;
+    sym->array_length = size;
     _add_to_scope(id, sym);
 }
 
