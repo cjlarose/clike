@@ -10,7 +10,7 @@ LEXER_EXEC=tokenout
 TMP_TOKENOUT_ARCHIVE=tmp/tokenout
 TOKENOUT_ARCHIVE=tokenout.tar.gz
 
-PARSER_EXEC=parse
+PARSER_EXEC=clike
 TMP_PARSER_ARCHIVE=parser
 PARSER_ARCHIVE=parser.tar.gz
 
