@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <assert.h>
 #include "array.h"
 #include "env.h"
 #include "procedure.h"
@@ -74,15 +75,8 @@ void print_epilogue(Procedure *proc, int num_args, int frame_size) {
     print_inst("jr", "$ra");
 }
 
-
-typedef struct LocalAllocInfo {
-    int size;
-    Map *map;
-} LocalAllocInfo;
-
-// map name -> offset from fp
 void allocate_local(void *k, void **v, void *data) {
-    LocalAllocInfo *info = data;
+    int *frame_size = data;
     Symbol *sym = *((Symbol **) v);
     int size = 0;
     switch (sym->type) {
@@ -98,13 +92,13 @@ void allocate_local(void *k, void **v, void *data) {
             break;
     }
 
-    if (info->size % size != 0)
-        info->size += size - (info->size % size);
+    if (*frame_size % size != 0)
+        *frame_size += size - (*frame_size % size);
 
-    int *size_ptr = malloc(sizeof(int)); // this is embarrasing
-    *size_ptr = info->size;
-    map_insert(info->map, k, size_ptr);
-    info->size += size;
+    sym->offset = *frame_size;
+    sym->size = size;
+
+    *frame_size += size;
 }
 
 void print_size(void *k, void **v, void *info) {
@@ -113,44 +107,38 @@ void print_size(void *k, void **v, void *info) {
     printf("%s => %d\n", id, *size);
 }
 
-LocalAllocInfo *allocate_locals(Procedure *proc) {
-    LocalAllocInfo *info = malloc(sizeof(LocalAllocInfo));
-    info->size = 0;
-    info->map = map_new(&fnv1_hash, &str_key_eq, 4);
-    map_apply(&(proc->env->table), &allocate_local, info);
-
-    //map_apply(info->map, &print_size, NULL);
-    return info;
+int allocate_locals(Procedure *proc) {
+    int size = 0;
+    map_apply(&(proc->env->table), &allocate_local, &size);
+    return size;
 }
 
-void load_word(Map *locals, char *dest, char *var) {
-    void **value;
-    if ((value = map_find(locals, var))) {
-        int offset = **((int **) map_find(locals, var));
-        print_inst("lw", "%s, %d($fp)", dest, offset);
+void load_word(Procedure *proc, char *dest, char *var) {
+    Symbol **sym;
+    if ((sym = (Symbol**) map_find(&proc->env->table, var))) {
+        print_inst("lw", "%s, %d($fp)", dest, (*sym)->offset);
     } else {
         print_inst("la", "%s, %s", dest, var);
         print_inst("lw", "%s, %s", dest, dest);
     }
 }
 
-void store_word(Map *locals, char *src, char *var) {
-    void *value;
-    if ((value = map_find(locals, var))) {
-        int offset = **((int **) map_find(locals, var));
-        print_inst("sw", "%s, %d($fp)", src, offset);
+void store_word(Procedure *proc, char *src, char *var) {
+    Symbol **sym;
+    if ((sym = (Symbol**) map_find(&proc->env->table, var))) {
+        print_inst("sw", "%s, %d($fp)", src, (*sym)->offset);
     } else {
         print_inst("la", "$t0, %s", var);
         print_inst("sw", "%s, $t0", src);
     }
 }
 
-void store_double(Map *locals, char *src, char *var) {
+void store_double(Procedure *proc, char *src, char *var) {
     // TODO: this
     printf("# LOL IDK HOW TO DO THAT\n");
 }
 
-void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
+void print_inst_node(Procedure *proc, Instruction *node) {
     switch (node->type) {
         case ARITHMETIC_INST: {
             // -x / * + - 
@@ -175,24 +163,24 @@ void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
                     break;
             }
 
-            load_word(locals, "$t0", inst->lhs);
+            load_word(proc, "$t0", inst->lhs);
             if (inst->rhs) {
-                load_word(locals, "$t1", inst->rhs);
+                load_word(proc, "$t1", inst->rhs);
                 print_inst(op_str, "$t2, $t0, $t1");
             } else
                 print_inst(op_str, "$t2, $t0");
-            store_word(locals, "$t2", inst->return_symbol);
+            store_word(proc, "$t2", inst->return_symbol);
             break;
         } case COPY_INST: {
             // TODO: inst->index
             CopyInstruction *inst = node->value;
-            load_word(locals, "$t0", inst->lhs);
-            store_word(locals, "$t0", inst->rhs);
+            load_word(proc, "$t0", inst->lhs);
+            store_word(proc, "$t0", inst->rhs);
             break;
         } case COND_JUMP_INST: {
             ConditionalJumpInstruction *inst = node->value;
             char *dest = ((LabelInstruction *) inst->destination->value)->name;
-            load_word(locals, "$t0", inst->condition);
+            load_word(proc, "$t0", inst->condition);
             print_inst("bne", "$t0, $zero, %s", dest);
             break;
         } case COND_COMP_JUMP_INST: {
@@ -219,8 +207,8 @@ void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
                     op_str = "ble";
                     break;
             }
-            load_word(locals, "$t0", inst->lhs);
-            load_word(locals, "$t1", inst->rhs);
+            load_word(proc, "$t0", inst->lhs);
+            load_word(proc, "$t1", inst->rhs);
             print_inst(op_str, "$t0, $t1, %s", dest);
             break;
         } case UNCOND_JUMP_INST: {
@@ -231,12 +219,12 @@ void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
         } case LOAD_INT_INST: {
             LoadIntInstruction *inst = node->value;
             print_inst("addi", "$t0, $zero, %d", inst->val);
-            store_word(locals, "$t0", inst->return_symbol);
+            store_word(proc, "$t0", inst->return_symbol);
             break;
         } case LOAD_FLOAT_INST: {
             LoadFloatInstruction *inst = node->value;
             print_inst("li.d", "$f0, %f", inst->val);
-            store_double(locals, "$f0", inst->return_symbol);
+            store_double(proc, "$f0", inst->return_symbol);
             break;
         } case LABEL_INST: {
             LabelInstruction *inst = node->value;
@@ -245,25 +233,26 @@ void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
         } case RETURN_INST: {
             ReturnInstruction *inst = node->value;
             if (inst->return_symbol)
-                load_word(locals, "$v0", inst->return_symbol);
+                load_word(proc, "$v0", inst->return_symbol);
             print_inst("j", "%s_epilogue", proc->id);
             break;
         } default:
             printf("%d\n", node->type);
+            //assert(0);
             break;
     }
 }
 
 void print_procedure(Procedure *proc) {
     int num_args = 4; // TODO: get correct num args
-    LocalAllocInfo *locals = allocate_locals(proc);
-    int frame_size = get_frame_size(locals->size, num_args);
+    int local_size = allocate_locals(proc);
+    int frame_size = get_frame_size(local_size, num_args);
 
     printf("%s:\n", proc->id);
     print_prologue(proc, num_args, frame_size);
     Instruction *inst = proc->code;
     for (; inst; inst = inst->next)
-        print_inst_node(proc, locals->map, inst);
+        print_inst_node(proc, inst);
     printf("    %s_epilogue:\n", proc->id); // ending label
     print_epilogue(proc, num_args, frame_size);
 }

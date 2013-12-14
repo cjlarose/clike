@@ -27,6 +27,9 @@ typedef struct Symbol {
     Array *param_list;
     Env *scope;
     int array_length;
+
+    int size;
+    int offset;
 } Symbol;
 
 /*
