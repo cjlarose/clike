@@ -70,7 +70,7 @@ Instruction *load_int_instruction_new(int n) {
 }
 
 Instruction *load_float_instruction_new(double n) {
-    LoadIntInstruction *inst = malloc(sizeof(LoadIntInstruction));
+    LoadFloatInstruction *inst = malloc(sizeof(LoadFloatInstruction));
     inst->val = n;
     return _instruction_new(LOAD_FLOAT_INST, inst);
 }
