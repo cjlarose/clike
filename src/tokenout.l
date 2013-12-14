@@ -3,6 +3,7 @@
 %x str
 
 %{
+#include <stdlib.h>
 #include "clike.tab.h"
 #include "clike_fn.h"
 #include "str_table.h"
@@ -36,12 +37,12 @@ auto|_Bool|break|case|_Complex|const|continue|default|restrict|do|enum|extern|_I
 "void"          {  return VOID; }
 "while"         {  return WHILE; }
 
-0[0-7]*{INTSUFF}?           { yylval.ival = atoi(yytext); return OCT_INT_CON; } // integer constants
-0[Xx][a-fA-F0-9]+{INTSUFF}? { yylval.ival = atoi(yytext); return HEX_INT_CON; }
-[1-9][0-9]*{INTSUFF}?       { yylval.ival = atoi(yytext); return DEC_INT_CON; }
+0[0-7]*{INTSUFF}?           { yylval.ival = (int) strtol(yytext, NULL, 0); return OCT_INT_CON; } // integer constants
+0[Xx][a-fA-F0-9]+{INTSUFF}? { yylval.ival = (int) strtol(yytext, NULL, 0); return HEX_INT_CON; }
+[1-9][0-9]*{INTSUFF}?       { yylval.ival = (int) strtol(yytext, NULL, 0); return DEC_INT_CON; }
 
-[0-9]+{EXPONENT}{FLOATSUFF}?       { yylval.fval = atof(yytext); return FLOAT_CON; } // floating-point constants
-{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { yylval.fval = atof(yytext); return FLOAT_CON; }
+[0-9]+{EXPONENT}{FLOATSUFF}?       { yylval.fval = strtod(yytext, NULL); return FLOAT_CON; } // floating-point constants
+{DOTDIGITS}{EXPONENT}?{FLOATSUFF}? { yylval.fval = strtod(yytext, NULL); return FLOAT_CON; }
 
 "/*"         BEGIN(comment); // traditional comments
 <comment>[^*\n]*

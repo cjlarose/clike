@@ -26,7 +26,7 @@ char *function_name;
 
 %union {
     int ival;
-    float fval;
+    double fval;
     char *sval;
     void *ptrval; // TODO: remove this.
     struct ExpNode * exp_node;
