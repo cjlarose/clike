@@ -151,6 +151,7 @@ void print_ir_list(Instruction *node) {
                 ArrayElementInstruction *inst = node->value;
                 printf("%s = %s[%s]\n", inst->return_symbol, inst->arr, 
                     inst->index);
+                break;
             }
         }
         node = node->next;
