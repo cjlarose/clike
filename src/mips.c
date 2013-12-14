@@ -78,6 +78,7 @@ void print_epilogue(Procedure *proc, int num_args, int frame_size) {
 }
 
 void allocate_local(void *k, void **v, void *data) {
+    // TODO: when allocating an array, remember that a[0] is at the bottom (closer to $sp)
     int *frame_size = data;
     Symbol *sym = *((Symbol **) v);
     int size = 0;
@@ -168,8 +169,11 @@ void store_word_index(Procedure *proc, char *src, char *arr, char *index) {
 }
 
 void store_double(Procedure *proc, char *src1, char *src2, char *var) {
-    // TODO: this
-    printf("# LOL IDK HOW TO DO THAT\n");
+    get_addr(proc, "$t0", var);
+    print_inst("mfc1", "$t1, %s", src1);
+    print_inst("mfc1", "$t2, %s", src2);
+    print_inst("sw", "$t1, 0($t0)");
+    print_inst("sw", "$t2, 4($t0)");
 }
 
 void print_inst_node(Procedure *proc, Instruction *node) {
