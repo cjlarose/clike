@@ -38,17 +38,33 @@ void print_ir_list(Instruction *node) {
         switch(node->type) {
             case ARITHMETIC_INST: {
                 ArithmeticInstruction *inst = node->value;
+                char *op_str;
+                switch (inst->op) {
+                    case OP_ADD:
+                        op_str = "+";
+                        break;
+                    case OP_SUB:
+                    case OP_NEG:
+                        op_str = "-";
+                        break;
+                    case OP_MUL:
+                        op_str = "*";
+                        break;
+                    case OP_DIV:
+                        op_str = "/";
+                        break;
+                }
                 if (inst->rhs)
                     printf("%s = %s %s %s\n",
                         inst->return_symbol,
                         inst->lhs,
-                        inst->op,
+                        op_str,
                         inst->rhs
                     );
                 else
                     printf("%s = %s %s\n",
                         inst->return_symbol,
-                        inst->op,
+                        op_str,
                         inst->lhs
                     );
                 break;

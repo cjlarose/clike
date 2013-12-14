@@ -36,8 +36,7 @@ typedef struct {
     char *return_symbol;
     char *lhs;
     char *rhs;
-    //arith_op op;
-    char *op;
+    arith_op op;
 } ArithmeticInstruction;
 
 typedef struct {

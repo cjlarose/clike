@@ -36,10 +36,22 @@ Instruction *_instruction_new(int type, void *value) {
 
 Instruction *arithmetic_instruction_new(char *op, char *lhs, char *rhs, char *sym) {
     ArithmeticInstruction *inst = calloc(1, sizeof(ArithmeticInstruction));
-    inst->op = op;
     inst->lhs = lhs;
     inst->rhs = rhs;
     inst->return_symbol = sym;
+
+    if (strcmp(op, "+") == 0)
+        inst->op = OP_ADD;
+    else if (strcmp(op, "-") == 0) {
+        if (rhs == NULL)
+            inst->op = OP_NEG;
+        else
+            inst->op = OP_SUB;
+    } else if (strcmp(op, "*") == 0)
+        inst->op = OP_MUL;
+    else /*if (strcmp(op, "/") == 0) {*/
+        inst->op = OP_DIV;
+    
     return _instruction_new(ARITHMETIC_INST, inst);
 }
 
