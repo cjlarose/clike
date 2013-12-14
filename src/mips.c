@@ -23,14 +23,14 @@ void print_data(void *k, void **v, void *info) {
             sym->size = 4;
             printf("%s:", id);
             for (i = 0; i < length; i++)
-                printf(" .word");
+                printf(" .word 0\n");
             printf("\n");
             break;
         case TYPE_FLOAT:
             sym->size = 8;
             printf("%s:", id);
             for (i = 0; i < length; i++)
-                printf(" .double");
+                printf(" .double 0.0\n");
             printf("\n");
             break;
         default:
@@ -122,7 +122,7 @@ void load_word(Procedure *proc, char *dest, char *var) {
         print_inst("lw", "%s, %d($fp) # %s = %s", dest, (*sym)->offset, dest, var);
     } else {
         print_inst("la", "%s, %s", dest, var);
-        print_inst("lw", "%s, %s # %s = %s", dest, dest, dest, var);
+        print_inst("lw", "%s, 0(%s) # %s = %s", dest, dest, dest, var);
     }
 }
 
@@ -150,7 +150,7 @@ void get_el_addr(Procedure *proc, char *dest, char *arr, char *index) {
 
 void load_word_index(Procedure *proc, char *dest, char *arr, char *index) {
     get_el_addr(proc, dest, arr, index);
-    print_inst("lw", "%s, %s # %s = %s[%s]", dest, dest, dest, arr, index);
+    print_inst("lw", "%s, 0(%s) # %s = %s[%s]", dest, dest, dest, arr, index);
 }
 
 void store_word(Procedure *proc, char *src, char *var) {
@@ -159,7 +159,7 @@ void store_word(Procedure *proc, char *src, char *var) {
         print_inst("sw", "%s, %d($fp) # %s = %s", src, (*sym)->offset, var, src);
     } else {
         print_inst("la", "$t0, %s", var);
-        print_inst("sw", "%s, $t0 # %s = %s", src, var, src);
+        print_inst("sw", "%s, 0($t0) # %s = %s", src, var, src);
     }
 }
 
@@ -264,7 +264,7 @@ void print_inst_node(Procedure *proc, Instruction *node) {
                 char *param_var = *((char **) array_get(inst->params, i));
                 load_word(proc, "$t0", param_var);
                 if (i < 4)
-                    print_inst("mov", "$a%d, $t0", i);
+                    print_inst("move", "$a%d, $t0", i);
                 print_inst("sw", "$t0, %d($sp)", i * 4);
             }
 
