@@ -237,6 +237,22 @@ void print_inst_node(Procedure *proc, Instruction *node) {
             char *dest = ((LabelInstruction *) inst->destination->value)->name;
             print_inst("j", "%s", dest);
             break;
+        } case INVOC_INST: {
+            InvocationInstruction *inst = node->value;
+
+            int i;
+            for (i = 0; i < inst->params->length; i++) {
+                char *param_var = *((char **) array_get(inst->params, i));
+                load_word(proc, "$t0", param_var);
+                if (i < 4)
+                    print_inst("mov", "$a%d, $t0", i);
+                print_inst("sw", "$t0, %d($sp)", i * 4);
+            }
+
+            print_inst("jal", inst->fn);
+            if (inst->return_symbol)
+                store_word(proc, "$v0", inst->return_symbol);
+            break;
         } case LOAD_INT_INST: {
             LoadIntInstruction *inst = node->value;
             print_inst("addi", "$t0, $zero, %d", inst->val);
