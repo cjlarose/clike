@@ -9,32 +9,15 @@
 Instruction *boolean_eval(Env *env, ExpNode *condition_expr, 
     Instruction *then_stmt, Instruction *else_stmt) {
 
-    //char *condition_var = next_tmp_symbol(env);
+    char *condition_var = next_tmp_symbol(env);
     Instruction *condition = NULL;
-    //if (condition_expr)
-        //condition = expr_to_ir(env, condition_expr, &condition_var);
+    if (condition_expr)
+        condition = expr_to_ir(env, condition_expr, &condition_var);
 
     Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
     Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
 
-    Instruction *jump_to_true;
-
-    if (condition_expr->node_type == COMP_EXPNODE) {
-        char *lhs_sym, *rhs_sym;
-        Instruction *lhs = expr_to_ir(env, condition_expr->lhs, &lhs_sym);
-        Instruction *rhs = expr_to_ir(env, condition_expr->rhs, &rhs_sym);
-
-        condition = concat_inst(2, lhs, rhs);
-        jump_to_true = cond_comp_jump_instruction_new(condition_expr->op, 
-            lhs_sym, rhs_sym, true_label);
-
-    } else {
-        // boolean_expnode
-        char *condition_var = next_tmp_symbol(env);
-        condition = expr_to_ir(env, condition_expr, &condition_var);
-        jump_to_true = cond_jump_instruction_new(condition_var, true_label);
-    }
-
+    Instruction *jump_to_true = cond_jump_instruction_new(condition_var, true_label);
 
     Instruction *jump_to_end = uncond_jump_instruction_new(end_label);
 

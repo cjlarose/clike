@@ -119,7 +119,15 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
         } case COMP_EXPNODE: {
             // return value should be 0 or 1
             //printf("Entering comp expnode\n");
-            assert(0);
+            //assert(0);
+            char *truth_var = next_tmp_symbol(env);
+
+            Instruction *init = load_int_instruction_new(0);
+            ((LoadIntInstruction *) init->value)->return_symbol = truth_var;
+
+            Instruction *true_label = label_instruction_new(next_tmp_symbol(env));
+            Instruction *end_label = label_instruction_new(next_tmp_symbol(env));
+
             char *return_symbol = next_tmp_symbol(env);
             if (result_sym)
                 *result_sym = return_symbol;
@@ -128,15 +136,22 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
 
-            Instruction *inst_cont = arithmetic_instruction_new();
-            ArithmeticInstruction *inst = inst_cont->value;
-            inst->return_symbol = return_symbol;
-            inst->lhs = lhs_sym;
-            inst->rhs = rhs_sym;
-            inst->op = expr->op;
+            Instruction *jump_to_end = uncond_jump_instruction_new(end_label);
+
+            Instruction *jump_to_true = cond_comp_jump_instruction_new(
+                expr->op, lhs_sym, rhs_sym, true_label);
+
+            char *load_one_var = next_tmp_symbol(env);
+            Instruction *load_one = load_int_instruction_new(1);
+            ((LoadIntInstruction *) load_one->value)->return_symbol = load_one_var;
+            Instruction *set_true = copy_instruction_new(truth_var, load_one_var, NULL);
+
+            if (result_sym)
+                *result_sym = truth_var;
 
             //printf("Exiting comp expnode\n");
-            return concat_inst(3, lhs, rhs, inst_cont);
+            return concat_inst(9, lhs, rhs, init, jump_to_true, 
+                jump_to_end, true_label, load_one, set_true, end_label);
             break;
         } case ARITHMETIC_EXPNODE: {
             //printf("Entering math expnode\n");
