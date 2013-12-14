@@ -145,7 +145,7 @@ void store_word(Map *locals, char *src, char *var) {
     }
 }
 
-void print_inst_node(Map *locals, Instruction *node) {
+void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
     switch (node->type) {
         case ARITHMETIC_INST: {
             // -x / * + - 
@@ -233,6 +233,12 @@ void print_inst_node(Map *locals, Instruction *node) {
             LabelInstruction *inst = node->value;
             printf("    %s:\n", inst->name);
             break;
+        } case RETURN_INST: {
+            ReturnInstruction *inst = node->value;
+            if (inst->return_symbol)
+                load_word(locals, "$v0", inst->return_symbol);
+            print_inst("j", "%s_epilogue", proc->id);
+            break;
         } default:
             printf("%d\n", node->type);
             break;
@@ -248,7 +254,8 @@ void print_procedure(Procedure *proc) {
     print_prologue(proc, num_args, frame_size);
     Instruction *inst = proc->code;
     for (; inst; inst = inst->next)
-        print_inst_node(locals->map, inst);
+        print_inst_node(proc, locals->map, inst);
+    printf("    %s_epilogue:\n", proc->id); // ending label
     print_epilogue(proc, num_args, frame_size);
 }
 
