@@ -298,8 +298,23 @@ void print_inst_node(Procedure *proc, Instruction *node) {
     }
 }
 
+int get_num_args(Procedure *proc) {
+    int num_args = 0;
+    Instruction *inst = proc->code;
+    for (; inst; inst = inst->next) {
+        if (inst->type == INVOC_INST) {
+            int length = ((InvocationInstruction *) inst->value)->params->length;
+            if (length > num_args)
+                num_args = length;
+        }
+    }
+    if (num_args > 4)
+        return num_args;
+    return 0;
+}
+
 void print_procedure(Procedure *proc) {
-    int num_args = 4; // TODO: get correct num args
+    int num_args = get_num_args(proc);
     int local_size = allocate_locals(proc);
     int frame_size = get_frame_size(local_size, num_args);
 
