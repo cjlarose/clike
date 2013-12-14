@@ -20,12 +20,14 @@ void print_data(void *k, void **v, void *info) {
     switch (sym->type) {
         case TYPE_CHAR:
         case TYPE_INT:
+            sym->size = 4;
             printf("%s:", id);
             for (i = 0; i < length; i++)
                 printf(" .word");
             printf("\n");
             break;
         case TYPE_FLOAT:
+            sym->size = 8;
             printf("%s:", id);
             for (i = 0; i < length; i++)
                 printf(" .double");
@@ -235,6 +237,21 @@ void print_inst_node(Procedure *proc, Instruction *node) {
             if (inst->return_symbol)
                 load_word(proc, "$v0", inst->return_symbol);
             print_inst("j", "%s_epilogue", proc->id);
+            break;
+        } case ARRAY_EL_INST: {
+            ArrayElementInstruction *inst = node->value;
+            load_word(proc, "$t0", inst->arr);
+            load_word(proc, "$t1", inst->index);
+            Symbol *sym = Env_get(proc->env, inst->arr);
+            switch (sym->size) {
+                case 8:
+                    print_inst("add", "$t1, $t1, $t1");
+                case 4:
+                    print_inst("add", "$t1, $t1, $t1");
+                    print_inst("add", "$t1, $t1, $t1");
+            }
+            print_inst("add", "$t2, $t0, $t1");
+            store_word(proc, "$t2", inst->return_symbol);
             break;
         } default:
             printf("%d\n", node->type);
