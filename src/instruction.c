@@ -72,22 +72,23 @@ Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
     return _instruction_new(COND_JUMP_INST, inst);
 }
 
-Instruction *cond_comp_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination) {
-    ConditionalComparisonJumpInstruction *inst = malloc(sizeof(ConditionalJumpInstruction));
+Instruction *cond_comp_jump_instruction_new(char *op, char *lhs, char *rhs, 
+    Instruction *destination) {
+    ConditionalComparisonJumpInstruction *inst = 
+        malloc(sizeof(ConditionalComparisonJumpInstruction));
 
-    comp_op op_enum = 0;
     if (strcmp(op, "==") == 0)
-        op_enum = OP_EQ;
+        inst->op = OP_EQ;
     else if (strcmp(op, "!=") == 0)
-        op_enum = OP_NEQ;
+        inst->op = OP_NEQ;
     else if (strcmp(op, ">") == 0)
-        op_enum = OP_GT;
+        inst->op = OP_GT;
     else if (strcmp(op, ">=") == 0)
-        op_enum = OP_GE;
+        inst->op = OP_GE;
     else if (strcmp(op, "<") == 0)
-        op_enum = OP_LT;
+        inst->op = OP_LT;
     else /*if (strcmp(op, "<=") == 0)*/
-        op_enum = OP_LE;
+        inst->op = OP_LE;
 
     inst->lhs = lhs;
     inst->rhs = rhs;

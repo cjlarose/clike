@@ -207,7 +207,7 @@ void print_inst_node(Map *locals, Instruction *node) {
             }
             load_word(locals, "$t0", inst->lhs);
             load_word(locals, "$t1", inst->rhs);
-            print_inst(op_str, "$t0, $t1, dest", dest);
+            print_inst(op_str, "$t0, $t1, %s", dest);
             break;
         } case UNCOND_JUMP_INST: {
             UnconditionalJumpInstruction *inst = node->value;
