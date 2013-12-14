@@ -9,13 +9,13 @@
 #include "instruction.h"
 #include "statements.h"
 #include "ir_statement.h"
-#define TMP_VAR_NAME_BUFFER_SIZE 12
+#define TMP_VAR_NAME_BUFFER_SIZE 16
 extern StringTable str_table;
 
 char *next_tmp_var_name() {
     static int num = 0;
     char buffer[TMP_VAR_NAME_BUFFER_SIZE];
-    snprintf(buffer, TMP_VAR_NAME_BUFFER_SIZE, "t%d", num++);
+    snprintf(buffer, TMP_VAR_NAME_BUFFER_SIZE, "temp%d", num++);
     return str_table_get(&str_table, buffer);
 }
 
