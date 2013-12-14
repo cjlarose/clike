@@ -126,10 +126,12 @@ ExpNode *new_invocation_expnode(char *fn_id, Array *expnx, int should_be_void) {
         expnx = array_new(0, sizeof(ExpNode *));
     Symbol *sym = Env_get(current_scope, fn_id);
     if (!sym)
+        sym = Env_get_prot(current_scope, fn_id);
+    if (!sym)
         print_error("Attempt to invoke undeclared function %s. "
         "Proceeding with the assumption that the return type of the function "
         "is int.", fn_id);
-    else if (sym->type != TYPE_FN)
+    else if (sym->type != TYPE_FN && sym->type != TYPE_FN_PROT)
         print_error("Attempt to invoke function %s, but %s is of "
         "type %s. Proceeding with the assumption that the return type of the "
         "function is int.", fn_id, fn_id, _type_str(sym->type));
