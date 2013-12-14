@@ -126,9 +126,15 @@ void load_word(Procedure *proc, char *dest, char *var) {
 }
 
 void get_el_addr(Procedure *proc, char *dest, char *arr, char *index) {
-    load_word(proc, "$t0", arr);
+    Symbol *sym, **sym_ptr;
+    if ((sym_ptr = (Symbol**) map_find(&proc->env->table, arr))) {
+        sym = *sym_ptr;
+        print_inst("addi", "$t0, $fp, %d # $t0 = &%s", sym->offset, arr);
+    } else {
+        sym = Env_get(proc->env, arr);
+        print_inst("la", "$t0, %s # $t0 = &%s", arr, arr);
+    }
     load_word(proc, "$t1", index);
-    Symbol *sym = Env_get(proc->env, arr);
     switch (sym->size) {
         case 8:
             print_inst("add", "$t1, $t1, $t1");
@@ -152,6 +158,11 @@ void store_word(Procedure *proc, char *src, char *var) {
         print_inst("la", "$t0, %s", var);
         print_inst("sw", "%s, $t0 # %s = %s", src, var, src);
     }
+}
+
+void store_word_index(Procedure *proc, char *src, char *arr, char *index) {
+    get_el_addr(proc, "$t3", arr, index);
+    print_inst("sw", "%s, 0($t3) # %s[%s] = %s", src, arr, index, src);
 }
 
 void store_double(Procedure *proc, char *src, char *var) {
@@ -193,10 +204,12 @@ void print_inst_node(Procedure *proc, Instruction *node) {
             store_word(proc, "$t2", inst->return_symbol);
             break;
         } case COPY_INST: {
-            // TODO: inst->index
             CopyInstruction *inst = node->value;
-            load_word(proc, "$t0", inst->rhs);
-            store_word(proc, "$t0", inst->lhs);
+            load_word(proc, "$t4", inst->rhs);
+            if (inst->index)
+                store_word_index(proc, "$t4", inst->lhs, inst->index);
+            else 
+                store_word(proc, "$t4", inst->lhs);
             break;
         } case COND_JUMP_INST: {
             ConditionalJumpInstruction *inst = node->value;
