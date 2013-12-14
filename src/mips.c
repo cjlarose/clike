@@ -147,30 +147,38 @@ void store_word(Map *locals, char *src, char *var) {
 
 void print_inst_node(Map *locals, Instruction *node) {
     switch (node->type) {
-        /*
         case ARITHMETIC_INST: {
             // -x / * + - 
-            // "<="|">="|"=="|"!="|">"|"<"
             ArithmeticInstruction *inst = node->value;
+
+            char *op_str;
+            switch (inst->op) {
+                case OP_ADD:
+                    op_str = "add";
+                    break;
+                case OP_SUB:
+                    op_str = "sub";
+                    break;
+                case OP_MUL:
+                    op_str = "mul";
+                    break;
+                case OP_DIV:
+                    op_str = "div";
+                    break;
+                case OP_NEG:
+                    op_str = "neg";
+                    break;
+            }
+
             load_word(locals, "$t0", inst->lhs);
             if (inst->rhs) {
                 load_word(locals, "$t1", inst->rhs);
-                if (strcmp(inst->op, "<") == 0)
-                    print_inst("slt", "$t2, $t0, $t1");
-                else
-                    printf("Unknown operator");
-
-                //printf("%s = %s %s %s\n",
-                //    inst->return_symbol,
-                //    inst->lhs,
-                //    inst->op,
-                //    inst->rhs
-                //);
-            }
-            // TODO: unary operators
+                print_inst(op_str, "$t2, $t0, $t1");
+            } else
+                print_inst(op_str, "$t2, $t0");
             store_word(locals, "$t2", inst->return_symbol);
             break;
-        }*/ case COPY_INST: {
+        } case COPY_INST: {
             // TODO: inst->index
             CopyInstruction *inst = node->value;
             load_word(locals, "$t0", inst->lhs);
