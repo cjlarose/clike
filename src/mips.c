@@ -125,15 +125,17 @@ void load_word(Procedure *proc, char *dest, char *var) {
     }
 }
 
+void get_addr(Procedure *proc, char *dest, char *var) {
+    Symbol **sym;
+    if ((sym = (Symbol**) map_find(&proc->env->table, var)))
+        print_inst("addi", "%s, $fp, %d # %s = &%s", dest, (*sym)->offset, dest, var);
+    else
+        print_inst("la", "%s, %s # %s = &%s", dest, var, dest, var);
+}
+
 void get_el_addr(Procedure *proc, char *dest, char *arr, char *index) {
-    Symbol *sym, **sym_ptr;
-    if ((sym_ptr = (Symbol**) map_find(&proc->env->table, arr))) {
-        sym = *sym_ptr;
-        print_inst("addi", "$t0, $fp, %d # $t0 = &%s", sym->offset, arr);
-    } else {
-        sym = Env_get(proc->env, arr);
-        print_inst("la", "$t0, %s # $t0 = &%s", arr, arr);
-    }
+    get_addr(proc, "$t0", arr);
+    Symbol *sym = Env_get(proc->env, arr);
     load_word(proc, "$t1", index);
     switch (sym->size) {
         case 8:
@@ -165,7 +167,7 @@ void store_word_index(Procedure *proc, char *src, char *arr, char *index) {
     print_inst("sw", "%s, 0($t3) # %s[%s] = %s", src, arr, index, src);
 }
 
-void store_double(Procedure *proc, char *src, char *var) {
+void store_double(Procedure *proc, char *src1, char *src2, char *var) {
     // TODO: this
     printf("# LOL IDK HOW TO DO THAT\n");
 }
@@ -274,7 +276,7 @@ void print_inst_node(Procedure *proc, Instruction *node) {
         } case LOAD_FLOAT_INST: {
             LoadFloatInstruction *inst = node->value;
             print_inst("li.d", "$f0, %f", inst->val);
-            store_double(proc, "$f0", inst->return_symbol);
+            store_double(proc, "$f0", "$f1", inst->return_symbol);
             break;
         } case LABEL_INST: {
             LabelInstruction *inst = node->value;
