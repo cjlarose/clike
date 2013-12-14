@@ -69,6 +69,11 @@ void print_ir_list(Instruction *node) {
             } case COND_JUMP_INST: {
                 ConditionalJumpInstruction *inst = node->value;
                 char *dest = ((LabelInstruction *) inst->destination->value)->name;
+                printf("if %s != 0 goto %s", inst->condition, dest);
+                break;
+            } case COND_COMP_JUMP_INST: {
+                ConditionalComparisonJumpInstruction *inst = node->value;
+                char *dest = ((LabelInstruction *) inst->destination->value)->name;
                 char *op_str;
                 switch (inst->op) {
                     case OP_EQ:

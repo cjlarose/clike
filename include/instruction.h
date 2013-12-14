@@ -63,6 +63,11 @@ typedef struct {
     char *lhs;
     char *rhs;
     struct Instruction *destination;
+} ConditionalComparisonJumpInstruction;
+
+typedef struct {
+    char *condition;
+    struct Instruction *destination;
 } ConditionalJumpInstruction;
 
 typedef struct {
@@ -94,6 +99,7 @@ typedef struct Instruction {
         ARITHMETIC_INST,
         COPY_INST,
         COND_JUMP_INST,
+        COND_COMP_JUMP_INST,
         UNCOND_JUMP_INST,
         INVOC_INST,
         LOAD_INT_INST,
@@ -112,7 +118,8 @@ Instruction *copy_instruction_new(char *lhs, char *rhs, char *index);
 Instruction *load_int_instruction_new(int n);
 Instruction *load_float_instruction_new(double n);
 Instruction *label_instruction_new(char *name);
-Instruction *cond_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination);
+Instruction *cond_jump_instruction_new(char *sym, Instruction *destination);
+Instruction *cond_comp_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination);
 Instruction *uncond_jump_instruction_new(Instruction *destination);
 Instruction *invocation_instruction_new(char *result_sym, char *fn_name, Array *params);
 Instruction *return_instruction_new(char *return_sym);

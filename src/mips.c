@@ -175,15 +175,44 @@ void print_inst_node(Map *locals, Instruction *node) {
             load_word(locals, "$t0", inst->lhs);
             store_word(locals, "$t0", inst->rhs);
             break;
-        } case JUMP_INST: {
-            JumpInstruction *inst = node->value;
+        } case COND_JUMP_INST: {
+            ConditionalJumpInstruction *inst = node->value;
             char *dest = ((LabelInstruction *) inst->destination->value)->name;
-            if (inst->condition) {
-                int offset = **((int **) map_find(locals, inst->condition));
-                print_inst("lw", "$t0, %d($fp)", offset);
-                print_inst("bne", "$t0, $zero, %s", dest);
-            } else
-                print_inst("j", "%s", dest);
+            load_word(locals, "$t0", inst->condition);
+            print_inst("bne", "$t0, $zero, %s", dest);
+            break;
+        } case COND_COMP_JUMP_INST: {
+            ConditionalComparisonJumpInstruction *inst = node->value;
+            char *dest = ((LabelInstruction *) inst->destination->value)->name;
+            char *op_str;
+            switch (inst->op) {
+                case OP_EQ:
+                    op_str = "beq";
+                    break;
+                case OP_NEQ:
+                    op_str = "bne";
+                    break;
+                case OP_GT:
+                    op_str = "bgt";
+                    break;
+                case OP_GE:
+                    op_str = "bge";
+                    break;
+                case OP_LT:
+                    op_str = "blt";
+                    break;
+                case OP_LE:
+                    op_str = "ble";
+                    break;
+            }
+            load_word(locals, "$t0", inst->lhs);
+            load_word(locals, "$t1", inst->rhs);
+            print_inst(op_str, "$t0, $t1, dest", dest);
+            break;
+        } case UNCOND_JUMP_INST: {
+            UnconditionalJumpInstruction *inst = node->value;
+            char *dest = ((LabelInstruction *) inst->destination->value)->name;
+            print_inst("j", "%s", dest);
             break;
         } case LOAD_INT_INST: {
             LoadIntInstruction *inst = node->value;

@@ -119,6 +119,7 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
         } case COMP_EXPNODE: {
             // return value should be 0 or 1
             //printf("Entering comp expnode\n");
+            assert(0);
             char *return_symbol = next_tmp_symbol(env);
             if (result_sym)
                 *result_sym = return_symbol;

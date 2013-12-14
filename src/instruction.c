@@ -65,8 +65,15 @@ Instruction *label_instruction_new(char *name) {
     return _instruction_new(LABEL_INST, inst);
 }
 
-Instruction *cond_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination) {
+Instruction *cond_jump_instruction_new(char *sym, Instruction *destination) {
     ConditionalJumpInstruction *inst = malloc(sizeof(ConditionalJumpInstruction));
+    inst->condition = sym;
+    inst->destination = destination;
+    return _instruction_new(COND_JUMP_INST, inst);
+}
+
+Instruction *cond_comp_jump_instruction_new(char *op, char *lhs, char *rhs, Instruction *destination) {
+    ConditionalComparisonJumpInstruction *inst = malloc(sizeof(ConditionalJumpInstruction));
 
     comp_op op_enum = 0;
     if (strcmp(op, "==") == 0)
@@ -85,7 +92,7 @@ Instruction *cond_jump_instruction_new(char *op, char *lhs, char *rhs, Instructi
     inst->lhs = lhs;
     inst->rhs = rhs;
     inst->destination = destination;
-    return _instruction_new(COND_JUMP_INST, inst);
+    return _instruction_new(COND_COMP_JUMP_INST, inst);
 }
 
 Instruction *uncond_jump_instruction_new(Instruction *destination) {
