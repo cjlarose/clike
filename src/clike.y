@@ -210,10 +210,10 @@ int main(int argc, char **argv) {
 
     if (!status) {
         make_ir(current_scope, &procedure_list);
-        // if -im
-        print_ir(current_scope, &procedure_list);
-        // else
-        print_mips(current_scope, &procedure_list);
+        if (argc > 1)
+            print_ir(current_scope, &procedure_list);
+        else
+            print_mips(current_scope, &procedure_list);
     }
 
     //procedure_list_free(&procedure_list);
