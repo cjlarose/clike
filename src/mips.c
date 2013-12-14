@@ -123,19 +123,37 @@ LocalAllocInfo *allocate_locals(Procedure *proc) {
     return info;
 }
 
+void load_word(Map *locals, char *dest, char *var) {
+    void **value;
+    if ((value = map_find(locals, var))) {
+        int offset = **((int **) map_find(locals, var));
+        print_inst("lw", "%s, %d($fp)", dest, offset);
+    } else {
+        print_inst("la", "%s, %s", dest, var);
+        print_inst("lw", "%s, %s", dest, dest);
+    }
+}
+
+void store_word(Map *locals, char *src, char *var) {
+    void *value;
+    if ((value = map_find(locals, var))) {
+        int offset = **((int **) map_find(locals, var));
+        print_inst("sw", "%s, %d($fp)", src, offset);
+    } else {
+        print_inst("la", "$t0, %s", var);
+        print_inst("sw", "%s, $t0", src);
+    }
+}
+
 void print_inst_node(Map *locals, Instruction *node) {
     switch (node->type) {
         case ARITHMETIC_INST: {
             // -x / * + - 
             // "<="|">="|"=="|"!="|">"|"<"
-            /*
             ArithmeticInstruction *inst = node->value;
-            int offset_d = **((int **) map_find(locals, inst->return_symbol));
-            int offset_l = **((int **) map_find(locals, inst->lhs));
-            print_inst("lw", "$t0, %d($fp)", offset_l);
+            load_word(locals, "$t0", inst->lhs);
             if (inst->rhs) {
-                int offset_r = **((int **) map_find(locals, inst->rhs));
-                print_inst("lw", "$t1, %d($fp)", offset_r);
+                load_word(locals, "$t1", inst->rhs);
                 if (strcmp(inst->op, "<") == 0)
                     print_inst("slt", "$t2, $t0, $t1");
                 else
@@ -149,18 +167,13 @@ void print_inst_node(Map *locals, Instruction *node) {
                 //);
             }
             // TODO: unary operators
-            print_inst("sw", "$t2, %d($fp)", offset_d);
-            */
+            store_word(locals, "$t2", inst->return_symbol);
             break;
         } case COPY_INST: {
             // TODO: inst->index
-            /*
             CopyInstruction *inst = node->value;
-            int offset_l = **((int **) map_find(locals, inst->lhs));
-            int offset_r = **((int **) map_find(locals, inst->rhs));
-            print_inst("lw", "$t0, %d($fp)", offset_r);
-            print_inst("sw", "$t0, %d($fp)", offset_l);
-            */
+            load_word(locals, "$t0", inst->lhs);
+            store_word(locals, "$t0", inst->rhs);
             break;
         } case JUMP_INST: {
             JumpInstruction *inst = node->value;
