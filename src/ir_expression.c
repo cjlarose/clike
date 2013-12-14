@@ -155,23 +155,19 @@ Instruction *expr_to_ir(Env *env, ExpNode *expr, char **result_sym) {
             break;
         } case ARITHMETIC_EXPNODE: {
             //printf("Entering math expnode\n");
-            Instruction *inst_cont = arithmetic_instruction_new();
-            ArithmeticInstruction *inst = inst_cont->value;
-
-            inst->return_symbol = next_tmp_symbol(env);
-            inst->op = expr->op;
 
             char *lhs_sym, *rhs_sym;
+            rhs_sym = NULL;
             Instruction *lhs = expr_to_ir(env, expr->lhs, &lhs_sym);
             Instruction *rhs = NULL;
-            inst->lhs = lhs_sym;
-            if (expr->rhs) {
+            if (expr->rhs)
                 rhs = expr_to_ir(env, expr->rhs, &rhs_sym);
-                inst->rhs = rhs_sym;
-            }
+
+            char *return_sym = next_tmp_symbol(env);
+            Instruction *inst_cont = arithmetic_instruction_new(expr->op, lhs_sym, rhs_sym, return_sym);
 
             if (result_sym)
-                *result_sym = inst->return_symbol;
+                *result_sym = return_sym;
             // prepend lhs and rhs and inst_cont
             //printf("%p %p %p\n", lhs, rhs, inst_cont);
             Instruction *result = concat_inst(3, lhs, rhs, inst_cont);

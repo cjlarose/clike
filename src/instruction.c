@@ -34,9 +34,13 @@ Instruction *_instruction_new(int type, void *value) {
     return inst_cont;
 }
 
-Instruction *arithmetic_instruction_new() {
-    return _instruction_new(ARITHMETIC_INST, 
-        calloc(1, sizeof(ArithmeticInstruction)));
+Instruction *arithmetic_instruction_new(char *op, char *lhs, char *rhs, char *sym) {
+    ArithmeticInstruction *inst = calloc(1, sizeof(ArithmeticInstruction));
+    inst->op = op;
+    inst->lhs = lhs;
+    inst->rhs = rhs;
+    inst->return_symbol = sym;
+    return _instruction_new(ARITHMETIC_INST, inst);
 }
 
 Instruction *copy_instruction_new(char *lhs, char *rhs, char *index) {

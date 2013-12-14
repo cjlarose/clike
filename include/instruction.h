@@ -24,10 +24,19 @@ invocation
     params // list of symbols
 */
 
+typedef enum {
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_NEG
+} arith_op;
+
 typedef struct {
     char *return_symbol;
     char *lhs;
     char *rhs;
+    //arith_op op;
     char *op;
 } ArithmeticInstruction;
 
@@ -113,7 +122,7 @@ typedef struct Instruction {
 } Instruction;
 
 Instruction *concat_inst(int count, ...);
-Instruction *arithmetic_instruction_new();
+Instruction *arithmetic_instruction_new(char *op, char *lhs, char *rhs, char *sym);
 Instruction *copy_instruction_new(char *lhs, char *rhs, char *index);
 Instruction *load_int_instruction_new(int n);
 Instruction *load_float_instruction_new(double n);

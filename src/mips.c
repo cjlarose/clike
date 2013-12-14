@@ -147,6 +147,7 @@ void store_word(Map *locals, char *src, char *var) {
 
 void print_inst_node(Map *locals, Instruction *node) {
     switch (node->type) {
+        /*
         case ARITHMETIC_INST: {
             // -x / * + - 
             // "<="|">="|"=="|"!="|">"|"<"
@@ -169,7 +170,7 @@ void print_inst_node(Map *locals, Instruction *node) {
             // TODO: unary operators
             store_word(locals, "$t2", inst->return_symbol);
             break;
-        } case COPY_INST: {
+        }*/ case COPY_INST: {
             // TODO: inst->index
             CopyInstruction *inst = node->value;
             load_word(locals, "$t0", inst->lhs);
