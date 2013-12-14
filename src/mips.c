@@ -333,7 +333,24 @@ void print_procedure(Procedure *proc) {
     print_epilogue(proc, num_args, frame_size);
 }
 
+void print_stdlib() {
+    char buf[1024];
+    FILE *file;
+    size_t nread;
+
+    file = fopen("src/stdlib.s", "r");
+    if (file) {
+        while ((nread = fread(buf, 1, sizeof buf, file)) > 0)
+            fwrite(buf, 1, nread, stdout);
+        if (ferror(file)) {
+            fprintf(stderr, "Cannot open stdlib.s\n");
+        }
+        fclose(file);
+    }
+}
+
 void print_mips(Env *global_scope, Array *procedures) {
+    print_stdlib();
     print_globals(global_scope);
     printf("\n");
     printf(".text\n\n");
