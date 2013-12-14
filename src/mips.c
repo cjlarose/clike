@@ -145,6 +145,11 @@ void store_word(Map *locals, char *src, char *var) {
     }
 }
 
+void store_double(Map *locals, char *src, char *var) {
+    // TODO: this
+    printf("# LOL IDK HOW TO DO THAT\n");
+}
+
 void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
     switch (node->type) {
         case ARITHMETIC_INST: {
@@ -225,9 +230,13 @@ void print_inst_node(Procedure *proc, Map *locals, Instruction *node) {
             break;
         } case LOAD_INT_INST: {
             LoadIntInstruction *inst = node->value;
-            int offset = **((int **) map_find(locals, inst->return_symbol));
             print_inst("addi", "$t0, $zero, %d", inst->val);
-            print_inst("sw", "$t0, %d($fp)", offset);
+            store_word(locals, "$t0", inst->return_symbol);
+            break;
+        } case LOAD_FLOAT_INST: {
+            LoadFloatInstruction *inst = node->value;
+            print_inst("li.d", "$f0, %f", inst->val);
+            store_double(locals, "$f0", inst->return_symbol);
             break;
         } case LABEL_INST: {
             LabelInstruction *inst = node->value;
