@@ -1,4 +1,4 @@
-Compiler written for CSC 453: Compilers and Systems Software
+Compiler written for CSC 453: Compilers and Systems Software in the Fall of 2013 at University of Arizona.
 
 ```
 $ git clone https://github.com/cjlarose/clike.git
