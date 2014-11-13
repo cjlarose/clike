@@ -1,5 +1,9 @@
 Compiler written for CSC 453: Compilers and Systems Software in the Fall of 2013 at University of Arizona.
 
+The source language is a variant of C and the target language is MIPS32 assembly. This project does not include an *assembler* for MIPS, and uses the `syscall` instruction as in [SPIM][1].
+
+[1]: http://spimsimulator.sourceforge.net/
+
 ```
 $ git clone https://github.com/cjlarose/clike.git
 $ git submodule init
